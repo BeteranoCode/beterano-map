@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "description": "Mapa colaborativo de restauradores de vehículos clásicos de BETERANO",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "leaflet": "^1.9.4",
@@ -17,6 +16,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.7.0",
+    "gh-pages": "^6.3.0",
     "vite": "^4.0.0"
   }
 }
