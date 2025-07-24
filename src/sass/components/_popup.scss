@@ -1,0 +1,114 @@
+.popup {
+    max-width: 300px;
+    padding-bottom: 1rem;
+}
+
+.popup__text {
+    padding: 20px 20px 0 20px;
+    word-wrap: break-word;
+    width: 300px;
+}
+
+.popup__filters {
+    list-style: none;
+    margin-bottom: 1rem;
+}
+
+.popup__header {
+    color: $primary-color;
+}
+
+.popup .popup__website {
+    color: $text-color;
+}
+
+.popup__column {
+    width: 49%;
+    display: inline-block;
+    vertical-align: bottom;
+}
+
+.popup__column-right {
+    text-align: right;
+}
+
+.popup__tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    list-style: none;
+    color: $secondary-color;
+    font-family: $title-font;
+    margin-top: 1em;
+}
+
+.popup__filter-text {
+    font-weight: 300;
+    color: $primary-color;
+    display: inline;
+}
+
+.popup__filtericon {
+    background-image: url('../img/map-sprite.png');
+    width: 25px;
+    height: 25px;
+    margin-right: 3px;
+    display: inline-block;
+    background-repeat: no-repeat;
+    vertical-align: text-bottom;
+    background-size: 50px;
+    vertical-align: middle;
+}
+
+.popup__filtericon-workshop {
+    background-position: -26px 3px;
+}
+
+.popup__filtericon-machine {
+    background-position: -26px -21px;
+}
+
+.popup__filtericon-started {
+    background-position: -26px -48px;
+}
+
+
+// resets for leaflet styles
+.leaflet-popup-content p {
+    margin: 0 0 1rem 0;
+}
+
+.popup a {
+    color: #fff;
+}
+
+.map .leaflet-popup-content-wrapper {
+  padding: 0;
+  border-radius: 2px;
+}
+
+.map .leaflet-popup-content {
+  margin: 0
+}
+
+.leaflet-container .marker-popup a.leaflet-popup-close-button {
+    width: 25px !important;
+    height: 25px !important;
+    left: 265px;
+    color: #fff;
+    opacity: 1 !important;
+    font-size: 25px;
+    font-weight: 100;
+    text-align: center;
+    top: 10px !important;
+    line-height: 22px;
+    border-radius: 50%;
+    background: $text-color;
+    padding: 0;
+}
+
+.poi-info-window {
+    padding: 20px 20px 0 20px;
+    word-wrap: break-word;
+    width: 300px;
+}
