@@ -3,9 +3,11 @@
 echo "🔧 Compilando el proyecto..."
 npm run build || { echo "❌ Falló la compilación"; exit 1; }
 
-echo "🚀 Cambiando a rama gh-pages..."
-git checkout gh-pages || { echo "❌ No se pudo cambiar a gh-pages"; exit 1; }
-
+echo "🚀 Cambiando o creando rama gh-pages..."
+git show-ref --quiet refs/heads/gh-pages && \
+  git checkout gh-pages || \
+  git checkout --orphan gh-pages
+  
 echo "🧹 Eliminando archivos anteriores..."
 git rm -r * || echo "ℹ️ No había archivos anteriores o ya estaban eliminados"
 
