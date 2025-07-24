@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mapa de Restauradores - BETERANO</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <title>BETERANO MAP</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 </head>
 <body>
   <div id="header-container"></div>
-  <div id="app"></div>
+  <div id="root"></div> <!-- importante para React -->
   <script>
     fetch("https://beteranocode.github.io/header.html")
       .then(res => res.text())
