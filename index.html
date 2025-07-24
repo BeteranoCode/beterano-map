@@ -10,15 +10,33 @@
   <!-- Scripts del header -->
   <script src="https://beteranocode.github.io/assets/header/header.js" defer></script>
   <script src="https://beteranocode.github.io/assets/header/hamburger.js" defer></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+  <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
   <div id="header-container"></div>
-  <div id="root"></div> <!-- importante para React -->
+  <button id="toggle-view" class="toggle-view">📋 Mostrar lista</button>
+
+  <div class="layout-container">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="map-container" id="map"></main>
+  </div>
+
+  <!-- Header dinámico -->
   <script>
     fetch("https://beteranocode.github.io/assets/header/header.html")
       .then(res => res.text())
       .then(html => document.getElementById("header-container").innerHTML = html);
   </script>
+
+  <!-- Scripts del header -->
+  <script src="https://beteranocode.github.io/assets/header/header.js" defer></script>
+  <script src="https://beteranocode.github.io/assets/header/hamburger.js" defer></script>
+
+  <!-- Scripts del mapa -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
