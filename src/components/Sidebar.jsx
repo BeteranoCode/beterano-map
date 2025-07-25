@@ -1,3 +1,4 @@
+// src/components/Sidebar.jsx
 import React from "react";
 
 const TRIBUS = [
@@ -15,27 +16,23 @@ const TRIBUS = [
 
 export default function Sidebar({ selectedTribu, setSelectedTribu, search, setSearch }) {
   return (
-    <div>
+    <div className="sidebar">
       <input
         type="text"
         placeholder="Buscar por nombre, ciudad, país…"
         value={search}
         onChange={e => setSearch(e.target.value)}
-        style={{ width: "100%", marginBottom: 16 }}
+        className="sidebar-search"
       />
-      <div>
+      <div className="tribu-filters">
         {TRIBUS.map(t =>
           <button
             key={t.key}
-            style={{
-              fontWeight: t.key === selectedTribu ? "bold" : "normal",
-              margin: 4
-            }}
+            className={t.key === selectedTribu ? "active" : ""}
             onClick={() => setSelectedTribu(t.key)}
           >{t.label}</button>
         )}
       </div>
-      {/* Aquí puedes añadir más filtros si lo deseas */}
     </div>
   );
 }

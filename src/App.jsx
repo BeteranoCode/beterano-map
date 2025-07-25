@@ -1,4 +1,4 @@
-// src/App.js
+// src/App.jsx
 import React, { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import MapPage from "./pages/Map";
