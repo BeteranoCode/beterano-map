@@ -5,25 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BETERANO MAP</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <!-- Estilos del header -->
+
+  <!-- Header styles -->
   <link rel="stylesheet" href="https://beteranocode.github.io/assets/header/header.css" />
-  <!-- Scripts del header -->
-  <script src="https://beteranocode.github.io/assets/header/header.js" defer></script>
-  <script src="https://beteranocode.github.io/assets/header/hamburger.js" defer></script>
+
+  <!-- Leaflet styles (OK, los necesitas para los popups y mapas) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
-  <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
   <div id="header-container"></div>
-  <button id="toggle-view" class="toggle-view">📋 Mostrar lista</button>
 
-  <div class="layout-container">
-    <aside class="sidebar" id="sidebar"></aside>
-    <main class="map-container" id="map"></main>
-  </div>
+  <!-- Aquí es donde React va a renderizar TODO el mapa y el resto de la web -->
+  <div id="root"></div>
 
-  <!-- Header dinámico -->
+  <!-- Header dinámico (si lo usas) -->
   <script>
     fetch("https://beteranocode.github.io/assets/header/header.html")
       .then(res => res.text())
@@ -34,9 +30,7 @@
   <script src="https://beteranocode.github.io/assets/header/header.js" defer></script>
   <script src="https://beteranocode.github.io/assets/header/hamburger.js" defer></script>
 
-  <!-- Scripts del mapa -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  <!-- Tu app React/Vite la monta aquí -->
   <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

@@ -1,10 +1,15 @@
 // src/App.js
 import React from "react";
-import MapPage from "./pages/Map.jsx"; // o el nombre del componente de página principal
+import MapPage from "./pages/Map"; // O "./pages/Map.jsx"
 
 function App() {
   return (
-    <MapPage />
+    <div className="layout-container">
+      <aside className="sidebar" id="sidebar"></aside>
+      <main className="map-container" id="map">
+        <MapPage />
+      </main>
+    </div>
   );
 }
 
