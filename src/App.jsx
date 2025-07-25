@@ -1,11 +1,11 @@
 // src/App.js
-import React from 'react';
+import React from "react";
+import MapPage from "./pages/Map.js"; // o el nombre del componente de página principal
 
-export default function App() {
+function App() {
   return (
-    <main>
-      <h1>BETERANO MAP</h1>
-      <p>Bienvenido al mapa de restauradores</p>
-    </main>
+    <MapPage />
   );
 }
+
+export default App;
