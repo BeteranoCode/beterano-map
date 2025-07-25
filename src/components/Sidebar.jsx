@@ -28,6 +28,10 @@ export default function Sidebar({ selectedTribu, setSelectedTribu, search, setSe
         {TRIBUS.map(t =>
           <button
             key={t.key}
+            style={{
+              fontWeight: t.key === selectedTribu ? "bold" : "normal",
+              margin: 4
+            }}
             className={t.key === selectedTribu ? "active" : ""}
             onClick={() => setSelectedTribu(t.key)}
           >{t.label}</button>
