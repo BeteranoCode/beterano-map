@@ -1,13 +1,23 @@
 // src/App.js
-import React from "react";
-import MapPage from "./pages/Map"; // O "./pages/Map.jsx"
+import React, { useState } from "react";
+import Sidebar from "./components/Sidebar";
+import MapPage from "./pages/Map";
 
 function App() {
+  // Estado para filtro rápido y búsqueda
+  const [activeType, setActiveType] = useState("restauradores");
+  const [search, setSearch] = useState("");
+
   return (
     <div className="layout-container">
-      <aside className="sidebar" id="sidebar"></aside>
+      <Sidebar
+        activeType={activeType}
+        setActiveType={setActiveType}
+        search={search}
+        setSearch={setSearch}
+      />
       <main className="map-container" id="map">
-        <MapPage />
+        <MapPage activeType={activeType} search={search} />
       </main>
     </div>
   );

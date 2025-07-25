@@ -14,6 +14,20 @@ import rent_space from "../data/rent_space.json";
 import rent_tools from "../data/rent_tools.json";
 import shops from "../data/shops.json";
 
+// imports de JSONs ...
+const DATA = {
+  restauradores,
+  gruas,
+  desguaces,
+  abandonos,
+  propietarios,
+  rent_knowledge,
+  rent_service,
+  rent_space,
+  rent_tools,
+  shops,
+};
+
 // Marcadores personalizados por tipo (puedes cambiar el iconUrl por tu SVG o PNG)
 const icons = {
   restaurador: new L.Icon({
@@ -54,33 +68,38 @@ const icons = {
 };
 
 // Función para renderizar marcadores genéricos (te sirve para los datasets nuevos)
-function renderMarkers(data, icon, popupFields = []) {
-  return data.map((item, idx) => (
-    <Marker
-      key={item.nombre || item.id || idx}
-      position={[
-        item.coordenadas?.lat || item.lat,
-        item.coordenadas?.lng || item.lng
-      ]}
-      icon={icon}
-    >
-      <Popup>
-        {popupFields.length
-          ? popupFields.map(field => item[field] && <div key={field}><b>{field}:</b> {item[field]}</div>)
-          : (
-            <>
-              <b>{item.nombre || item.titulo || "Sin nombre"}</b><br />
-              {item.ciudad && item.pais && `${item.ciudad}, ${item.pais}`}<br />
-              {item.descripcion}
-            </>
-          )
-        }
-      </Popup>
-    </Marker>
-  ));
+function renderMarkers(data, icon, popupFields = [], search = "") {
+  if (!Array.isArray(data)) return null;
+  return data
+    .filter(item =>
+      !search ||
+      [item.nombre, item.ciudad, item.pais, item.descripcion]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    )
+    .map((item, idx) => (
+      <Marker
+        key={item.nombre || item.id || idx}
+        position={[
+          item.coordenadas?.lat || item.lat,
+          item.coordenadas?.lng || item.lng
+        ]}
+        icon={icon}
+      >
+        <Popup>
+          {popupFields.map(field => item[field] && <div key={field}><b>{field}:</b> {item[field]}</div>)}
+        </Popup>
+      </Marker>
+    ));
 }
 
-export default function MapPage() {
+export default function MapPage({ activeType, search }) {
+  // Según el tipo activo, filtra el dataset y el icono
+  const dataset = DATA[activeType] || [];
+  const icon = ICONS[activeType.replace(/^rent_.*/, "rent")] || ICONS.restaurador;
+
   return (
     <div style={{ height: "90vh", width: "100%" }}>
       <MapContainer center={[40.4168, -3.7038]} zoom={3} style={{ height: "100%", width: "100%" }}>
@@ -88,24 +107,7 @@ export default function MapPage() {
           attribution='&copy; OpenStreetMap contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-
-        {/* Restauradores */}
-        {renderMarkers(restauradores, icons.restaurador, ['nombre', 'ciudad', 'pais', 'descripcion'])}
-        {/* Gruas */}
-        {renderMarkers(gruas, icons.grua, ['nombre', 'ciudad', 'pais', 'descripcion'])}
-        {/* Desguaces */}
-        {renderMarkers(desguaces, icons.desguace, ['nombre', 'ciudad', 'pais', 'descripcion'])}
-        {/* Abandonos */}
-        {renderMarkers(abandonos, icons.abandono, ['nombre', 'ciudad', 'pais', 'descripcion'])}
-        {/* Propietarios */}
-        {renderMarkers(propietarios, icons.propietario, ['nombre', 'ciudad', 'pais', 'descripcion'])}
-        {/* Rent: knowledge, service, space, tools */}
-        {renderMarkers(rent_knowledge, icons.rent, ['nombre', 'ciudad', 'pais', 'descripcion'])}
-        {renderMarkers(rent_service, icons.rent, ['nombre', 'ciudad', 'pais', 'descripcion'])}
-        {renderMarkers(rent_space, icons.rent, ['nombre', 'ciudad', 'pais', 'descripcion'])}
-        {renderMarkers(rent_tools, icons.rent, ['nombre', 'ciudad', 'pais', 'descripcion'])}
-        {/* Shops */}
-        {renderMarkers(shops, icons.shop, ['nombre', 'ciudad', 'pais', 'descripcion'])}
+        {renderMarkers(dataset, icon, ['nombre', 'ciudad', 'pais', 'descripcion'], search)}
       </MapContainer>
     </div>
   );
