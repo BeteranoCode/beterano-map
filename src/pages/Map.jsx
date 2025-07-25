@@ -116,10 +116,18 @@ export default function MapPage({ selectedTribu, search }) {
   // Ejemplo para uno solo
   return (
     <div style={{ height: "90vh", width: "100%" }}>
-      <MapContainer ...>
-        <TileLayer ... />
+      <MapContainer
+        center={[40.4168, -3.7038]}
+        zoom={6}
+        style={{ height: "100%", width: "100%" }}
+      >
+        <TileLayer
+          attribution='&copy; OpenStreetMap contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
         {renderMarkers(filtered, icons[selectedTribu] || icons.restaurador)}
       </MapContainer>
+
     </div>
   );
 }
