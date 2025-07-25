@@ -4,23 +4,24 @@ import Sidebar from "./components/Sidebar";
 import MapPage from "./pages/Map";
 
 function App() {
-  // Estado para filtro rápido y búsqueda
-  const [activeType, setActiveType] = useState("restauradores");
+  // Nuevo estado para filtro rápido y búsqueda
+  const [selectedTribu, setSelectedTribu] = useState("restauradores");
   const [search, setSearch] = useState("");
 
   return (
     <div className="layout-container">
-      <Sidebar
-        activeType={activeType}
-        setActiveType={setActiveType}
-        search={search}
-        setSearch={setSearch}
-      />
+      <aside className="sidebar" id="sidebar">
+        <Sidebar
+          selectedTribu={selectedTribu}
+          setSelectedTribu={setSelectedTribu}
+          search={search}
+          setSearch={setSearch}
+        />
+      </aside>
       <main className="map-container" id="map">
-        <MapPage activeType={activeType} search={search} />
+        <MapPage selectedTribu={selectedTribu} search={search} />
       </main>
     </div>
   );
 }
-
 export default App;

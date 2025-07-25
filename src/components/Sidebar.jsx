@@ -1,40 +1,41 @@
 import React from "react";
 
-const TIPO_TRIBUS = [
+const TRIBUS = [
   { key: "restauradores", label: "Restauradores" },
   { key: "gruas", label: "Grúas" },
   { key: "desguaces", label: "Desguaces" },
   { key: "abandonos", label: "Abandonos" },
   { key: "propietarios", label: "Propietarios" },
-  { key: "rent_knowledge", label: "Conocimiento" },
-  { key: "rent_service", label: "Servicio" },
-  { key: "rent_space", label: "Espacio" },
-  { key: "rent_tools", label: "Herramientas" },
+  { key: "rent_knowledge", label: "Alquiler Conocimiento" },
+  { key: "rent_service", label: "Alquiler Servicio" },
+  { key: "rent_space", label: "Alquiler Espacio" },
+  { key: "rent_tools", label: "Alquiler Herramientas" },
   { key: "shops", label: "Tiendas" }
 ];
-// Puedes pasarle props para controlar búsqueda, filtro activo, etc.
-export default function Sidebar({ activeType, setActiveType, search, setSearch }) {
+
+export default function Sidebar({ selectedTribu, setSelectedTribu, search, setSearch }) {
   return (
-    <aside className="sidebar">
+    <div>
       <input
-        className="sidebar-search"
         type="text"
-        placeholder="Buscar por nombre, ciudad, país..."
+        placeholder="Buscar por nombre, ciudad, país…"
         value={search}
         onChange={e => setSearch(e.target.value)}
+        style={{ width: "100%", marginBottom: 16 }}
       />
-      <div className="sidebar-filters">
-        {TIPO_TRIBUS.map(tipo => (
+      <div>
+        {TRIBUS.map(t =>
           <button
-            key={tipo.key}
-            className={`sidebar-filter-btn${activeType === tipo.key ? " active" : ""}`}
-            onClick={() => setActiveType(tipo.key)}
-          >
-            {tipo.label}
-          </button>
-        ))}
+            key={t.key}
+            style={{
+              fontWeight: t.key === selectedTribu ? "bold" : "normal",
+              margin: 4
+            }}
+            onClick={() => setSelectedTribu(t.key)}
+          >{t.label}</button>
+        )}
       </div>
-      {/* Aquí puedes poner la lista de resultados filtrados */}
-    </aside>
+      {/* Aquí puedes añadir más filtros si lo deseas */}
+    </div>
   );
 }

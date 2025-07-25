@@ -95,20 +95,32 @@ function renderMarkers(data, icon, popupFields = [], search = "") {
     ));
 }
 
-export default function MapPage({ activeType, search }) {
-  // Según el tipo activo, filtra el dataset y el icono
-  const dataset = DATA[activeType] || [];
-  const icon = ICONS[activeType.replace(/^rent_.*/, "rent")] || ICONS.restaurador;
+export default function MapPage({ selectedTribu, search }) {
+  // Mapear las tribus a los datos correspondientes
+  const DATA_MAP = {
+    restauradores, gruas, desguaces, abandonos, propietarios,
+    rent_knowledge, rent_service, rent_space, rent_tools, shops
+  };
+  const data = DATA_MAP[selectedTribu] || [];
+  const filtered = data.filter(item => {
+    const q = search.toLowerCase();
+    return (
+      (item.nombre?.toLowerCase().includes(q) ||
+      item.ciudad?.toLowerCase().includes(q) ||
+      item.pais?.toLowerCase().includes(q) ||
+      item.descripcion?.toLowerCase().includes(q))
+    );
+  });
 
+  // ... el resto igual, pero usando filtered en vez de data para renderMarkers
+  // Ejemplo para uno solo
   return (
     <div style={{ height: "90vh", width: "100%" }}>
-      <MapContainer center={[40.4168, -3.7038]} zoom={3} style={{ height: "100%", width: "100%" }}>
-        <TileLayer
-          attribution='&copy; OpenStreetMap contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        {renderMarkers(dataset, icon, ['nombre', 'ciudad', 'pais', 'descripcion'], search)}
+      <MapContainer ...>
+        <TileLayer ... />
+        {renderMarkers(filtered, icons[selectedTribu] || icons.restaurador)}
       </MapContainer>
     </div>
   );
 }
+
