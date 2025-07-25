@@ -1,5 +1,6 @@
-html, body, .map {
+html, body, #map, .map-container, .leaflet-container {
   height: 100%;
+  min-height: 400px;
 }
 
 .map {
@@ -15,3 +16,18 @@ html, body, .map {
     }
   }
 }
+
+.layout-container {
+  min-height: 80vh;
+  height: 80vh;
+  display: flex;
+}
+
+.map-container,
+#map {
+  flex: 1 1 0%;
+  height: 100%;
+  min-height: 400px;
+  position: relative;
+}
+
