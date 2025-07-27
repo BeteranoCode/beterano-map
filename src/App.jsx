@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import MapPage from "./pages/Map";
 
+
 function App() {
   // Nuevo estado para filtro rápido y búsqueda
   const [selectedTribu, setSelectedTribu] = useState("restauradores");

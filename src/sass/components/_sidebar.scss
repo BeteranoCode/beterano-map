@@ -27,7 +27,7 @@
 
 .tribu-filters {
   display: flex;
-  flex-direction: column;   // Cambia a row si prefieres horizontal en desktop
+  flex-direction:row-reverse;
   gap: 7px;
 }
 
