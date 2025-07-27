@@ -4,6 +4,11 @@
   height: 100%;
   position: relative;
   min-width: 0; // Para evitar problemas de overflow horizontal
+  @media (max-width: 768px) {
+    width: 100vw;
+    height: 100vh;
+    min-width: 0;
+  }
 }
 
 .leaflet-container {

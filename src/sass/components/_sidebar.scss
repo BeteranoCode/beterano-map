@@ -13,7 +13,20 @@
   display: flex;
   flex-direction: column;
   font-family: 'Inter', Arial, sans-serif;
-  box-sizing: border-box; 
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    width: 100vw;
+    max-width: 100vw;
+    height: auto;
+    min-height: unset;
+    box-shadow: none;
+    border-right: none;
+    border-bottom: 1.5px solid #ededed;
+    padding: 10px 5px 0 5px;
+    position: static;
+    z-index: 2;
+  }
 }
 
 .sidebar-search {
