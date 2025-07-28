@@ -100,7 +100,7 @@ export default function MapPage({ selectedTribu, search, onDataLoaded }) {
 
   return (
     <div style={{ height: "90vh", width: "100%" }}>
-      <MapContainer center={[54.5260, 15.2551]} zoom={4} style={{ height: "100%", width: "100%" }}>
+      <MapContainer center={[45.0, 5.0]} zoom={5} style={{ height: "100%", width: "100%" }}>
         <TileLayer
           attribution='&copy; OpenStreetMap contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
