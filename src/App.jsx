@@ -8,6 +8,7 @@ function App() {
   const [search, setSearch] = useState("");
   const [mobileView, setMobileView] = useState("map"); // "map" o "list"
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [hasResults, setHasResults] = useState(true); // ✅ nuevo estado
 
   // Cambia isMobile al redimensionar
   useEffect(() => {
@@ -29,7 +30,7 @@ function App() {
 
       {/* Sidebar: Desktop siempre, móvil solo si está en modo lista */}
       {(!isMobile || mobileView === "list") && (
-        <aside className="sidebar" id="sidebar">
+        <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
           <Sidebar
             selectedTribu={selectedTribu}
             setSelectedTribu={setSelectedTribu}
@@ -42,7 +43,11 @@ function App() {
       {/* Mapa: Desktop siempre, móvil solo si está en modo mapa */}
       {(!isMobile || mobileView === "map") && (
         <main className="map-container" id="map">
-          <MapPage selectedTribu={selectedTribu} search={search} />
+          <MapPage
+            selectedTribu={selectedTribu}
+            search={search}
+            onDataLoaded={setHasResults} // ✅ pasamos callback para saber si hay resultados
+          />
         </main>
       )}
     </div>

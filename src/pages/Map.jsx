@@ -72,18 +72,31 @@ function renderMarkers(data, icon, popupFields = ["nombre", "ciudad", "pais", "d
     ));
 }
 
-export default function MapPage({ selectedTribu, search }) {
+export default function MapPage({ selectedTribu, search, onDataLoaded }) {
   const [data, setData] = useState([]);
 
   useEffect(() => {
     fetch(`/beterano-map/data/${selectedTribu}.json`)
       .then(res => res.json())
-      .then(setData)
+      .then(json => {
+        setData(json);
+        if (onDataLoaded) {
+          const filtered = json.filter(item =>
+            !search || [item.nombre, item.ciudad, item.pais, item.descripcion]
+              .filter(Boolean)
+              .join(" ")
+              .toLowerCase()
+              .includes(search.toLowerCase())
+          );
+          onDataLoaded(filtered.length > 0);
+        }
+      })
       .catch(err => {
         console.error("Error cargando los datos:", err);
-        setData([]); // fallback vacío en caso de error
+        setData([]);
+        if (onDataLoaded) onDataLoaded(false);
       });
-  }, [selectedTribu]);
+  }, [selectedTribu, search]);
 
   return (
     <div style={{ height: "90vh", width: "100%" }}>
@@ -97,3 +110,4 @@ export default function MapPage({ selectedTribu, search }) {
     </div>
   );
 }
+
