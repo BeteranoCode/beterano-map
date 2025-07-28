@@ -4,22 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BETERANO MAP</title>
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/beterano-map/favicon.svg" type="image/svg+xml" />
 
-  <!-- Leaflet styles (OK, los necesitas para los popups y mapas) -->
+  <!-- Leaflet styles -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
 </head>
 
 <body>
-    <!-- Header dinámico centralizado -->
+  <!-- Header dinámico centralizado -->
   <div id="header-container"></div>
   <script src="https://beteranocode.github.io/components/header/header-loader.js"></script>
 
-  <!-- Aquí es donde React va a renderizar TODO el mapa y el resto de la web -->
+  <!-- Aquí React montará la app -->
   <div id="root"></div>
-
-  <!-- Tu app React/Vite la monta aquí -->
-  <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
