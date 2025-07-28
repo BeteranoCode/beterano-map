@@ -41,9 +41,16 @@
 
 .sidebar.no-results {
   @media (max-width: 768px) {
-    border-bottom: none;
+    border-bottom: none !important;
+    box-shadow: none !important;
+
+    > div:last-child {
+      margin-top: 0 !important;
+      border-top: none !important;
+    }
   }
 }
+
 
 .tribu-filters {
   display: flex;
