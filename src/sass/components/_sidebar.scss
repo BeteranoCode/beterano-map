@@ -76,3 +76,21 @@
   color: #232323;
   outline: none;
 }
+
+@media (max-width: 768px) {
+  .layout-container {
+    height: 100vh;
+    flex-direction: column;
+  }
+
+  .map-container {
+    flex: 1;
+    height: 100%;
+  }
+
+  .sidebar.no-results {
+    height: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+  }
+}
