@@ -39,6 +39,12 @@
   font-family: inherit;
 }
 
+.sidebar.no-results {
+  @media (max-width: 768px) {
+    border-bottom: none;
+  }
+}
+
 .tribu-filters {
   display: flex;
   flex-direction:wrap;
