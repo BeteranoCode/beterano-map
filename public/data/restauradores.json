@@ -1,0 +1,62 @@
+[
+  {
+    "nombre": "Cool Vintage Works",
+    "pais": "Portugal",
+    "ciudad": "Lisboa",
+    "tipo": ["servicio", "espacio"],
+    "descripcion": "Restauración premium de clásicos 4x4 con estilo minimalista.",
+    "instagram": "@coolvintageworks",
+    "web": "https://www.coolnvintage.com",
+    "email": "info@coolnvintage.com",
+    "logo": "coolvintage.svg",
+    "coordenadas": { "lat": 38.7169, "lng": -9.1399 }
+  },
+  {
+    "nombre": "The Landrovers",
+    "pais": "Países Bajos",
+    "ciudad": "Ámsterdam",
+    "tipo": ["servicio"],
+    "descripcion": "Restauración y diseño de Land Rover a medida.",
+    "instagram": "@thelandrovers",
+    "web": "https://www.the-landrovers.com",
+    "email": "contact@the-landrovers.com",
+    "logo": "thelandrovers.svg",
+    "coordenadas": { "lat": 52.3702, "lng": 4.8952 }
+  },
+  {
+    "nombre": "Staydog Classics",
+    "pais": "Alemania",
+    "ciudad": "Hamburgo",
+    "tipo": ["servicio", "herramienta"],
+    "descripcion": "Especialistas en Mercedes G y herramientas de restauración.",
+    "instagram": "@staydogclassics",
+    "web": "https://www.staydogclassics.com",
+    "email": "info@staydogclassics.com",
+    "logo": "staydog.svg",
+    "coordenadas": { "lat": 53.5511, "lng": 9.9937 }
+  },
+  {
+    "nombre": "RoverHaul",
+    "pais": "Estados Unidos",
+    "ciudad": "Denver",
+    "tipo": ["servicio", "conocimiento"],
+    "descripcion": "Reparación y asesoramiento en Land Rover clásicos.",
+    "instagram": "@roverhaul",
+    "web": "https://www.roverhaul.com",
+    "email": "hello@roverhaul.com",
+    "logo": "roverhaul.svg",
+    "coordenadas": { "lat": 39.7392, "lng": -104.9903 }
+  },
+  {
+    "nombre": "Project88",
+    "pais": "India",
+    "ciudad": "Delhi",
+    "tipo": ["servicio", "espacio", "herramienta"],
+    "descripcion": "Transformaciones extremas de 4x4 y espacios de taller.",
+    "instagram": "@project88",
+    "web": "https://www.project88.co",
+    "email": "contact@project88.co",
+    "logo": "project88.svg",
+    "coordenadas": { "lat": 28.6139, "lng": 77.209 }
+  }
+]
