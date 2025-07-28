@@ -2,6 +2,13 @@
 
 set -e
 
+# 🛡️ Protección: prevenir ejecución en rama main
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+if [ "$current_branch" = "main" ]; then
+  echo "❌ ERROR: Estás en 'main'. Cancela el deploy o cambia de rama primero."
+  exit 1
+fi
+
 echo "🔧 Compilando el proyecto..."
 npm run build || { echo "❌ Falló la compilación"; exit 1; }
 
@@ -16,6 +23,17 @@ fi
 
 echo "🧹 Limpiando rama gh-pages..."
 git rm -rf . > /dev/null 2>&1
+
+# ❌ Verificar que la carpeta dist/ existe
+if [ ! -d "dist" ]; then
+  echo "❌ ERROR: No existe la carpeta dist/. Ejecuta 'npm run build' antes del deploy."
+  exit 1
+fi
+
+# ⚠️ Advertencia si dist/ está vacía
+if [ -z "$(ls -A dist)" ]; then
+  echo "⚠️ ADVERTENCIA: La carpeta dist/ está vacía. El deploy no copiará nada."
+fi
 
 echo "📂 Copiando solo archivos generados de dist/ (sin data/)..."
 rsync -av --exclude='data/' dist/ . > /dev/null
