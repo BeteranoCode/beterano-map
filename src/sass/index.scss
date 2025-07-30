@@ -6,6 +6,7 @@ html, body {
   height: 100vh;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 .toggle-mobile-view {
@@ -37,6 +38,11 @@ html, body {
 #root {
   margin-top: 65.5px;
   height: calc(100vh - 65.5px);
+
+  @media (max-width: 768px) {
+    height: calc(100dvh - 65.5px); // usa 100dvh para móviles
+    overflow: hidden;
+  }
 }
 
 .layout-container {
@@ -47,6 +53,7 @@ html, body {
   @media (max-width: 768px) {
     flex-direction: column;
     height: calc(100vh - 65.5px); // para móvil, igual
+    overflow: hidden;              // evita scroll accidental
   }
 }
 
