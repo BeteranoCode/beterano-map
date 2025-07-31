@@ -10,7 +10,7 @@ function App() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hasResults, setHasResults] = useState(true); // ✅ nuevo estado
 
-  // ✅ Aplicar traducciones al cargar el header.js
+  // ✅ Aplicar traducciones al cargar el header.js dinámico
   useEffect(() => {
     const lang = localStorage.getItem("beteranoLang") || "es";
 
@@ -25,14 +25,14 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // ✅ Detectar cambio de tamaño para modo móvil
+  // ✅ Detectar cambio de tamaño para adaptar vista móvil
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // ✅ Ajustar altura dinámica del layout para que el mapa no se superponga al header
+  // ✅ Ajustar dinámicamente el espacio superior según el header + announcement
   useEffect(() => {
     const adjustLayoutPadding = () => {
       const announcement = document.getElementById("announcement-bar");
@@ -48,13 +48,42 @@ function App() {
       }
     };
 
-    adjustLayoutPadding();
+    // 🔁 Reintenta hasta que el header esté completamente montado
+    let retryCount = 0;
+    const retryUntilLoaded = () => {
+      const headerReady = document.getElementById("site-header");
+      if (headerReady && headerReady.offsetHeight > 0) {
+        adjustLayoutPadding();
+      } else if (retryCount < 10) {
+        retryCount++;
+        setTimeout(retryUntilLoaded, 150);
+      }
+    };
+
+    retryUntilLoaded();
+
+    // 👁️ Escucha cambios en el DOM por si el header-loader termina tarde
+    const observer = new MutationObserver(() => {
+      adjustLayoutPadding();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    // 🔁 Ajustar también al redimensionar la ventana
     window.addEventListener("resize", adjustLayoutPadding);
-    return () => window.removeEventListener("resize", adjustLayoutPadding);
+
+    return () => {
+      window.removeEventListener("resize", adjustLayoutPadding);
+      observer.disconnect();
+    };
   }, []);
 
   return (
     <div className="layout-container">
+      {/* Botón móvil para alternar mapa ↔ lista */}
       {isMobile && (
         <button
           className="toggle-mobile-view"
@@ -64,7 +93,7 @@ function App() {
         </button>
       )}
 
-      {/* Sidebar: Desktop siempre, móvil solo si está en modo lista */}
+      {/* Sidebar: visible en escritorio o en móvil si se activa lista */}
       {(!isMobile || mobileView === "list") && (
         <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
           <Sidebar
@@ -76,13 +105,13 @@ function App() {
         </aside>
       )}
 
-      {/* Mapa: Desktop siempre, móvil solo si está en modo mapa */}
+      {/* Mapa: visible en escritorio o en móvil si se activa mapa */}
       {(!isMobile || mobileView === "map") && (
         <main className="map-container" id="map">
           <MapPage
             selectedTribu={selectedTribu}
             search={search}
-            onDataLoaded={setHasResults}
+            onDataLoaded={setHasResults} // ✅ permite ocultar sidebar si no hay resultados
           />
         </main>
       )}
