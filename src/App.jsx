@@ -37,13 +37,13 @@ function App() {
     const adjustLayoutPadding = () => {
       const announcement = document.getElementById("announcement-bar");
       const header = document.getElementById("site-header");
-      const root = document.getElementById("root");
       const layout = document.querySelector(".layout-container");
 
-      if (announcement && header && root && layout) {
+      if (announcement && header && layout) {
         const totalHeight = announcement.offsetHeight + header.offsetHeight;
-        root.style.marginTop = `${totalHeight}px`;
-        root.style.height = `calc(100vh - ${totalHeight}px)`;
+
+        // 👇 Ahora aplicamos al <body> y al layout directamente
+        document.body.style.marginTop = `${totalHeight}px`;
         layout.style.height = `calc(100vh - ${totalHeight}px)`;
       }
     };

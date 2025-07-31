@@ -3,10 +3,10 @@
 @import "leaflet.markercluster/dist/MarkerCluster.css";
 
 html, body {
-  height: 100vh;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  height: auto;           // ❌ Quitar 100vh
+  overflow-x: hidden;     // ✅ Mantener horizontal si quieres
 }
 
 .toggle-mobile-view {
@@ -54,7 +54,6 @@ html, body {
 
   @media (max-width: 768px) {
     flex-direction: column;
-    overflow: hidden;
   }
 }
 
