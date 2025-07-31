@@ -11,7 +11,7 @@ html, body {
 
 .toggle-mobile-view {
   display: none;
-  
+
   @media (max-width: 768px) {
     display: block;
     width: 100vw;
@@ -27,33 +27,34 @@ html, body {
   }
 }
 
+/* El contenedor del header principal */
 #header-container {
   top: 0;
   left: 0;
   width: 100%;
-  height: 0;
+  height: 0; /* ya no se usa para layout */
   z-index: 99;
 }
 
+/* El contenedor raíz (root) ahora se adapta dinámicamente vía App.jsx */
 #root {
-  margin-top: 65.5px;
-  height: calc(100vh - 65.5px);
+  margin-top: 0 !important;
+  height: auto;
 
   @media (max-width: 768px) {
-    height: calc(100dvh - 65.5px); // usa 100dvh para móviles
     overflow: hidden;
   }
 }
 
+/* Contenedor principal del mapa + sidebar */
 .layout-container {
   display: flex;
-  flex-direction: row; // Importante: horizontal
-  height: calc(100vh - 65.5px); // 65.5px si tu header mide eso, usa F12 para medirlo
-   
+  flex-direction: row;
+  height: auto;
+
   @media (max-width: 768px) {
     flex-direction: column;
-    height: calc(100vh - 65.5px); // para móvil, igual
-    overflow: hidden;              // evita scroll accidental
+    overflow: hidden;
   }
 }
 

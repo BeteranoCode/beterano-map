@@ -10,7 +10,7 @@ function App() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hasResults, setHasResults] = useState(true); // ✅ nuevo estado
 
-  // ✅ Detectar idioma y aplicar traducción global una vez cargue header.js
+  // ✅ Aplicar traducciones al cargar el header.js
   useEffect(() => {
     const lang = localStorage.getItem("beteranoLang") || "es";
 
@@ -25,11 +25,32 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Cambia isMobile al redimensionar
+  // ✅ Detectar cambio de tamaño para modo móvil
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  // ✅ Ajustar altura dinámica del layout para que el mapa no se superponga al header
+  useEffect(() => {
+    const adjustLayoutPadding = () => {
+      const announcement = document.getElementById("announcement-bar");
+      const header = document.getElementById("site-header");
+      const root = document.getElementById("root");
+      const layout = document.querySelector(".layout-container");
+
+      if (announcement && header && root && layout) {
+        const totalHeight = announcement.offsetHeight + header.offsetHeight;
+        root.style.marginTop = `${totalHeight}px`;
+        root.style.height = `calc(100vh - ${totalHeight}px)`;
+        layout.style.height = `calc(100vh - ${totalHeight}px)`;
+      }
+    };
+
+    adjustLayoutPadding();
+    window.addEventListener("resize", adjustLayoutPadding);
+    return () => window.removeEventListener("resize", adjustLayoutPadding);
   }, []);
 
   return (
@@ -61,7 +82,7 @@ function App() {
           <MapPage
             selectedTribu={selectedTribu}
             search={search}
-            onDataLoaded={setHasResults} // ✅ pasamos callback para saber si hay resultados
+            onDataLoaded={setHasResults}
           />
         </main>
       )}

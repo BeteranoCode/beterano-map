@@ -99,8 +99,8 @@ export default function MapPage({ selectedTribu, search, onDataLoaded }) {
   }, [selectedTribu, search]);
 
   return (
-    <div style={{ height: "90vh", width: "100%" }}>
-      <MapContainer center={[45.0, 5.0]} zoom={5} style={{ height: "100%", width: "100%" }}>
+    <div className="map-leaflet-wrapper">
+      <MapContainer center={[45.0, 5.0]} zoom={5} className="leaflet-container">
         <TileLayer
           attribution='&copy; OpenStreetMap contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
