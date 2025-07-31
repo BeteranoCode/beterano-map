@@ -10,6 +10,21 @@ function App() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hasResults, setHasResults] = useState(true); // ✅ nuevo estado
 
+  // ✅ Detectar idioma y aplicar traducción global una vez cargue header.js
+  useEffect(() => {
+    const lang = localStorage.getItem("beteranoLang") || "es";
+
+    const interval = setInterval(() => {
+      if (typeof window.applyTranslations === "function") {
+        window.applyTranslations(lang);
+        document.documentElement.setAttribute("lang", lang);
+        clearInterval(interval);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Cambia isMobile al redimensionar
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
