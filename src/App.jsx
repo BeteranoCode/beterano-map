@@ -41,7 +41,14 @@ function App() {
 
       if (announcement && header && layout) {
         const totalHeight = announcement.offsetHeight + header.offsetHeight;
+        // Aplica padding o margen a todos los niveles necesarios
         document.body.style.marginTop = `${totalHeight}px`;
+
+        const root = document.getElementById("root");
+        if (root) {
+          root.style.marginTop = `${totalHeight}px`;
+          root.style.height = `calc(100vh - ${totalHeight}px)`;
+        }
         layout.style.height = `calc(100vh - ${totalHeight}px)`;
       }
     };
