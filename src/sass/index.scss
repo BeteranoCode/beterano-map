@@ -5,10 +5,11 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: auto;           // ❌ Quitar 100vh
-  overflow-x: hidden;     // ✅ Mantener horizontal si quieres
+  height: 100%;
+  overflow-x: hidden;
 }
 
+/* Botón para cambiar vista en móvil */
 .toggle-mobile-view {
   display: none;
 
@@ -27,16 +28,16 @@ html, body {
   }
 }
 
-/* El contenedor del header principal */
+/* Placeholder del contenedor del header externo */
 #header-container {
   top: 0;
   left: 0;
   width: 100%;
-  height: 0; /* ya no se usa para layout */
+  height: 0; // No interfiere con layout
   z-index: 99;
 }
 
-/* El contenedor raíz (root) ahora se adapta dinámicamente vía App.jsx */
+/* Contenedor raíz (root) */
 #root {
   margin-top: 0 !important;
   height: auto;
@@ -46,15 +47,37 @@ html, body {
   }
 }
 
-/* Contenedor principal del mapa + sidebar */
+/* Layout principal mapa + sidebar */
 .layout-container {
   display: flex;
   flex-direction: row;
-  height: auto;
+  height: calc(100vh - 97px); // 97px es el total del header + announcement (ajustable)
 
   @media (max-width: 768px) {
     flex-direction: column;
+    height: auto;
   }
+}
+
+/* Asegura que tanto el mapa como el sidebar ocupen la altura completa */
+.sidebar {
+  width: 320px;
+  height: 100%;
+  overflow-y: auto;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+}
+
+.map-container {
+  flex: 1;
+  height: 100%;
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
 }
 
 @import "components/_map";

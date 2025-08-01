@@ -6,11 +6,11 @@ import MapPage from "./pages/Map";
 function App() {
   const [selectedTribu, setSelectedTribu] = useState("restauradores");
   const [search, setSearch] = useState("");
-  const [mobileView, setMobileView] = useState("map"); // "map" o "list"
+  const [mobileView, setMobileView] = useState("map");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [hasResults, setHasResults] = useState(true); // ✅ nuevo estado
+  const [hasResults, setHasResults] = useState(true);
 
-  // ✅ Aplicar traducciones al cargar el header.js dinámico
+  // Aplicar traducciones cuando cargue el header externo
   useEffect(() => {
     const lang = localStorage.getItem("beteranoLang") || "es";
 
@@ -25,14 +25,14 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // ✅ Detectar cambio de tamaño para adaptar vista móvil
+  // Cambia isMobile al redimensionar
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // ✅ Ajustar dinámicamente el espacio superior según el header + announcement
+  // Ajusta el espacio superior y altura del layout en función del header externo
   useEffect(() => {
     const adjustLayoutPadding = () => {
       const announcement = document.getElementById("announcement-bar");
@@ -41,14 +41,11 @@ function App() {
 
       if (announcement && header && layout) {
         const totalHeight = announcement.offsetHeight + header.offsetHeight;
-
-        // 👇 Ahora aplicamos al <body> y al layout directamente
         document.body.style.marginTop = `${totalHeight}px`;
         layout.style.height = `calc(100vh - ${totalHeight}px)`;
       }
     };
 
-    // 🔁 Reintenta hasta que el header esté completamente montado
     let retryCount = 0;
     const retryUntilLoaded = () => {
       const headerReady = document.getElementById("site-header");
@@ -62,7 +59,6 @@ function App() {
 
     retryUntilLoaded();
 
-    // 👁️ Escucha cambios en el DOM por si el header-loader termina tarde
     const observer = new MutationObserver(() => {
       adjustLayoutPadding();
     });
@@ -72,7 +68,6 @@ function App() {
       subtree: true,
     });
 
-    // 🔁 Ajustar también al redimensionar la ventana
     window.addEventListener("resize", adjustLayoutPadding);
 
     return () => {
@@ -83,7 +78,6 @@ function App() {
 
   return (
     <div className="layout-container">
-      {/* Botón móvil para alternar mapa ↔ lista */}
       {isMobile && (
         <button
           className="toggle-mobile-view"
@@ -93,7 +87,6 @@ function App() {
         </button>
       )}
 
-      {/* Sidebar: visible en escritorio o en móvil si se activa lista */}
       {(!isMobile || mobileView === "list") && (
         <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
           <Sidebar
@@ -105,13 +98,12 @@ function App() {
         </aside>
       )}
 
-      {/* Mapa: visible en escritorio o en móvil si se activa mapa */}
       {(!isMobile || mobileView === "map") && (
         <main className="map-container" id="map">
           <MapPage
             selectedTribu={selectedTribu}
             search={search}
-            onDataLoaded={setHasResults} // ✅ permite ocultar sidebar si no hay resultados
+            onDataLoaded={setHasResults}
           />
         </main>
       )}
