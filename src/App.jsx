@@ -10,7 +10,7 @@ function App() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hasResults, setHasResults] = useState(true);
 
-  // Aplicar traducciones cuando cargue el header externo
+  // Aplicar traducciones al cargar el header.js dinámico
   useEffect(() => {
     const lang = localStorage.getItem("beteranoLang") || "es";
 
@@ -25,31 +25,22 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Cambia isMobile al redimensionar
+  // Detectar vista móvil
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Ajusta el espacio superior y altura del layout en función del header externo
+  // Ajustar altura del layout en función del header externo
   useEffect(() => {
-    const adjustLayoutPadding = () => {
+    const adjustHeaderOffset = () => {
       const announcement = document.getElementById("announcement-bar");
       const header = document.getElementById("site-header");
-      const layout = document.querySelector(".layout-container");
 
-      if (announcement && header && layout) {
+      if (announcement && header) {
         const totalHeight = announcement.offsetHeight + header.offsetHeight;
-        // Aplica padding o margen a todos los niveles necesarios
-        document.body.style.marginTop = `${totalHeight}px`;
-
-        const root = document.getElementById("root");
-        if (root) {
-          root.style.marginTop = `${totalHeight}px`;
-          root.style.height = `calc(100vh - ${totalHeight}px)`;
-        }
-        layout.style.height = `calc(100vh - ${totalHeight}px)`;
+        document.documentElement.style.setProperty("--header-offset", `${totalHeight}px`);
       }
     };
 
@@ -57,7 +48,7 @@ function App() {
     const retryUntilLoaded = () => {
       const headerReady = document.getElementById("site-header");
       if (headerReady && headerReady.offsetHeight > 0) {
-        adjustLayoutPadding();
+        adjustHeaderOffset();
       } else if (retryCount < 10) {
         retryCount++;
         setTimeout(retryUntilLoaded, 150);
@@ -67,7 +58,7 @@ function App() {
     retryUntilLoaded();
 
     const observer = new MutationObserver(() => {
-      adjustLayoutPadding();
+      adjustHeaderOffset();
     });
 
     observer.observe(document.body, {
@@ -75,10 +66,10 @@ function App() {
       subtree: true,
     });
 
-    window.addEventListener("resize", adjustLayoutPadding);
+    window.addEventListener("resize", adjustHeaderOffset);
 
     return () => {
-      window.removeEventListener("resize", adjustLayoutPadding);
+      window.removeEventListener("resize", adjustHeaderOffset);
       observer.disconnect();
     };
   }, []);

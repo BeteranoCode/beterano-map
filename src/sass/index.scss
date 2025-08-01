@@ -6,7 +6,8 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow-x: hidden;
+  overflow: hidden;
+  position: relative;
 }
 
 /* Botón para cambiar vista en móvil */
@@ -33,33 +34,38 @@ html, body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 0; // No interfiere con layout
+  height: 0;
   z-index: 99;
 }
 
-/* Contenedor raíz (root) */
 #root {
-  margin-top: 0 !important;
-  height: auto;
+  height: 100%;
+  position: relative;
 
   @media (max-width: 768px) {
     overflow: hidden;
   }
 }
 
-/* Layout principal mapa + sidebar */
+/* Layout principal: ocupa todo el viewport excepto el header */
 .layout-container {
+  position: absolute;
+  top: var(--header-offset, 98px); // Valor inicial por defecto
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: row;
-  height: calc(100vh - 97px); // 97px es el total del header + announcement (ajustable)
 
   @media (max-width: 768px) {
     flex-direction: column;
+    position: relative;
+    top: 0;
     height: auto;
   }
 }
 
-/* Asegura que tanto el mapa como el sidebar ocupen la altura completa */
+/* Sidebar */
 .sidebar {
   width: 320px;
   height: 100%;
@@ -67,6 +73,7 @@ html, body {
 
   @media (max-width: 768px) {
     width: 100%;
+    height: auto;
   }
 }
 
