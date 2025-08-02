@@ -2,12 +2,52 @@
 @import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 @import "leaflet.markercluster/dist/MarkerCluster.css";
 
+/* ╔══════════════════════╗ */
+/* ║ 📱 BASE: SMARTPHONE ║ */
+/* ╚══════════════════════╝ */
+
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
   position: relative;
+}
+
+/* Header externo cargado dinámicamente */
+#header-container {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  z-index: 9999;
+  position: relative;
+  overflow: visible;
+}
+
+/* Contenedor principal (React) */
+#root {
+  height: 100%;
+  position: relative;
+  z-index: 1;
+
+  @media (max-width: 768px) {
+    overflow: visible;
+  }
+}
+
+.map-container {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 /* Botón para cambiar vista en móvil */
@@ -29,69 +69,37 @@ html, body {
   }
 }
 
-/* Placeholder del contenedor del header externo */
-#header-container {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 0;
-  z-index: 99;
-}
-
-#root {
-  height: 100%;
-  position: relative;
-
-  @media (max-width: 768px) {
-    overflow: hidden;
-  }
-}
-
-/* Layout principal: ocupa todo el viewport excepto el header */
+/* Layout principal debajo del header */
 .layout-container {
   position: absolute;
-  top: var(--header-offset, 98px); // Valor inicial por defecto
+  top: var(--header-offset, 98px);
   left: 0;
   right: 0;
   bottom: 0;
   display: flex;
   flex-direction: row;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    position: relative;
-    top: 0;
-    height: auto;
-  }
 }
 
-/* Sidebar */
+/* Sidebar (versión móvil por defecto) */
 .sidebar {
-  width: 320px;
-  height: 100%;
-  overflow-y: auto;
-
-  @media (max-width: 768px) {
-    width: 100%;
-    height: auto;
-  }
-}
-
-.map-container {
-  flex: 1;
-  height: 100%;
-}
-
-.leaflet-container {
-  height: 100%;
   width: 100%;
+  height: auto;
+  overflow-y: auto;
+}
+
+/* ╔═════════════════════════╗ */
+/* ║ 💻 VISTA ESCRITORIO     ║ */
+/* ╚═════════════════════════╝ */
+@media (min-width: 769px) {
+  .layout-container {
+    flex-direction: row;
+  }
+
+  .sidebar {
+    width: 320px;
+    height: 100%;
+  }
 }
 
 @import "components/_map";
 @import "components/_sidebar";
-//@import "components/_components";
-//@import "components/_variables";
-//@import "components/_mixins";
-//@import "components/_reset";
-//@import "components/_typography";
-//@import "components/_popup";
