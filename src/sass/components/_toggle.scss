@@ -32,8 +32,8 @@
 /* ╚═══════════════════════════════════╝ */
 
 .toggle-mobile-view {
-  position: fixed; // no relative!
-  top: var(--header-offset, 98px);
+  position: fixed;
+  bottom: calc(20px + var(--header-offset, 98px));
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
@@ -53,6 +53,7 @@
     display: block;
   }
 }
+
 
 
 .toggle-mobile-view:hover {
