@@ -32,21 +32,23 @@
 /* ╚═══════════════════════════════════╝ */
 
 .toggle-mobile-view {
-  position: fixed;
-  bottom: 20px;
+  position: absolute; /* antes: fixed */
+  top: var(--header-offset, 100px); /* usa la variable que ya defines en App.jsx */
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
+
   padding: 10px 24px;
-  background: #fcd20b;
-  color: #000;
+  background: #2c2f4a; /* más oscuro como en el screenshot */
+  color: #fff;
   font-weight: 600;
   font-size: 1rem;
   border: none;
-  border-radius: 30px;
+  border-radius: 999px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   transition: background 0.3s ease;
+
   display: none;
 
   @media (max-width: 768px) {
@@ -55,5 +57,5 @@
 }
 
 .toggle-mobile-view:hover {
-  background: #ffd700;
+  background: #444866;
 }
