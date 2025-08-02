@@ -76,7 +76,7 @@ function App() {
 
   return (
     <>
-      {/* ✅ Botón flotante en móvil, superpuesto al mapa */}
+      {/* ✅ Botón flotante en móvil, posicionado globalmente respecto al header */}
       {isMobile && (
         <button
           className="toggle-mobile-view"
