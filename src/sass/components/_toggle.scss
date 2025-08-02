@@ -33,7 +33,7 @@
 
 .toggle-mobile-view {
   position: fixed;
-  bottom: calc(20px + var(--header-offset, 98px));
+  top: var(--header-offset, 99px);
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;

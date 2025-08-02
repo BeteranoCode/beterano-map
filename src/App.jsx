@@ -76,7 +76,7 @@ function App() {
 
   return (
     <>
-      {/* ✅ Botón flotante en móvil, posicionado globalmente respecto al header */}
+      {/* ✅ Botón flotante en móvil, fuera del layout-container */}
       {isMobile && (
         <button
           className="toggle-mobile-view"
