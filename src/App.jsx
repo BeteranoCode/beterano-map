@@ -10,9 +10,9 @@ function App() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hasResults, setHasResults] = useState(true);
 
-  // ✅ Aplicar traducciones del header externo
   useEffect(() => {
     const lang = localStorage.getItem("beteranoLang") || "es";
+
     const interval = setInterval(() => {
       if (typeof window.applyTranslations === "function") {
         window.applyTranslations(lang);
@@ -20,21 +20,21 @@ function App() {
         clearInterval(interval);
       }
     }, 100);
+
     return () => clearInterval(interval);
   }, []);
 
-  // ✅ Detectar cambio de tamaño (móvil vs escritorio)
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // ✅ Calcular altura combinada del header externo
   useEffect(() => {
     const adjustHeaderOffset = () => {
       const announcement = document.getElementById("announcement-bar");
       const header = document.getElementById("site-header");
+
       if (announcement && header) {
         const totalHeight = announcement.offsetHeight + header.offsetHeight;
         document.documentElement.style.setProperty("--header-offset", `${totalHeight}px`);
@@ -54,8 +54,15 @@ function App() {
 
     retryUntilLoaded();
 
-    const observer = new MutationObserver(adjustHeaderOffset);
-    observer.observe(document.body, { childList: true, subtree: true });
+    const observer = new MutationObserver(() => {
+      adjustHeaderOffset();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
     window.addEventListener("resize", adjustHeaderOffset);
 
     return () => {
@@ -66,9 +73,9 @@ function App() {
 
   return (
     <>
-      {/* ✅ Botón fijo debajo del header solo en móvil */}
+      {/* ✅ Botón fuera del layout, justo debajo del header */}
       {isMobile && (
-        <div className="toggle-bar">
+        <div className="button-wrapper">
           <button
             className="toggle-mobile-view"
             onClick={() => setMobileView(mobileView === "map" ? "list" : "map")}

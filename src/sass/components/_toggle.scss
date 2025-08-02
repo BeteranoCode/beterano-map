@@ -31,27 +31,27 @@
 /* ║ 🎛 BOTÓN TOGGLE MOBILE-VIEW      ║ */
 /* ╚═══════════════════════════════════╝ */
 
-/* Botón fijo debajo del header (solo en móvil) */
-.toggle-bar {
-  position: fixed;
-  top: var(--header-offset, 99px);
-  left: 0;
-  width: 100%;
+/* Contenedor del botón debajo del header (móvil) */
+.button-wrapper {
+  position: relative;
+  z-index: 2;
   background: white;
-  z-index: 9998; // justo debajo del header externo
-  padding: 8px 0;
-  text-align: center;
 
   .toggle-mobile-view {
+    width: 100%;
+    padding: 12px 0;
     font-size: 1.2rem;
-    font-weight: 600;
     background: #fcd20b;
     border: none;
-    padding: 12px 24px;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: 2px solid #eee;
     cursor: pointer;
+    position: relative;
+    z-index: 2;
   }
-}
 
-.toggle-mobile-view:hover {
-  background: #444866;
+  .toggle-mobile-view:hover {
+    background: #ffd700;
+  }
 }
