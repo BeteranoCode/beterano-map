@@ -33,9 +33,13 @@
 
 /* Contenedor del botón debajo del header (móvil) */
 .button-wrapper {
-  position: relative;
-  z-index: 2;
+  position: fixed;
+  top: var(--header-offset, 99px); // 💡 ahora se ajusta dinámicamente
+  left: 0;
+  width: 100%;
+  z-index: 9998;
   background: white;
+  border-bottom: 2px solid #eee;
 
   .toggle-mobile-view {
     width: 100%;
@@ -45,10 +49,7 @@
     border: none;
     font-weight: 600;
     text-align: center;
-    border-bottom: 2px solid #eee;
     cursor: pointer;
-    position: relative;
-    z-index: 2;
   }
 
   .toggle-mobile-view:hover {
