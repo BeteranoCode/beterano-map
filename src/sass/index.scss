@@ -50,25 +50,6 @@ html, body {
   z-index: 1;
 }
 
-/* Botón para cambiar vista en móvil */
-.toggle-mobile-view {
-  display: none;
-
-  @media (max-width: 768px) {
-    display: block;
-    width: 100vw;
-    padding: 12px 0;
-    font-size: 1.2rem;
-    background: #fcd20b;
-    border: none;
-    font-weight: 600;
-    margin: 0 auto;
-    text-align: center;
-    border-bottom: 2px solid #eee;
-    cursor: pointer;
-  }
-}
-
 /* Layout principal debajo del header */
 .layout-container {
   position: absolute;
@@ -103,3 +84,4 @@ html, body {
 
 @import "components/_map";
 @import "components/_sidebar";
+@import "components/_toggle";
