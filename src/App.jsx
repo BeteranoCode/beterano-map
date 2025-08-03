@@ -8,14 +8,16 @@ function App() {
   const [mobileView, setMobileView] = useState("map");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hasResults, setHasResults] = useState(true);
-  const [headerReady, setHeaderReady] = useState(false); // 👈 NUEVO
+  const [headerReady, setHeaderReady] = useState(false); // ✅ espera al evento global
 
+  // Actualiza isMobile al cambiar tamaño de pantalla
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // Escucha evento de header cargado y ajusta offset
   useEffect(() => {
     const adjustHeaderOffset = () => {
       const announcement = document.getElementById("announcement-bar");
@@ -27,52 +29,23 @@ function App() {
         );
         document.documentElement.style.setProperty("--header-offset", `${totalHeight}px`);
         document.body.classList.add("header-loaded");
-        setHeaderReady(true); // ✅ Ahora sí se puede renderizar el layout
+        setHeaderReady(true);
         console.log("[Layout] Altura combinada header:", totalHeight);
       }
     };
 
-    let retryCount = 0;
-    const retryUntilLoaded = () => {
-      const announcement = document.getElementById("announcement-bar");
-      const header = document.getElementById("site-header");
+    const onHeaderReady = () => adjustHeaderOffset();
+    window.addEventListener("beteranoHeaderReady", onHeaderReady);
 
-      if (
-        announcement &&
-        header &&
-        announcement.offsetHeight > 0 &&
-        header.offsetHeight > 0
-      ) {
-        adjustHeaderOffset();
-      } else if (retryCount < 20) {
-        retryCount++;
-        setTimeout(retryUntilLoaded, 100);
-      } else {
-        console.warn("[Layout] No se pudo detectar la altura del header");
-        setHeaderReady(true); // ✅ Continuar aunque no esté perfecto
-      }
-    };
-
-    retryUntilLoaded();
-
-    const observer = new MutationObserver(() => {
-      adjustHeaderOffset();
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-
-    window.addEventListener("resize", adjustHeaderOffset);
+    // Fallback por si el evento no llega
+    setTimeout(adjustHeaderOffset, 500);
 
     return () => {
-      window.removeEventListener("resize", adjustHeaderOffset);
-      observer.disconnect();
+      window.removeEventListener("beteranoHeaderReady", onHeaderReady);
     };
   }, []);
 
-  // ⏳ Esperar a que el header esté montado antes de mostrar layout
+  // Espera a que el header esté montado
   if (!headerReady) return null;
 
   return (
