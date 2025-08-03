@@ -11,18 +11,6 @@ function App() {
   const [headerReady, setHeaderReady] = useState(false); // 👈 NUEVO
 
   useEffect(() => {
-    const lang = localStorage.getItem("beteranoLang") || "es";
-    const interval = setInterval(() => {
-      if (typeof window.applyTranslations === "function") {
-        window.applyTranslations(lang);
-        document.documentElement.setAttribute("lang", lang);
-        clearInterval(interval);
-      }
-    }, 100);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
