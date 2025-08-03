@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { useState, useEffect } from "react";
 import Sidebar from "./components/Sidebar";
 import MapPage from "./pages/Map";
@@ -8,44 +9,42 @@ function App() {
   const [mobileView, setMobileView] = useState("map");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hasResults, setHasResults] = useState(true);
-  const [headerReady, setHeaderReady] = useState(false); // ✅ espera al evento global
+  const [headerReady, setHeaderReady] = useState(false);
 
-  // Actualiza isMobile al cambiar tamaño de pantalla
+  // 📦 Esperar a que header esté presente y posicionado
+  useEffect(() => {
+    const waitForHeader = () => {
+      const announcement = document.getElementById("announcement-bar");
+      const header = document.getElementById("site-header");
+
+      if (announcement && header && announcement.offsetHeight > 0 && header.offsetHeight > 0) {
+        const totalHeight = Math.round(announcement.offsetHeight + header.offsetHeight);
+        document.documentElement.style.setProperty("--header-offset", `${totalHeight}px`);
+        document.body.classList.add("header-loaded");
+        setHeaderReady(true);
+        console.log("[Layout] Header offset aplicado:", totalHeight);
+      } else {
+        setTimeout(waitForHeader, 100);
+      }
+    };
+
+    // ⏳ Escuchar evento custom si lo lanza header-loader
+    document.addEventListener("beteranoHeaderReady", waitForHeader);
+
+    // ⏳ Fallback tras carga general
+    window.addEventListener("load", () => setTimeout(waitForHeader, 200));
+
+    return () => {
+      document.removeEventListener("beteranoHeaderReady", waitForHeader);
+    };
+  }, []);
+
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Escucha evento de header cargado y ajusta offset
-  useEffect(() => {
-    const adjustHeaderOffset = () => {
-      const announcement = document.getElementById("announcement-bar");
-      const header = document.getElementById("site-header");
-
-      if (announcement && header) {
-        const totalHeight = Math.round(
-          announcement.offsetHeight + header.offsetHeight
-        );
-        document.documentElement.style.setProperty("--header-offset", `${totalHeight}px`);
-        document.body.classList.add("header-loaded");
-        setHeaderReady(true);
-        console.log("[Layout] Altura combinada header:", totalHeight);
-      }
-    };
-
-    const onHeaderReady = () => adjustHeaderOffset();
-    window.addEventListener("beteranoHeaderReady", onHeaderReady);
-
-    // Fallback por si el evento no llega
-    setTimeout(adjustHeaderOffset, 500);
-
-    return () => {
-      window.removeEventListener("beteranoHeaderReady", onHeaderReady);
-    };
-  }, []);
-
-  // Espera a que el header esté montado
   if (!headerReady) return null;
 
   return (
@@ -72,7 +71,6 @@ function App() {
             />
           </aside>
         )}
-
         {(!isMobile || mobileView === "map") && (
           <main className="map-container" id="map">
             <MapPage
