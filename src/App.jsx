@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { useState, useEffect } from "react";
 import Sidebar from "./components/Sidebar";
 import MapPage from "./pages/Map";
@@ -8,7 +9,6 @@ function App() {
   const [mobileView, setMobileView] = useState("map");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hasResults, setHasResults] = useState(true);
-  const [layoutReady, setLayoutReady] = useState(false); // ⬅️ Nuevo
 
   useEffect(() => {
     const lang = localStorage.getItem("beteranoLang") || "es";
@@ -40,7 +40,7 @@ function App() {
           announcement.offsetHeight + header.offsetHeight
         );
         document.documentElement.style.setProperty("--header-offset", `${totalHeight}px`);
-        setLayoutReady(true); // ⬅️ Activar layout solo cuando todo cargó
+        document.body.classList.add("header-loaded"); // ✅
         console.log("[Layout] Altura combinada header:", totalHeight);
       }
     };
@@ -62,7 +62,6 @@ function App() {
         setTimeout(retryUntilLoaded, 100);
       } else {
         console.warn("[Layout] No se pudo detectar la altura del header");
-        setLayoutReady(true); // ⬅️ Continuar aunque falle
       }
     };
 
@@ -84,8 +83,6 @@ function App() {
       observer.disconnect();
     };
   }, []);
-
-  if (!layoutReady) return null;
 
   return (
     <>

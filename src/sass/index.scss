@@ -21,25 +21,28 @@ html, body {
   position: relative;
 }
 
-/* Contenedor principal React */
-#root {
-  height: 100%;
-  position: relative;
-  z-index: 1;
+/* Oculta el layout hasta que el header esté cargado */
+body:not(.header-loaded) .layout-container {
+  visibility: hidden;
 }
 
-/* Layout principal debajo del header */
+/* Contenedor principal React */
+#root {
+  height: calc(100vh - var(--header-offset, 98px)); /* ⬅️ clave */
+  margin-top: var(--header-offset, 98px);
+  overflow: hidden;
+}
+
+/* Layout principal */
 .layout-container {
   display: flex;
   flex-direction: column;
-  margin-top: var(--header-offset, 98px);
-  min-height: calc(100vh - var(--header-offset, 98px)); // ⬅️ cambiado de height a min-height
+  height: 100%;
 
   @media (min-width: 769px) {
     flex-direction: row;
   }
 }
-
 
 /* Sidebar */
 .sidebar {
