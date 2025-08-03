@@ -10,6 +10,7 @@ function App() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hasResults, setHasResults] = useState(true);
 
+  // Aplicar traducciones al cargar
   useEffect(() => {
     const lang = localStorage.getItem("beteranoLang") || "es";
 
@@ -24,31 +25,45 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
+  // Detectar modo móvil
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // Ajustar desplazamiento por header externo
   useEffect(() => {
     const adjustHeaderOffset = () => {
       const announcement = document.getElementById("announcement-bar");
       const header = document.getElementById("site-header");
 
       if (announcement && header) {
-        const totalHeight = announcement.offsetHeight + header.offsetHeight;
+        const totalHeight = Math.round(
+          announcement.offsetHeight + header.offsetHeight
+        );
         document.documentElement.style.setProperty("--header-offset", `${totalHeight}px`);
+        console.log("[Layout] Altura combinada header:", totalHeight);
       }
     };
 
     let retryCount = 0;
     const retryUntilLoaded = () => {
-      const headerReady = document.getElementById("site-header");
-      if (headerReady && headerReady.offsetHeight > 0) {
+      const announcement = document.getElementById("announcement-bar");
+      const header = document.getElementById("site-header");
+
+      if (
+        announcement &&
+        header &&
+        announcement.offsetHeight > 0 &&
+        header.offsetHeight > 0
+      ) {
         adjustHeaderOffset();
-      } else if (retryCount < 10) {
+      } else if (retryCount < 20) {
         retryCount++;
-        setTimeout(retryUntilLoaded, 150);
+        setTimeout(retryUntilLoaded, 100); // 100ms, hasta 20 intentos
+      } else {
+        console.warn("[Layout] No se pudo detectar la altura del header");
       }
     };
 
