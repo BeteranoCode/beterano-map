@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Iconos personalizados según el tipo
+// Iconos por tipo
 const icons = {
   restauradores: new L.Icon({
     iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -42,7 +42,6 @@ const icons = {
   }),
 };
 
-// Función para renderizar marcadores
 function renderMarkers(data, icon, popupFields = ["nombre", "ciudad", "pais", "descripcion"], search = "") {
   if (!Array.isArray(data)) return null;
   return data
@@ -98,6 +97,13 @@ export default function MapPage({ selectedTribu, search, onDataLoaded }) {
       });
   }, [selectedTribu, search]);
 
+  // ⬅️ Forzar repaint del mapa tras cargar layout
+  useEffect(() => {
+    setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+    }, 200);
+  }, []);
+
   return (
     <div className="map-leaflet-wrapper">
       <MapContainer center={[45.0, 5.0]} zoom={5} className="leaflet-container">
@@ -110,4 +116,3 @@ export default function MapPage({ selectedTribu, search, onDataLoaded }) {
     </div>
   );
 }
-

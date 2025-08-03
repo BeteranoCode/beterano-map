@@ -33,12 +33,13 @@ html, body {
   display: flex;
   flex-direction: column;
   margin-top: var(--header-offset, 98px);
-  height: calc(100vh - var(--header-offset, 98px));
+  min-height: calc(100vh - var(--header-offset, 98px)); // ⬅️ cambiado de height a min-height
 
   @media (min-width: 769px) {
     flex-direction: row;
   }
 }
+
 
 /* Sidebar */
 .sidebar {

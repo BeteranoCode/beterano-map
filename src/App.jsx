@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useState, useEffect } from "react";
 import Sidebar from "./components/Sidebar";
 import MapPage from "./pages/Map";
@@ -9,8 +8,8 @@ function App() {
   const [mobileView, setMobileView] = useState("map");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hasResults, setHasResults] = useState(true);
+  const [layoutReady, setLayoutReady] = useState(false); // ⬅️ Nuevo
 
-  // Aplicar traducciones al cargar
   useEffect(() => {
     const lang = localStorage.getItem("beteranoLang") || "es";
 
@@ -25,14 +24,12 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Detectar modo móvil
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Ajustar desplazamiento por header externo
   useEffect(() => {
     const adjustHeaderOffset = () => {
       const announcement = document.getElementById("announcement-bar");
@@ -43,6 +40,7 @@ function App() {
           announcement.offsetHeight + header.offsetHeight
         );
         document.documentElement.style.setProperty("--header-offset", `${totalHeight}px`);
+        setLayoutReady(true); // ⬅️ Activar layout solo cuando todo cargó
         console.log("[Layout] Altura combinada header:", totalHeight);
       }
     };
@@ -61,9 +59,10 @@ function App() {
         adjustHeaderOffset();
       } else if (retryCount < 20) {
         retryCount++;
-        setTimeout(retryUntilLoaded, 100); // 100ms, hasta 20 intentos
+        setTimeout(retryUntilLoaded, 100);
       } else {
         console.warn("[Layout] No se pudo detectar la altura del header");
+        setLayoutReady(true); // ⬅️ Continuar aunque falle
       }
     };
 
@@ -86,9 +85,10 @@ function App() {
     };
   }, []);
 
+  if (!layoutReady) return null;
+
   return (
     <>
-      {/* ✅ Botón fuera del layout, justo debajo del header */}
       {isMobile && (
         <div className="button-wrapper">
           <button
