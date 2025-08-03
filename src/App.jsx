@@ -9,10 +9,11 @@ function App() {
   const [mobileView, setMobileView] = useState("map");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hasResults, setHasResults] = useState(true);
+  const [isHeaderReady, setIsHeaderReady] = useState(false);
 
+  // 🈯️ Traducción al cargar
   useEffect(() => {
     const lang = localStorage.getItem("beteranoLang") || "es";
-
     const interval = setInterval(() => {
       if (typeof window.applyTranslations === "function") {
         window.applyTranslations(lang);
@@ -20,16 +21,17 @@ function App() {
         clearInterval(interval);
       }
     }, 100);
-
     return () => clearInterval(interval);
   }, []);
 
+  // 🧠 Detectar tamaño de pantalla
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // 📐 Calcular offset del header
   useEffect(() => {
     const adjustHeaderOffset = () => {
       const announcement = document.getElementById("announcement-bar");
@@ -40,8 +42,9 @@ function App() {
           announcement.offsetHeight + header.offsetHeight
         );
         document.documentElement.style.setProperty("--header-offset", `${totalHeight}px`);
-        document.body.classList.add("header-loaded"); // ✅
-        console.log("[Layout] Altura combinada header:", totalHeight);
+        document.body.classList.add("header-loaded");
+        setIsHeaderReady(true);
+        console.log("[Layout] Header OK, offset:", totalHeight);
       }
     };
 
@@ -97,28 +100,30 @@ function App() {
         </div>
       )}
 
-      <div className="layout-container">
-        {(!isMobile || mobileView === "list") && (
-          <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
-            <Sidebar
-              selectedTribu={selectedTribu}
-              setSelectedTribu={setSelectedTribu}
-              search={search}
-              setSearch={setSearch}
-            />
-          </aside>
-        )}
+      {isHeaderReady && (
+        <div className="layout-container">
+          {(!isMobile || mobileView === "list") && (
+            <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
+              <Sidebar
+                selectedTribu={selectedTribu}
+                setSelectedTribu={setSelectedTribu}
+                search={search}
+                setSearch={setSearch}
+              />
+            </aside>
+          )}
 
-        {(!isMobile || mobileView === "map") && (
-          <main className="map-container" id="map">
-            <MapPage
-              selectedTribu={selectedTribu}
-              search={search}
-              onDataLoaded={setHasResults}
-            />
-          </main>
-        )}
-      </div>
+          {(!isMobile || mobileView === "map") && (
+            <main className="map-container" id="map">
+              <MapPage
+                selectedTribu={selectedTribu}
+                search={search}
+                onDataLoaded={setHasResults}
+              />
+            </main>
+          )}
+        </div>
+      )}
     </>
   );
 }
