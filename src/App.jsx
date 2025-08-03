@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useState, useEffect } from "react";
 import Sidebar from "./components/Sidebar";
 import MapPage from "./pages/Map";
@@ -9,9 +8,8 @@ function App() {
   const [mobileView, setMobileView] = useState("map");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hasResults, setHasResults] = useState(true);
-  const [isHeaderReady, setIsHeaderReady] = useState(false);
+  const [headerReady, setHeaderReady] = useState(false); // 👈 NUEVO
 
-  // 🈯️ Traducción al cargar
   useEffect(() => {
     const lang = localStorage.getItem("beteranoLang") || "es";
     const interval = setInterval(() => {
@@ -24,14 +22,12 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // 🧠 Detectar tamaño de pantalla
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // 📐 Calcular offset del header
   useEffect(() => {
     const adjustHeaderOffset = () => {
       const announcement = document.getElementById("announcement-bar");
@@ -43,8 +39,8 @@ function App() {
         );
         document.documentElement.style.setProperty("--header-offset", `${totalHeight}px`);
         document.body.classList.add("header-loaded");
-        setIsHeaderReady(true);
-        console.log("[Layout] Header OK, offset:", totalHeight);
+        setHeaderReady(true); // ✅ Ahora sí se puede renderizar el layout
+        console.log("[Layout] Altura combinada header:", totalHeight);
       }
     };
 
@@ -65,6 +61,7 @@ function App() {
         setTimeout(retryUntilLoaded, 100);
       } else {
         console.warn("[Layout] No se pudo detectar la altura del header");
+        setHeaderReady(true); // ✅ Continuar aunque no esté perfecto
       }
     };
 
@@ -87,6 +84,9 @@ function App() {
     };
   }, []);
 
+  // ⏳ Esperar a que el header esté montado antes de mostrar layout
+  if (!headerReady) return null;
+
   return (
     <>
       {isMobile && (
@@ -100,30 +100,28 @@ function App() {
         </div>
       )}
 
-      {isHeaderReady && (
-        <div className="layout-container">
-          {(!isMobile || mobileView === "list") && (
-            <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
-              <Sidebar
-                selectedTribu={selectedTribu}
-                setSelectedTribu={setSelectedTribu}
-                search={search}
-                setSearch={setSearch}
-              />
-            </aside>
-          )}
+      <div className="layout-container">
+        {(!isMobile || mobileView === "list") && (
+          <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
+            <Sidebar
+              selectedTribu={selectedTribu}
+              setSelectedTribu={setSelectedTribu}
+              search={search}
+              setSearch={setSearch}
+            />
+          </aside>
+        )}
 
-          {(!isMobile || mobileView === "map") && (
-            <main className="map-container" id="map">
-              <MapPage
-                selectedTribu={selectedTribu}
-                search={search}
-                onDataLoaded={setHasResults}
-              />
-            </main>
-          )}
-        </div>
-      )}
+        {(!isMobile || mobileView === "map") && (
+          <main className="map-container" id="map">
+            <MapPage
+              selectedTribu={selectedTribu}
+              search={search}
+              onDataLoaded={setHasResults}
+            />
+          </main>
+        )}
+      </div>
     </>
   );
 }
