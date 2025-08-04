@@ -11,36 +11,38 @@ html, body {
   padding: 0;
   height: 100%;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Header externo cargado dinámicamente */
+/* Header dinámico */
 #header-container {
   width: 100%;
-  height: auto;
   z-index: 9999;
   position: relative;
 }
 
-/* Oculta el layout hasta que el header esté cargado */
+/* Oculta mientras el header no carga */
 body:not(.header-loaded) #root {
   visibility: hidden;
 }
 
 /* Contenedor principal React */
 #root {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
-/* Asegura que layout-container solo ocupe el espacio restante del header */
-.layout-container {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  min-height: 0; /* evita que el overflow lo desplace */
+}
 
-  @media (min-width: 769px) {
-    flex-direction: row;
+/* Layout React */
+.layout-container {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
   }
 }
 
@@ -60,17 +62,21 @@ body:not(.header-loaded) #root {
   flex: 1;
   height: 100%;
   position: relative;
-  z-index: 1;
+  overflow: hidden;
+  min-height: 0;
 }
 
+/* Leaflet map */
 .leaflet-container {
   height: 100%;
   width: 100%;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   z-index: 1;
 }
 
-/* Botón toggle fijo (móvil) */
+/* Botón toggle móvil */
 .button-wrapper {
   position: fixed;
   top: var(--header-offset, 98px);
