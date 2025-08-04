@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BETERANO MAP</title>
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BETERANO MAP</title>
+    <link rel="icon" href="/beterano-map/favicon.svg" type="image/svg+xml" />
 
-  <!-- ✅ Header dinámico: se carga antes que React -->
-  <script src="https://beteranocode.github.io/components/header/header-loader.js" defer></script>
+    <!-- ✅ Header dinámico: se carga antes que React -->
+    <script src="https://beteranocode.github.io/components/header/header-loader.js" defer></script>
 
-  <!-- ✅ Leaflet styles -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
-</head>
+    <!-- ✅ Leaflet styles -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+  </head>
 
-<body>
-  <!-- ✅ Header dinámico se insertará aquí -->
-  <div id="header-container"></div>
+  <body>
+    <!-- ✅ Header dinámico se insertará aquí -->
+    <div id="header-container"></div>
 
-  <!-- ✅ Aquí se monta React (mapa + sidebar) -->
-  <div id="root"></div>
+    <!-- ✅ Aquí se monta React (mapa + sidebar) -->
+    <div id="root"></div>
 
-  <!-- ✅ App React/Vite -->
-  <script type="module" src="/src/main.jsx"></script>
-</body>
+    <!-- ✅ App React/Vite (reemplazado por Vite en build) -->
+    <script type="module" src="/beterano-map/main.jsx"></script>
+  </body>
 </html>

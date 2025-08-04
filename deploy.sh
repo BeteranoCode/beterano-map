@@ -29,8 +29,8 @@ git checkout -b deploy-temp
 # 🧹 Limpiar contenido del repositorio
 git rm -rf . > /dev/null 2>&1
 
-# 📂 Copiar archivos desde dist (sin la carpeta data/)
-rsync -av --exclude='data/' dist/ . > /dev/null
+# 📂 Copiar archivos desde dist
+rsync -av dist/ . > /dev/null
 
 # 📤 Commit y push a gh-pages
 git add .
