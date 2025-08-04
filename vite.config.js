@@ -1,4 +1,3 @@
-// vite.config.js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -24,7 +23,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      input: 'index.html'
+      input: path.resolve(__dirname, 'index.html')
     }
   }
 });
