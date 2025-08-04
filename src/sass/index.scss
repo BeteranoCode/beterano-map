@@ -4,33 +4,35 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: sans-serif;
+  overflow: hidden; /* Elimina scroll global */
 }
 
-/* 🔝 Header dinámico externo */
+/* 🔝 Header externo */
 #header-container {
   width: 100%;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 9999;
+  height: 125px; /* ⬅️ Altura total del header fijo */
 }
 
-/* ⚠️ Añadir espacio para el header (announcement + header) */
-body {
-  padding-top: 125px; /* Altura exacta del header */
-  overflow: hidden;
-}
-
-/* 🎯 App React debajo del header */
+/* 🔧 React App debajo del header */
 #root {
-  height: calc(100vh - 125px);
+  position: absolute;
+  top: 125px; /* ⬅️ Misma altura que el header */
+  left: 0;
+  right: 0;
+  bottom: 0;
   overflow: hidden;
+  height: auto;
 }
 
 /* 🚧 Layout principal */
 .layout-container {
   display: flex;
   height: 100%;
+  width: 100%;
   flex-direction: row;
 
   @media (max-width: 768px) {
@@ -49,25 +51,26 @@ body {
   }
 }
 
-/* 🗺️ Mapa */
+/* 🗺️ Contenedor del mapa */
 .map-container {
   flex: 1;
   height: 100%;
   position: relative;
 }
 
+/* 🌍 Leaflet */
 .leaflet-container {
-  height: 100%;
-  width: 100%;
+  height: 100% !important;
+  width: 100% !important;
   position: absolute;
   top: 0;
   left: 0;
 }
 
-/* 📱 Botón de toggle en móvil */
+/* 📱 Botón toggle en móvil */
 .button-wrapper {
   position: fixed;
-  top: 125px; /* MISMA ALTURA QUE EL HEADER */
+  top: 125px;
   width: 100vw;
   z-index: 9999;
   background: white;
@@ -85,7 +88,7 @@ body {
   cursor: pointer;
 }
 
-/* COMPONENTES ADICIONALES */
+/* COMPONENTES */
 @import "components/_map";
 @import "components/_sidebar";
 @import "components/_toggle";
