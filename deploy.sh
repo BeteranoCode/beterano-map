@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# 🛡️ Verificar si estamos dentro de un repositorio Git
+# 🗭️ Verificar si estamos dentro de un repositorio Git
 if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
   echo "❌ ERROR: Este script debe ejecutarse dentro de un repositorio Git."
   exit 1
