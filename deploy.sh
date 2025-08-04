@@ -26,24 +26,22 @@ fi
 echo "🔀 Creando rama temporal 'deploy-temp'..."
 git checkout -b deploy-temp
 
-# 🧹 Limpiar contenido
+# 🧹 Limpiar contenido del repositorio
 git rm -rf . > /dev/null 2>&1
 
-# 📂 Copiar archivos desde dist (sin data/)
-shopt -s dotglob
-cp -r dist/* ./
-rm -rf ./data
+# 📂 Copiar archivos desde dist (sin la carpeta data/)
+rsync -av --exclude='data/' dist/ . > /dev/null
 
-# 📤 Commit y push a gh-pages (desde rama temporal)
+# 📤 Commit y push a gh-pages
 git add .
 git commit -m "🚀 Deploy automático desde dist"
 git push -f origin deploy-temp:gh-pages
 
-# 🔄 Volver a la rama original
-echo "🔄 Volviendo a la rama original..."
+# 🔄 Volver a la rama main
+echo "🔄 Volviendo a la rama main..."
 git checkout main
 
-# 🧹 Borrar rama temporal
+# 🗑️ Borrar rama temporal
 echo "🗑️ Borrando rama 'deploy-temp'..."
 git branch -D deploy-temp
 
