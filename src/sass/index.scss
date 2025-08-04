@@ -22,22 +22,22 @@ html, body {
 }
 
 /* Oculta el layout hasta que el header esté cargado */
-body:not(.header-loaded) .layout-container {
+body:not(.header-loaded) #root {
   visibility: hidden;
 }
 
 /* Contenedor principal React */
 #root {
-  height: auto;
-  overflow: hidden;
-}
-
-/* Layout principal */
-.layout-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - var(--header-offset, 98px));
-  margin-top: var(--header-offset, 98px);
+  height: 100vh;
+}
+
+/* Asegura que layout-container solo ocupe el espacio restante del header */
+.layout-container {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
 
   @media (min-width: 769px) {
     flex-direction: row;
@@ -59,7 +59,6 @@ body:not(.header-loaded) .layout-container {
 .map-container {
   flex: 1;
   height: 100%;
-  overflow: hidden;
   position: relative;
   z-index: 1;
 }
