@@ -87,8 +87,10 @@ html, body {
   text-align: center;
   cursor: pointer;
 }
-
+/* MIXINS - Importa primero para que esté disponible en todos los componentes */
+@import "_mixins";
 /* COMPONENTES */
 @import "components/_map";
 @import "components/_sidebar";
 @import "components/_toggle";
+
