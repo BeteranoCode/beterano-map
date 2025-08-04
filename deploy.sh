@@ -30,7 +30,9 @@ git checkout -b deploy-temp
 git rm -rf . > /dev/null 2>&1
 
 # 📂 Copiar archivos desde dist (sin data/)
-rsync -av --exclude='data/' dist/ . > /dev/null
+shopt -s dotglob
+cp -r dist/* ./
+rm -rf ./data
 
 # 📤 Commit y push a gh-pages (desde rama temporal)
 git add .
