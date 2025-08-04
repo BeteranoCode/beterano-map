@@ -89,6 +89,7 @@ html, body {
 }
 /* MIXINS - Importa primero para que esté disponible en todos los componentes */
 @import "_mixins";
+@import "_variables";
 /* COMPONENTES */
 @import "components/_map";
 @import "components/_sidebar";
