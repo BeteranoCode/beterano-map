@@ -7,6 +7,12 @@ if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
   exit 1
 fi
 
+# 📝 Verificar si hay cambios sin guardar
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  echo "⚠️ Tienes cambios sin guardar. Por favor haz commit o stash antes de hacer deploy."
+  exit 1
+fi
+
 # 🛠️ Compilar el proyecto
 echo "🔧 Compilando el proyecto..."
 npm run build || { echo "❌ Falló la compilación"; exit 1; }
@@ -20,6 +26,12 @@ fi
 # ⚠️ Advertir si dist/ está vacía
 if [ -z "$(ls -A dist)" ]; then
   echo "⚠️ ADVERTENCIA: La carpeta dist/ está vacía. El deploy no copiará nada."
+fi
+
+# 🔄 Borrar rama 'deploy-temp' si existe
+if git show-ref --verify --quiet refs/heads/deploy-temp; then
+  echo "🧹 Borrando rama existente 'deploy-temp'..."
+  git branch -D deploy-temp
 fi
 
 # 🪄 Crear rama temporal de trabajo
