@@ -1,16 +1,33 @@
 #!/bin/bash
 set -e
 
-# 🗭️ Verificar si estamos dentro de un repositorio Git
+# 📍 Verificar si estamos dentro de un repositorio Git
 if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
   echo "❌ ERROR: Este script debe ejecutarse dentro de un repositorio Git."
   exit 1
 fi
 
-# 📝 Verificar si hay cambios sin guardar
+# 📍 Verificar si hay cambios sin guardar
 if ! git diff --quiet || ! git diff --cached --quiet; then
   echo "⚠️ Tienes cambios sin guardar. Por favor haz commit o stash antes de hacer deploy."
   exit 1
+fi
+
+# 📦 Verificar si node_modules existe
+if [ ! -d "node_modules" ]; then
+  echo "📦 node_modules no encontrado. Ejecutando npm install..."
+  npm install || {
+    echo "⚠️ npm install falló. Intentando limpieza profunda..."
+    rm -rf node_modules package-lock.json
+    npm install || { echo "❌ npm install falló incluso tras limpiar. Revisa manualmente."; exit 1; }
+  }
+fi
+
+# ✅ Verificar si vite está disponible
+if ! npx --no vite --version > /dev/null 2>&1; then
+  echo "❌ Vite no está instalado o hay un error en node_modules. Intentando reparar..."
+  rm -rf node_modules package-lock.json
+  npm install || { echo "❌ npm install falló. Revisa tu package.json"; exit 1; }
 fi
 
 # 🛠️ Compilar el proyecto
