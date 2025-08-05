@@ -30,7 +30,7 @@ git checkout -b deploy-temp
 git rm -rf . > /dev/null 2>&1
 
 # 📂 Copiar archivos desde dist
-rsync -av dist/ . > /dev/null
+cp -r dist/* ./
 
 # 📤 Commit y push a gh-pages
 git add .
