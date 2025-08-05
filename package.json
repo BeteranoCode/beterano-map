@@ -1,5 +1,6 @@
 {
   "name": "beterano-map",
+  "type": "module",
   "version": "1.0.0",
   "homepage": "https://beteranocode.github.io/beterano-map/",
   "description": "Mapa colaborativo de restauradores de vehículos clásicos de BETERANO",
