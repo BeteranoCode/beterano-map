@@ -45,7 +45,8 @@ function App() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  if (!headerReady) return null;
+  const isLocal = location.hostname === "localhost";
+  if (!headerReady && !isLocal) return null;
 
   return (
     <>
