@@ -28,10 +28,8 @@ function App() {
       }
     };
 
-    // ⏳ Escuchar evento custom si lo lanza header-loader
-    document.addEventListener("beteranoHeaderReady", () => {
+    const onHeaderReady = () => {
       if (location.hostname === "localhost") {
-        // Forzar carga inmediata
         document.documentElement.style.setProperty("--header-offset", `0px`);
         document.body.classList.add("header-loaded");
         setHeaderReady(true);
@@ -39,15 +37,16 @@ function App() {
       } else {
         waitForHeader();
       }
-    });
+    };
 
-    // ⏳ Fallback tras carga general
+    document.addEventListener("beteranoHeaderReady", onHeaderReady);
     window.addEventListener("load", () => setTimeout(waitForHeader, 200));
 
     return () => {
-      document.removeEventListener("beteranoHeaderReady", waitForHeader);
+      document.removeEventListener("beteranoHeaderReady", onHeaderReady);
     };
   }, []);
+
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
