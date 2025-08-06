@@ -67,26 +67,7 @@ html, body {
   left: 0;
 }
 
-/* 📱 Botón toggle en móvil */
-.button-wrapper {
-  position: fixed;
-  top: 125px;
-  width: 100vw;
-  z-index: 9999;
-  background: white;
-  border-bottom: 1px solid #eee;
-}
 
-.toggle-mobile-view {
-  width: 100%;
-  padding: 12px 0;
-  font-size: 1.2rem;
-  background: #fcd20b;
-  border: none;
-  font-weight: 600;
-  text-align: center;
-  cursor: pointer;
-}
 /* MIXINS - Importa primero para que esté disponible en todos los componentes */
 @import "_mixins";
 @import "_variables";
