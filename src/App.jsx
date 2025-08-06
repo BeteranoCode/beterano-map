@@ -29,7 +29,17 @@ function App() {
     };
 
     // ⏳ Escuchar evento custom si lo lanza header-loader
-    document.addEventListener("beteranoHeaderReady", waitForHeader);
+    document.addEventListener("beteranoHeaderReady", () => {
+      if (location.hostname === "localhost") {
+        // Forzar carga inmediata
+        document.documentElement.style.setProperty("--header-offset", `0px`);
+        document.body.classList.add("header-loaded");
+        setHeaderReady(true);
+        console.log("[Local] Forzado headerReady sin medir alturas.");
+      } else {
+        waitForHeader();
+      }
+    });
 
     // ⏳ Fallback tras carga general
     window.addEventListener("load", () => setTimeout(waitForHeader, 200));
