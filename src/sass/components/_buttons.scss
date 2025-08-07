@@ -1,3 +1,6 @@
+@use "../_variables.scss" as *;
+@use "../_mixins.scss" as *;
+
 .btn {
   display: inline-block;
   font-size: 1rem;
