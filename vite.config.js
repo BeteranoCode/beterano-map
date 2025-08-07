@@ -19,6 +19,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@sass': path.resolve(__dirname, './src/sass') // ✅ Alias para SCSS
     },
   },
   build: {
