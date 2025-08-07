@@ -78,4 +78,5 @@ body.local-dev #header-container {
 @use "sass:math";
 @use "./_mixins.scss" as *;
 @use "./_variables.scss" as *;
-@use "./components/components.scss" as *;
+@use "./components/_components.scss" as *;
+@use "./components/_map.scss" as *;
