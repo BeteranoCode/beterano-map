@@ -74,11 +74,10 @@ body.local-dev #header-container {
   border-bottom: 1px solid #ddd;
 }
 
-/* MIXINS - Importa primero para que esté disponible en todos los componentes */
-@import "_mixins";
-@import "_variables";
-/* COMPONENTES */
-@import "components/_map";
-@import "components/_sidebar";
-@import "components/_toggle";
+@use "sass:math"; // si usas funciones nativas
+@use "./_mixins.scss" as *;
+@use "./_variables.scss" as *;
+@use "./components/map.scss" as *;
+@use "./components/sidebar.scss" as *;
+@use "./components/toggle.scss" as *;
 
