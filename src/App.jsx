@@ -13,6 +13,16 @@ function App() {
 
   // 📦 Esperar a que header esté presente y posicionado
   useEffect(() => {
+    const isLocal = location.hostname === "localhost";
+
+    if (isLocal) {
+      document.documentElement.style.setProperty("--header-offset", `0px`);
+      document.body.classList.add("header-loaded");
+      setHeaderReady(true);
+      console.log("[Local] ⚡ HeaderReady forzado desde fallback inmediato.");
+      return;
+    }
+
     const waitForHeader = () => {
       const announcement = document.getElementById("announcement-bar");
       const header = document.getElementById("site-header");
@@ -28,16 +38,7 @@ function App() {
       }
     };
 
-    const onHeaderReady = () => {
-      if (location.hostname === "localhost") {
-        document.documentElement.style.setProperty("--header-offset", `0px`);
-        document.body.classList.add("header-loaded");
-        setHeaderReady(true);
-        console.log("[Local] Forzado headerReady sin medir alturas.");
-      } else {
-        waitForHeader();
-      }
-    };
+    const onHeaderReady = () => waitForHeader();
 
     document.addEventListener("beteranoHeaderReady", onHeaderReady);
     window.addEventListener("load", () => setTimeout(waitForHeader, 200));
@@ -46,7 +47,6 @@ function App() {
       document.removeEventListener("beteranoHeaderReady", onHeaderReady);
     };
   }, []);
-
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
