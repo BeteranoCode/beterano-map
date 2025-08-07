@@ -1,3 +1,11 @@
+@use "sass:math";
+/* ✅ IMPORTACIÓN MODERNA */
+
+@use "./_mixins.scss" as *;
+@use "./_variables.scss" as *;
+@use "./components/_components.scss" as *;
+@use "./components/_map.scss" as *;
+
 /* RESET */
 html, body {
   margin: 0;
@@ -74,9 +82,4 @@ body.local-dev #header-container {
   border-bottom: 1px solid #ddd;
 }
 
-/* ✅ IMPORTACIÓN MODERNA */
-@use "sass:math";
-@use "./_mixins.scss" as *;
-@use "./_variables.scss" as *;
-@use "./components/_components.scss" as *;
-@use "./components/_map.scss" as *;
+
