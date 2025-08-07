@@ -1,9 +1,9 @@
-@import "_buttons";
-@import "_checkboxes";
-@import "_panel";
-@import "_search";
-@import "_popup";
-@import "_slides";
-@import "_info";
-@import "_toggle";
-@import "_autocomplete";
+@use "./_buttons.scss" as *;
+@use "./_checkboxes.scss" as *;
+@use "./_panel.scss" as *;
+@use "./_search.scss" as *;
+@use "./_popup.scss" as *;
+@use "./_slides.scss" as *;
+@use "./_info.scss" as *;
+@use "./_toggle.scss" as *;
+@use "./_autocomplete.scss" as *;
