@@ -74,10 +74,8 @@ body.local-dev #header-container {
   border-bottom: 1px solid #ddd;
 }
 
-@use "sass:math"; // si usas funciones nativas
+/* ✅ IMPORTACIÓN MODERNA */
+@use "sass:math";
 @use "./_mixins.scss" as *;
 @use "./_variables.scss" as *;
-@use "./components/map.scss" as *;
-@use "./components/sidebar.scss" as *;
-@use "./components/toggle.scss" as *;
-
+@use "./components/components.scss" as *;
