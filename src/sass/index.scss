@@ -67,6 +67,12 @@ html, body {
   left: 0;
 }
 
+/* 🧪 Header simulado en local */
+body.local-dev #header-container {
+  height: var(--header-offset, 125px);
+  background: #f8f8f8;
+  border-bottom: 1px solid #ddd;
+}
 
 /* MIXINS - Importa primero para que esté disponible en todos los componentes */
 @import "_mixins";

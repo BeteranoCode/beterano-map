@@ -16,8 +16,8 @@ function App() {
     const isLocal = location.hostname === "localhost";
 
     if (isLocal) {
-      document.documentElement.style.setProperty("--header-offset", `0px`);
-      document.body.classList.add("header-loaded");
+      document.documentElement.style.setProperty("--header-offset", `125px`);
+      document.body.classList.add("header-loaded", "local-dev");
       setHeaderReady(true);
       console.log("[Local] ⚡ HeaderReady forzado desde fallback inmediato.");
       return;
