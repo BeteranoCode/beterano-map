@@ -1,6 +1,5 @@
 @use "sass:math";
 /* ✅ IMPORTACIÓN MODERNA */
-
 @use "./_mixins.scss" as *;
 @use "./_variables.scss" as *;
 @use "./components/_components.scss" as *;
@@ -83,14 +82,17 @@ body.local-dev #header-container {
   border-bottom: 1px solid #ddd;
 }
 
+/* 👷 Ajustes cuando se ha cargado el header externo */
 body.header-loaded-local-dev {
   #root {
-    margin-top: 200px; // Altura del header
+    margin-top: 125px; // ⬅️ Altura del header real
   }
-    .sidebar {
-    padding-top: 16px; // Ajustable según diseño
+
+  .sidebar {
+    padding-top: 16px; // ⬅️ Separación del contenido
+  }
+
+  .map-container {
+    margin-top: 0 !important; // ⬅️ Por si el mapa hereda márgenes
   }
 }
-}
-
-
