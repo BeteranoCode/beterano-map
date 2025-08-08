@@ -83,4 +83,10 @@ body.local-dev #header-container {
   border-bottom: 1px solid #ddd;
 }
 
+body.header-loaded-local-dev {
+  #root {
+    margin-top: 200px; // Altura del header
+  }
+}
+
 
