@@ -1,5 +1,6 @@
 
 @use "../_variables.scss" as *;
+@use '../_mixins.scss' as *;
 
 .search {
   position: absolute;
