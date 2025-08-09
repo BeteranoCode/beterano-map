@@ -22,18 +22,20 @@ html, body {
   top: 0;
   left: 0;
   z-index: 9999;
-  height: 125px; /* ⬅️ Altura total del header fijo */
+  height: 85px; /* ⬅️ Altura total del header fijo */
 }
 
 /* 🔧 React App debajo del header */
 #root {
   position: absolute;
-  top: 125px; /* ⬅️ Misma altura que el header */
+  top: 85px; /* ⬅️ Misma altura que el header */
   left: 0;
   right: 0;
   bottom: 0;
   overflow: hidden;
-  height: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
 }
 
 /* 🚧 Layout principal */
@@ -42,6 +44,7 @@ html, body {
   height: 100%;
   width: 100%;
   flex-direction: row;
+  flex: 1;
 
   @media (max-width: 768px) {
     flex-direction: column;
