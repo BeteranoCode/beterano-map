@@ -11,43 +11,47 @@ function App() {
   const [hasResults, setHasResults] = useState(true);
   const [headerReady, setHeaderReady] = useState(false);
 
-  // 📦 Esperar a que header esté presente y posicionado
+  // Esperar a que el header esté listo
   useEffect(() => {
     const isLocal = location.hostname === "localhost";
 
     if (isLocal) {
-      document.documentElement.style.setProperty("--header-offset", `125px`);
+      // En local simulamos todo
+      document.documentElement.style.setProperty("--header-offset", "125px");
       document.body.classList.add("header-loaded", "local-dev");
       setHeaderReady(true);
-      console.log("[Local] ⚡ HeaderReady forzado desde fallback inmediato.");
       return;
     }
 
-    const waitForHeader = () => {
-      const announcement = document.getElementById("announcement-bar");
-      const header = document.getElementById("site-header");
+    // Marcador directo cuando el loader nos avisa (evento SIEMPRE en document)
+    const onReady = () => setHeaderReady(true);
 
-      if (announcement && header && announcement.offsetHeight > 0 && header.offsetHeight > 0) {
-        const totalHeight = Math.round(announcement.offsetHeight + header.offsetHeight);
-        document.documentElement.style.setProperty("--header-offset", `${totalHeight}px`);
+    document.addEventListener("beteranoHeaderReady", onReady);
+    // tolerancia extra por si en algún momento alguien emite en window
+    window.addEventListener("beteranoHeaderReady", onReady);
+
+    // Fallback: si por algún motivo no llega el evento, calculamos nosotros
+    const fallback = () => {
+      const a = document.getElementById("announcement-bar");
+      const h = document.getElementById("site-header");
+      if (a && h && a.offsetHeight > 0 && h.offsetHeight > 0) {
+        const total = Math.round(a.offsetHeight + h.offsetHeight);
+        document.documentElement.style.setProperty("--header-offset", `${total}px`);
         document.body.classList.add("header-loaded");
         setHeaderReady(true);
-        console.log("[Layout] Header offset aplicado:", totalHeight);
       } else {
-        setTimeout(waitForHeader, 100);
+        setTimeout(fallback, 120);
       }
     };
-
-    const onHeaderReady = () => waitForHeader();
-
-    document.addEventListener("beteranoHeaderReady", onHeaderReady);
-    window.addEventListener("load", () => setTimeout(waitForHeader, 200));
+    window.addEventListener("load", () => setTimeout(fallback, 200));
 
     return () => {
-      document.removeEventListener("beteranoHeaderReady", onHeaderReady);
+      document.removeEventListener("beteranoHeaderReady", onReady);
+      window.removeEventListener("beteranoHeaderReady", onReady);
     };
   }, []);
 
+  // Responsive: móvil / escritorio
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
@@ -81,6 +85,7 @@ function App() {
             />
           </aside>
         )}
+
         {(!isMobile || mobileView === "map") && (
           <main className="map-container" id="map">
             <MapPage

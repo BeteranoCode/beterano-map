@@ -12,25 +12,24 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: sans-serif;
-  overflow: hidden; /* Elimina scroll global */
+  overflow: hidden;
 }
 
-/* 🔝 Contenedor donde se monta el header externo */
+/* 🔝 Contenedor donde el loader inserta el header */
 #header-container {
   width: 100%;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 9999;
-  height: auto; /* ✅ que mida lo real (announcement + site-header) */
+  /* ❌ no fijamos altura: debe ser la suma real announcement+site-header */
+  height: auto;
 }
 
-/* 🔧 React App debajo del header
-   Usamos una variable que pondrá el loader del header (con fallback a 85px)
-*/
+/* 🔧 React App debajo del header: usar la variable del loader/App.jsx */
 #root {
   position: absolute;
-  top: var(--header-offset, 85px); /* ✅ sin hardcode si el loader la define */
+  top: var(--header-offset, 85px);
   left: 0;
   right: 0;
   bottom: 0;
@@ -80,13 +79,51 @@ html, body {
   left: 0;
 }
 
-/* 🧪 Header simulado en local */
+/* 🧪 Modo local: simulamos la variable si no hay header externo */
 body.local-dev #header-container {
-  /* si no hay loader, usa fallback (mismo valor que arriba) */
-  height: var(--header-offset, 85px);
+  /* solo estilos visuales; la altura es la del contenido */
   background: #f8f8f8;
   border-bottom: 1px solid #ddd;
 }
+body.local-dev {
+  --header-offset: 125px;
+}
 
-/* 🧹 Eliminamos reglas que forzaban 125px y márgenes extra */
-// body.header-loaded-local-dev { ... }  ← ya no es necesario
+/* 👷 App lista cuando el header ya midió su altura */
+body.header-loaded {
+  /* ya no necesitamos márgenes extras ni hacks */
+}
+
+/* 📱 Botón móvil flotante (tipo Precious Plastic) */
+.button-wrapper {
+  position: fixed;
+  top: calc(var(--header-offset, 85px) + 8px);
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: transparent;
+  z-index: 500;              /* por encima del mapa y controles */
+  pointer-events: none;      /* el wrapper no intercepta clicks */
+}
+
+.toggle-mobile-view {
+  pointer-events: auto;      /* solo el botón recibe clicks */
+  padding: 8px 14px 8px 34px;
+  border-radius: 18px;
+  border: 0;
+  background: rgba(255, 231, 123, 0.95); /* similar PP */
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  position: relative;
+}
+
+/* iconito “hamburguesa” simple a la izquierda */
+.toggle-mobile-view::before {
+  content: "≡";
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: 700;
+}
