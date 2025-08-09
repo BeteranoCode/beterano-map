@@ -30,7 +30,7 @@ html, body {
 */
 #root {
   position: absolute;
-  top: var(--external-header-height, 85px); /* ✅ sin hardcode si el loader la define */
+  top: var(--header-offset, 85px); /* ✅ sin hardcode si el loader la define */
   left: 0;
   right: 0;
   bottom: 0;
@@ -83,7 +83,7 @@ html, body {
 /* 🧪 Header simulado en local */
 body.local-dev #header-container {
   /* si no hay loader, usa fallback (mismo valor que arriba) */
-  height: var(--external-header-height, 85px);
+  height: var(--header-offset, 85px);
   background: #f8f8f8;
   border-bottom: 1px solid #ddd;
 }
