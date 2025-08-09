@@ -15,18 +15,18 @@ html, body {
   overflow: hidden;
 }
 
-/* 🔝 Contenedor donde el loader inserta el header */
+/* 🔝 Header dinámico */
 #header-container {
   width: 100%;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 9999;
-  /* ❌ No fijamos altura: debe ser la suma real announcement+site-header */
-  height: auto;
+  height: auto; /* solo alto real */
+  pointer-events: none; /* ← no intercepta el mapa */
 }
 
-/* 🔧 React App debajo del header: usar variable calculada por loader/App.jsx */
+/* React App debajo del header */
 #root {
   position: absolute;
   top: var(--header-offset, 85px);
@@ -39,7 +39,7 @@ html, body {
   flex-direction: row;
 }
 
-/* 🚧 Layout principal */
+/* Layout principal */
 .layout-container {
   display: flex;
   height: 100%;
@@ -69,25 +69,29 @@ html, body {
   flex: 1 1 auto;
   height: 100%;
   position: relative;
-  min-width: 0; /* ← evita que el flex-item colapse */
+  min-width: 0; /* evita colapsos en flex */
+  display: flex; /* asegura que el wrapper crezca */
 }
 
-/* 🌍 Leaflet (el <div class="leaflet-container"> del MapContainer) */
+/* 🌍 Leaflet */
 .leaflet-container {
   height: 100% !important;
   width: 100% !important;
-  position: absolute;
-  top: 0;
-  left: 0;
+  /* ahora relative (se define en _map.scss) */
 }
 
-/* 🧪 Modo local: simulamos variable si no hay header externo */
+/* 🧪 Modo local: variable simulada si no hay header externo */
 body.local-dev #header-container {
   background: #f8f8f8;
   border-bottom: 1px solid #ddd;
 }
 body.local-dev {
   --header-offset: 125px;
+}
+
+/* El header real sí debe permitir clics en sus elementos */
+#header-container * {
+  pointer-events: auto;
 }
 
 /* 📱 Botón móvil flotante */
