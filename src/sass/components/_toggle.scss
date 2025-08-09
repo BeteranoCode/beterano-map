@@ -61,4 +61,13 @@
   border: 0;
   background: #fcd20b;
   font-weight: 600;
-  font-size: 1.1
+  font-size: 1.1rem;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+
+.toggle-mobile-view:hover { background: #ffd700; }
+
+/* ❌ eliminar cualquier pseudo-icono heredado */
+.toggle-mobile-view::before { content: none !important; }
