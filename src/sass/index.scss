@@ -15,25 +15,27 @@ html, body {
   overflow: hidden; /* Elimina scroll global */
 }
 
-/* 🔝 Header externo */
+/* 🔝 Contenedor donde se monta el header externo */
 #header-container {
   width: 100%;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 9999;
-  height: 85px; /* ⬅️ Altura total del header fijo */
+  height: auto; /* ✅ que mida lo real (announcement + site-header) */
 }
 
-/* 🔧 React App debajo del header */
+/* 🔧 React App debajo del header
+   Usamos una variable que pondrá el loader del header (con fallback a 85px)
+*/
 #root {
   position: absolute;
-  top: 85px; /* ⬅️ Misma altura que el header */
+  top: var(--external-header-height, 85px); /* ✅ sin hardcode si el loader la define */
   left: 0;
   right: 0;
   bottom: 0;
   overflow: hidden;
-  height: 100%;
+  height: auto;
   display: flex;
   flex-direction: row;
 }
@@ -80,22 +82,11 @@ html, body {
 
 /* 🧪 Header simulado en local */
 body.local-dev #header-container {
-  height: var(--header-offset, 125px);
+  /* si no hay loader, usa fallback (mismo valor que arriba) */
+  height: var(--external-header-height, 85px);
   background: #f8f8f8;
   border-bottom: 1px solid #ddd;
 }
 
-/* 👷 Ajustes cuando se ha cargado el header externo */
-body.header-loaded-local-dev {
-  #root {
-    margin-top: 125px; // ⬅️ Altura del header real
-  }
-
-  .sidebar {
-    padding-top: 16px; // ⬅️ Separación del contenido
-  }
-
-  .map-container {
-    margin-top: 0 !important; // ⬅️ Por si el mapa hereda márgenes
-  }
-}
+/* 🧹 Eliminamos reglas que forzaban 125px y márgenes extra */
+// body.header-loaded-local-dev { ... }  ← ya no es necesario
