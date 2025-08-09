@@ -109,17 +109,21 @@ body.local-dev {
   pointer-events: none;
 }
 
+/* Forzamos ancho compacto y quitamos el icono antes (≡) venga de donde venga */
 .toggle-mobile-view {
   pointer-events: auto;
-  padding: 8px 14px; /* padding horizontal reducido */
+  display: inline-flex !important;   /* evita expandir a 100% */
+  align-items: center;
+  white-space: nowrap;
+  width: auto !important;            /* clave */
+  max-width: fit-content !important; /* clave */
+  padding: 8px 16px;                 /* compacto */
   border-radius: 18px;
   border: 0;
   background: rgba(255, 231, 123, 0.95);
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(0,0,0,.15);
   position: relative;
-  width: auto; /* se ajusta al texto */
-  max-width: fit-content;
 }
 
 .toggle-mobile-view::before {
