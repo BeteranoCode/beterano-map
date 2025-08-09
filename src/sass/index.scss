@@ -101,9 +101,9 @@ body.local-dev {
   position: fixed;
   top: calc(var(--header-offset, 85px) + 8px);
   left: 0;
-  width: 100%;
+  width: 100%; /* ← puedes cambiar a auto o quitar */
   display: flex;
-  justify-content: center;
+  justify-content: center; /* o flex-start si lo quieres a la izquierda */
   background: transparent;
   z-index: 500;
   pointer-events: none;
@@ -118,6 +118,8 @@ body.local-dev {
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(0,0,0,.15);
   position: relative;
+  width: auto; /* ← evita ocupar todo el ancho */
+  max-width: fit-content; /* ← adapta al texto */
 }
 
 .toggle-mobile-view::before {
