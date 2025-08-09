@@ -22,8 +22,14 @@ html, body {
   top: 0;
   left: 0;
   z-index: 9999;
-  height: auto; /* solo alto real */
-  pointer-events: none; /* ← no intercepta el mapa */
+  height: auto !important;       /* solo alto real */
+  max-height: none !important;   /* no forzar altura completa */
+  pointer-events: none;          /* no intercepta el mapa */
+}
+
+/* El header real sí debe permitir clics en sus elementos */
+#header-container * {
+  pointer-events: auto;
 }
 
 /* React App debajo del header */
@@ -71,13 +77,14 @@ html, body {
   position: relative;
   min-width: 0; /* evita colapsos en flex */
   display: flex; /* asegura que el wrapper crezca */
+  z-index: 1;    /* aseguramos que el mapa esté por encima de fondos */
 }
 
 /* 🌍 Leaflet */
 .leaflet-container {
   height: 100% !important;
   width: 100% !important;
-  /* ahora relative (se define en _map.scss) */
+  position: relative; /* controlado también en _map.scss */
 }
 
 /* 🧪 Modo local: variable simulada si no hay header externo */
@@ -87,11 +94,6 @@ body.local-dev #header-container {
 }
 body.local-dev {
   --header-offset: 125px;
-}
-
-/* El header real sí debe permitir clics en sus elementos */
-#header-container * {
-  pointer-events: auto;
 }
 
 /* 📱 Botón móvil flotante */
