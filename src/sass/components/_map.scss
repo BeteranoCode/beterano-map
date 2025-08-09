@@ -1,6 +1,7 @@
 .map-leaflet-wrapper {
-  flex: 1 1 0%;
-  width: 0;
+  /* Que el mapa ocupe todo el espacio disponible */
+  flex: 1 1 auto;
+  width: 100%;
   height: 100%;
   position: relative;
   min-width: 0;
@@ -12,6 +13,7 @@
   }
 }
 
+/* Contenedor real de Leaflet */
 .leaflet-container {
   height: 100% !important;
   width: 100% !important;

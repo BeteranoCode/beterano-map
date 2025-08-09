@@ -60,17 +60,19 @@ html, body {
 
   @media (min-width: 769px) {
     width: 320px;
+    flex: 0 0 320px;
   }
 }
 
 /* 🗺️ Contenedor del mapa */
 .map-container {
-  flex: 1;
+  flex: 1 1 auto;
   height: 100%;
   position: relative;
+  min-width: 0; /* ← evita que el flex-item colapse */
 }
 
-/* 🌍 Leaflet */
+/* 🌍 Leaflet (el <div class="leaflet-container"> del MapContainer) */
 .leaflet-container {
   height: 100% !important;
   width: 100% !important;

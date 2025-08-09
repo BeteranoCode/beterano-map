@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import React, { useEffect, useMemo, useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Iconos por tipo
+/* ─────────────── Icons por tipo ─────────────── */
 const icons = {
   restauradores: new L.Icon({
     iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -42,6 +42,24 @@ const icons = {
   }),
 };
 
+/* ─────────────── Forzar recalculo Leaflet ─────────────── */
+function FixMapSize({ deps = [] }) {
+  const map = useMap();
+
+  useEffect(() => {
+    // Pequeño delay para asegurar layout final
+    const id = setTimeout(() => {
+      map.invalidateSize();
+    }, 200);
+
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map, ...deps]);
+
+  return null;
+}
+
+/* ─────────────── Helpers ─────────────── */
 function renderMarkers(data, icon, popupFields = ["nombre", "ciudad", "pais", "descripcion"], search = "") {
   if (!Array.isArray(data)) return null;
   return data
@@ -57,8 +75,8 @@ function renderMarkers(data, icon, popupFields = ["nombre", "ciudad", "pais", "d
       <Marker
         key={item.nombre || item.id || idx}
         position={[
-          item.coordenadas?.lat || item.lat,
-          item.coordenadas?.lng || item.lng
+          item.coordenadas?.lat ?? item.lat,
+          item.coordenadas?.lng ?? item.lng
         ]}
         icon={icon}
       >
@@ -71,8 +89,15 @@ function renderMarkers(data, icon, popupFields = ["nombre", "ciudad", "pais", "d
     ));
 }
 
+/* ─────────────── Componente principal ─────────────── */
 export default function MapPage({ selectedTribu, search, onDataLoaded }) {
   const [data, setData] = useState([]);
+
+  // ícono memoizado para evitar recrearlo
+  const currentIcon = useMemo(
+    () => icons[selectedTribu] || icons.restauradores,
+    [selectedTribu]
+  );
 
   useEffect(() => {
     fetch(`/beterano-map/data/${selectedTribu}.json`)
@@ -95,23 +120,25 @@ export default function MapPage({ selectedTribu, search, onDataLoaded }) {
         setData([]);
         if (onDataLoaded) onDataLoaded(false);
       });
-  }, [selectedTribu, search]);
-
-  // ⬅️ Forzar repaint del mapa tras cargar layout
-  useEffect(() => {
-    setTimeout(() => {
-      window.dispatchEvent(new Event("resize"));
-    }, 200);
-  }, []);
+  }, [selectedTribu, search, onDataLoaded]);
 
   return (
     <div className="map-leaflet-wrapper">
-      <MapContainer center={[45.0, 5.0]} zoom={5} className="leaflet-container">
+      <MapContainer
+        center={[45.0, 5.0]}
+        zoom={5}
+        className="leaflet-container"
+        style={{ height: "100%", width: "100%" }}
+      >
+        {/* Fuerza el recalculo al montar y cuando cambian tribu/datos/búsqueda */}
+        <FixMapSize deps={[selectedTribu, data.length, search]} />
+
         <TileLayer
-          attribution='&copy; OpenStreetMap contributors'
+          attribution="&copy; OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {renderMarkers(data, icons[selectedTribu] || icons.restauradores, undefined, search)}
+
+        {renderMarkers(data, currentIcon, undefined, search)}
       </MapContainer>
     </div>
   );
