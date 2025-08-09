@@ -18,9 +18,7 @@
     border-right: 1px solid $border-color;
     color: $primary-color;
 
-    &:hover {
-      cursor: pointer;
-    }
+    &:hover { cursor: pointer; }
   }
 
   .toggle__label {
@@ -36,50 +34,31 @@
 
 /* Solo visible en móvil */
 @media (min-width: 769px) {
-  .button-wrapper {
-    display: none;
-  }
+  .button-wrapper { display: none; }
 }
 
-/* Contenedor del botón debajo del header (móvil) */
 .button-wrapper {
   position: fixed;
   top: calc(var(--header-offset, 85px) + 8px);
   left: 0;
   width: 100%;
-  z-index: 500;
-  background: transparent;
-  border-bottom: none;
   display: flex;
-  justify-content: center;
-  pointer-events: none; /* no bloquear mapa alrededor */
-
-  .toggle-mobile-view {
-    pointer-events: auto;
-    /* ✳️ estrecho y centrado */
-    display: inline-flex;
-    align-items: center;
-    width: auto;
-    max-width: fit-content;
-    padding: 8px 16px;
-    border-radius: 18px;
-
-    /* estilo */
-    background: #fcd20b;
-    border: none;
-    font-weight: 600;
-    font-size: 1.1rem;
-    text-align: center;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,.15);
-  }
-
-  .toggle-mobile-view:hover {
-    background: #ffd700;
-  }
-
-  /* ❌ quitar icono pseudo-elemento venga de donde venga */
-  .toggle-mobile-view::before {
-    content: none !important;
-  }
+  justify-content: center;   /* centrado */
+  background: transparent;
+  z-index: 500;
+  pointer-events: none;      /* no bloquea el mapa alrededor */
 }
+
+.toggle-mobile-view {
+  pointer-events: auto;
+  display: inline-flex;      /* evita expandir a 100% */
+  align-items: center;
+  white-space: nowrap;
+  width: auto;               /* se adapta al texto */
+  max-width: fit-content;
+  padding: 8px 16px;         /* compacto */
+  border-radius: 18px;
+  border: 0;
+  background: #fcd20b;
+  font-weight: 600;
+  font-size: 1.1
