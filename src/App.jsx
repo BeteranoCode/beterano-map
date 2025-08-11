@@ -64,9 +64,9 @@ function App() {
   return (
     <>
       {isMobile && (
-        <div className="button-wrapper">
+        <div className="bm-button-wrapper">
           <button
-            className="toggle-mobile-view"
+            className="bm-toggle-mobile"
             onClick={() => setMobileView(mobileView === "map" ? "list" : "map")}
           >
             {mobileView === "map" ? "Mostrar lista" : "Mostrar mapa"}

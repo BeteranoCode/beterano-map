@@ -29,15 +29,17 @@
 }
 
 /* ╔═══════════════════════════════════╗ */
-/* ║ 🎛 BOTÓN TOGGLE MOBILE-VIEW      ║ */
+/* ║ 🎛 BOTÓN TOGGLE MOBILE (AISLADO)  ║ */
 /* ╚═══════════════════════════════════╝ */
+/* NOTA: Sustituye .button-wrapper / .toggle-mobile-view por estas clases
+   para evitar choques con estilos del header externo. */
 
 /* Solo visible en móvil */
 @media (min-width: 769px) {
-  .button-wrapper { display: none; }
+  .bm-button-wrapper { display: none; }
 }
 
-.button-wrapper {
+.bm-button-wrapper {
   position: fixed;
   top: calc(var(--header-offset, 85px) + 8px);
   left: 0;
@@ -49,7 +51,7 @@
   pointer-events: none;      /* no bloquea el mapa alrededor */
 }
 
-.toggle-mobile-view {
+.bm-toggle-mobile {
   pointer-events: auto;
   display: inline-flex;      /* evita expandir a 100% */
   align-items: center;
@@ -67,7 +69,10 @@
   box-shadow: 0 2px 8px rgba(0,0,0,.15);
 }
 
-.toggle-mobile-view:hover { background: #ffd700; }
+.bm-toggle-mobile:hover { background: #ffd700; }
 
-/* ❌ eliminar cualquier pseudo-icono heredado */
-.toggle-mobile-view::before { content: none !important; }
+/* Quitar cualquier pseudo-icono heredado (≡, etc.) */
+.bm-toggle-mobile::before,
+.bm-toggle-mobile::after {
+  content: none !important;
+}
