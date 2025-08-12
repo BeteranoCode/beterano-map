@@ -1,6 +1,12 @@
 @use "../_variables.scss" as *;
 @use "../_mixins.scss" as *;
 
+/* ===== Vars útiles ===== */
+:root {
+  /* Altura del botón + margen de respiro para el contenido debajo */
+  --mobile-toggle-offset: 72px; /* puedes ajustar: 58–80px según veas */
+}
+
 /* ╔════════════════════════════════════╗ */
 /* ║ 🧩 BOTÓN TOGGLE LATERAL (LEGACY)   ║ */
 /* ╚════════════════════════════════════╝ */
@@ -62,17 +68,14 @@
 /* ════════════════════════════════════════ */
 .bm-toggle-mobile,
 .toggle-mobile-view {
-  /* tamaño fijo */
   width: 200px !important;
   height: 46px !important;
 
-  /* layout */
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
   white-space: nowrap;
 
-  /* aspecto */
   padding: 0 16px !important;
   border-radius: 18px;
   border: 0;
@@ -85,9 +88,7 @@
 }
 
 .bm-toggle-mobile:hover,
-.toggle-mobile-view:hover {
-  background: #ffd700;
-}
+.toggle-mobile-view:hover { background: #ffd700; }
 
 /* Quitar cualquier pseudo-icono heredado (≡, etc.) */
 .bm-toggle-mobile::before,
@@ -100,14 +101,12 @@
 
 /* ───────────────────────────────────────────────────────────── */
 /*  OFFSET DEL SIDEBAR EN MÓVIL CUANDO HAY BOTÓN FIJO ENCIMA     */
-/*  (evita superposición). Funciona con clases nuevas y legacy.  */
-/*  Estructura actual:                                          */
+/*  Estructura:                                                  */
 /*  #root > .button-wrapper | .bm-button-wrapper ~ .layout-container .sidebar  */
 /* ───────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .button-wrapper ~ .layout-container .sidebar,
   .bm-button-wrapper ~ .layout-container .sidebar {
-    /* 46px de botón + 12px de respiración */
-    padding-top: 58px;
+    padding-top: var(--mobile-toggle-offset) !important;
   }
 }
