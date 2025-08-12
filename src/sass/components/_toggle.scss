@@ -5,19 +5,8 @@
 /* ║ 🧩 BOTÓN TOGGLE LATERAL (LEGACY)   ║ */
 /* ╚════════════════════════════════════╝ */
 
-/* Oculta clases antiguas que pueden venir de otros bundles */
-.button-wrapper,
-.toggle-mobile-view {
-  display: none !important;
-  visibility: hidden !important;
-}
-
-/* Neutraliza también posibles pseudo-elementos en las clases legacy */
-.toggle-mobile-view::before,
-.toggle-mobile-view::after {
-  content: none !important;
-  display: none !important;
-}
+/* Nota: ya no ocultamos .button-wrapper / .toggle-mobile-view para que,
+   si el bundle viejo aún los usa, podamos darles el mismo estilo y ancho fijo. */
 
 .toggle__btn { display: none; }
 
@@ -70,15 +59,24 @@
   background: transparent;
 }
 
-/* Estilo único del botón */
-.bm-toggle-mobile {
-  pointer-events: auto;
-  display: inline-flex;
+/* ════════════════════════════════════════ */
+/*  Estilo ÚNICO del botón (bm + legacy)   */
+/*  → Opción A: ancho fijo 200×46          */
+/* ════════════════════════════════════════ */
+.bm-toggle-mobile,
+.toggle-mobile-view {
+  /* tamaño fijo */
+  width: 200px !important;
+  height: 46px !important;
+
+  /* layout */
+  display: inline-flex !important;
   align-items: center;
+  justify-content: center;
   white-space: nowrap;
-  width: auto !important;            /* se adapta al texto */
-  max-width: fit-content !important; /* evita 100% */
-  padding: 8px 16px;
+
+  /* aspecto */
+  padding: 0 16px !important;
   border-radius: 18px;
   border: 0;
   background: #fcd20b;
@@ -89,14 +87,16 @@
   box-shadow: 0 2px 8px rgba(0,0,0,.15);
 }
 
-.bm-toggle-mobile:hover { background: #ffd700; }
+.bm-toggle-mobile:hover,
+.toggle-mobile-view:hover {
+  background: #ffd700;
+}
 
-/* Blindaje extra: elimina cualquier pseudo-icono (≡) */
+/* Quitar cualquier pseudo-icono heredado (≡, etc.) */
 .bm-toggle-mobile::before,
+.toggle-mobile-view::before,
 .bm-toggle-mobile::after,
-button.bm-toggle-mobile::before,
-.bm-button-wrapper .bm-toggle-mobile::before,
-.bm-button-inline .bm-toggle-mobile::before {
-  content: "" !important;   /* o none; "" garantiza que no se pinte el glifo */
-  display: none !important; /* por si otro CSS insiste */
+.toggle-mobile-view::after {
+  content: "" !important;
+  display: none !important;
 }
