@@ -4,7 +4,7 @@
 /* ===== Vars útiles ===== */
 :root {
   /* Altura del botón + margen de respiro para el contenido debajo */
-  --mobile-toggle-offset: 72px; /* puedes ajustar: 58–80px según veas */
+  --mobile-toggle-offset: 72px; /* ajusta 58–84px si lo necesitas */
 }
 
 /* ╔════════════════════════════════════╗ */
@@ -100,13 +100,19 @@
 }
 
 /* ───────────────────────────────────────────────────────────── */
-/*  OFFSET DEL SIDEBAR EN MÓVIL CUANDO HAY BOTÓN FIJO ENCIMA     */
-/*  Estructura:                                                  */
-/*  #root > .button-wrapper | .bm-button-wrapper ~ .layout-container .sidebar  */
+/*  OFFSET EN MÓVIL CUANDO HAY BOTÓN FIJO:                      */
+/*  desplazamos la .layout-container completa (no sólo sidebar) */
 /* ───────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
+  /* Si existe el wrapper legacy o el nuevo, empuja el layout hacia abajo */
+  .button-wrapper ~ .layout-container,
+  .bm-button-wrapper ~ .layout-container {
+    padding-top: var(--mobile-toggle-offset) !important;
+  }
+
+  /* Evita doble padding en el propio sidebar si tenía alguno arriba */
   .button-wrapper ~ .layout-container .sidebar,
   .bm-button-wrapper ~ .layout-container .sidebar {
-    padding-top: var(--mobile-toggle-offset) !important;
+    padding-top: 10px; /* su padding “normal” arriba; ajusta si quieres */
   }
 }
