@@ -5,6 +5,11 @@
 /* ║ 🧩 BOTÓN TOGGLE LATERAL (PREEXISTENTE) ║ */
 /* ╚════════════════════════════════════╝ */
 
+/* Oculta clases antiguas que pisan estilos (por si vienen de otro bundle) */
+.button-wrapper,
+.toggle-mobile-view {
+  display: none !important;
+}
 .toggle__btn {
   display: none;
 }

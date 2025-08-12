@@ -2,9 +2,12 @@
 /* ✅ IMPORTACIÓN MODERNA */
 @use "./_mixins.scss" as *;
 @use "./_variables.scss" as *;
+/* ⚠️ Legacy/paquete general primero, NUNCA al final */
 @use "./components/_components.scss" as *;
-@use "./components/_map.scss" as *;
+/* Luego nuestros componentes específicos que DEBEN ganar */
 @use "./components/_sidebar.scss" as *;
+@use "./components/_map.scss" as *;       // ← necesita ir después de _components.scss
+@use "./components/_toggle.scss" as *;    // ← oculta las clases viejas y define bm-*
 
 /* RESET */
 html, body {
