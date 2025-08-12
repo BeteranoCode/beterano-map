@@ -5,9 +5,6 @@
 /* ║ 🧩 BOTÓN TOGGLE LATERAL (LEGACY)   ║ */
 /* ╚════════════════════════════════════╝ */
 
-/* Nota: ya no ocultamos .button-wrapper / .toggle-mobile-view para que,
-   si el bundle viejo aún los usa, podamos darles el mismo estilo y ancho fijo. */
-
 .toggle__btn { display: none; }
 
 @include breakpoint {
@@ -99,4 +96,18 @@
 .toggle-mobile-view::after {
   content: "" !important;
   display: none !important;
+}
+
+/* ───────────────────────────────────────────────────────────── */
+/*  OFFSET DEL SIDEBAR EN MÓVIL CUANDO HAY BOTÓN FIJO ENCIMA     */
+/*  (evita superposición). Funciona con clases nuevas y legacy.  */
+/*  Estructura actual:                                          */
+/*  #root > .button-wrapper | .bm-button-wrapper ~ .layout-container .sidebar  */
+/* ───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .button-wrapper ~ .layout-container .sidebar,
+  .bm-button-wrapper ~ .layout-container .sidebar {
+    /* 46px de botón + 12px de respiración */
+    padding-top: 58px;
+  }
 }
