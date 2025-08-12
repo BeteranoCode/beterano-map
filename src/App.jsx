@@ -59,8 +59,8 @@ function App() {
             <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
               <div className="bm-button-inline">
                 <button
-                  id="bm-toggle"
-                  className="bm-toggle-mobile"
+                  /* id eliminado para no forzar 200px */
+                  className="bm-toggle-mobile toggle-mobile-view"
                   onClick={() => setMobileView("map")}
                   aria-label="Mostrar mapa"
                 >
@@ -79,8 +79,8 @@ function App() {
               {/* Vista MAPA en móvil: botón flotante */}
               <div className="bm-button-wrapper">
                 <button
-                  id="bm-toggle"
-                  className="bm-toggle-mobile"
+                  /* id eliminado para no forzar 200px */
+                  className="bm-toggle-mobile toggle-mobile-view"
                   onClick={() => setMobileView("list")}
                   aria-label="Mostrar lista"
                 >
