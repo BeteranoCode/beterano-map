@@ -3,40 +3,10 @@
 
 /* ===== Vars útiles ===== */
 :root {
-  /* Altura del botón + margen de respiro para el contenido debajo */
-  --mobile-toggle-offset: 72px; /* ajusta 58–84px si lo necesitas */
+  --mobile-toggle-offset: 72px; /* altura del botón + respiración */
 }
 
-/* ╔════════════════════════════════════╗ */
-/* ║ 🧩 BOTÓN TOGGLE LATERAL (LEGACY)   ║ */
-/* ╚════════════════════════════════════╝ */
-
-.toggle__btn { display: none; }
-
-@include breakpoint {
-  .toggle__btn {
-    display: block;
-    padding: 2px 10px 0 10px;
-    position: absolute;
-    height: 30px;
-    border-right: 1px solid $border-color;
-    color: $primary-color;
-
-    &:hover { cursor: pointer; }
-  }
-
-  .toggle__label {
-    display: inline;
-    font-size: 12px;
-    color: $primary-color;
-  }
-}
-
-/* ╔═══════════════════════════════════╗ */
-/* ║ 🎛 BOTÓN TOGGLE MÓVIL AISLADO     ║ */
-/* ╚═══════════════════════════════════╝ */
-
-/* Botón flotante (solo vista MAPA en móvil) */
+/* ===== Botón flotante (móvil, vista mapa) ===== */
 @media (min-width: 769px) { .bm-button-wrapper { display: none; } }
 
 .bm-button-wrapper {
@@ -48,10 +18,10 @@
   justify-content: center;
   background: transparent;
   z-index: 500;
-  pointer-events: none; /* no bloquea clics fuera del botón */
+  pointer-events: none; /* sólo el botón captura eventos */
 }
 
-/* Botón inline (sticky) para vista LISTA en móvil */
+/* ===== Botón inline (móvil, vista lista) ===== */
 .bm-button-inline {
   position: sticky;
   top: calc(var(--header-offset, 85px) + 8px);
@@ -62,57 +32,48 @@
   background: transparent;
 }
 
-/* ════════════════════════════════════════ */
-/*  Estilo ÚNICO del botón (bm + legacy)   */
-/*  → Opción A: ancho fijo 200×46          */
-/* ════════════════════════════════════════ */
+/* ==== Estilo base (por si aún existiera la clase legacy) ==== */
 .bm-toggle-mobile,
 .toggle-mobile-view {
-  width: 200px !important;
-  height: 46px !important;
-
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-
-  padding: 0 16px !important;
-  border-radius: 18px;
-  border: 0;
   background: #fcd20b;
   font-weight: 600;
   font-size: 1.1rem;
-  text-align: center;
-  cursor: pointer;
+  border: 0;
+  border-radius: 18px;
   box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  cursor: pointer;
 }
 
-.bm-toggle-mobile:hover,
-.toggle-mobile-view:hover { background: #ffd700; }
+/* ——— Forzar 200x46 con máxima prioridad (por ID) ——— */
+#bm-toggle,
+.button-wrapper > #bm-toggle,
+.bm-button-wrapper > #bm-toggle,
+.bm-button-inline > #bm-toggle {
+  width: 200px !important;
+  height: 46px !important;
+  flex: 0 0 200px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px !important;
+  white-space: nowrap;
+}
 
-/* Quitar cualquier pseudo-icono heredado (≡, etc.) */
+/* Quitar pseudo-iconos (“≡”) venga de donde venga */
+#bm-toggle::before,
+#bm-toggle::after,
 .bm-toggle-mobile::before,
-.toggle-mobile-view::before,
 .bm-toggle-mobile::after,
+.toggle-mobile-view::before,
 .toggle-mobile-view::after {
   content: "" !important;
   display: none !important;
 }
 
-/* ───────────────────────────────────────────────────────────── */
-/*  OFFSET EN MÓVIL CUANDO HAY BOTÓN FIJO:                      */
-/*  desplazamos la .layout-container completa (no sólo sidebar) */
-/* ───────────────────────────────────────────────────────────── */
+/* ===== Empujar layout bajo el botón fijo en móvil ===== */
 @media (max-width: 768px) {
-  /* Si existe el wrapper legacy o el nuevo, empuja el layout hacia abajo */
-  .button-wrapper ~ .layout-container,
+  /* cuando existe el botón flotante como hermano antes de .layout-container */
   .bm-button-wrapper ~ .layout-container {
     padding-top: var(--mobile-toggle-offset) !important;
-  }
-
-  /* Evita doble padding en el propio sidebar si tenía alguno arriba */
-  .button-wrapper ~ .layout-container .sidebar,
-  .bm-button-wrapper ~ .layout-container .sidebar {
-    padding-top: 10px; /* su padding “normal” arriba; ajusta si quieres */
   }
 }

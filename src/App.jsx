@@ -6,7 +6,7 @@ import MapPage from "./pages/Map";
 function App() {
   const [selectedTribu, setSelectedTribu] = useState("restauradores");
   const [search, setSearch] = useState("");
-  const [mobileView, setMobileView] = useState("map");
+  const [mobileView, setMobileView] = useState("map"); // "map" | "list"
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hasResults, setHasResults] = useState(true);
   const [headerReady, setHeaderReady] = useState(false);
@@ -53,58 +53,69 @@ function App() {
   return (
     <>
       <div className="layout-container">
-        {/* MÓVIL: si estamos en LISTA, pintamos el botón DENTRO del sidebar (no fijo) */}
-        {isMobile && mobileView === "list" ? (
-          <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
-            <div className="bm-button-inline">
-              <button
-                className="bm-toggle-mobile"
-                onClick={() => setMobileView("map")}
-              >
-                Mostrar mapa
-              </button>
-            </div>
-            <Sidebar
-              selectedTribu={selectedTribu}
-              setSelectedTribu={setSelectedTribu}
-              search={search}
-              setSearch={setSearch}
-            />
-          </aside>
+        {/* MÓVIL: si estamos en LISTA, botón inline dentro del sidebar (no tapa la búsqueda) */}
+        {isMobile ? (
+          mobileView === "list" ? (
+            <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
+              <div className="bm-button-inline">
+                <button
+                  id="bm-toggle"
+                  className="bm-toggle-mobile"
+                  onClick={() => setMobileView("map")}
+                  aria-label="Mostrar mapa"
+                >
+                  Mostrar mapa
+                </button>
+              </div>
+              <Sidebar
+                selectedTribu={selectedTribu}
+                setSelectedTribu={setSelectedTribu}
+                search={search}
+                setSearch={setSearch}
+              />
+            </aside>
+          ) : (
+            <>
+              {/* Vista MAPA en móvil: botón flotante */}
+              <div className="bm-button-wrapper">
+                <button
+                  id="bm-toggle"
+                  className="bm-toggle-mobile"
+                  onClick={() => setMobileView("list")}
+                  aria-label="Mostrar lista"
+                >
+                  Mostrar lista
+                </button>
+              </div>
+              <main className="map-container" id="map">
+                <MapPage
+                  selectedTribu={selectedTribu}
+                  search={search}
+                  onDataLoaded={setHasResults}
+                />
+              </main>
+            </>
+          )
         ) : (
-          // Escritorio SIEMPRE o móvil en MAPA: sidebar a la izquierda
-          <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
-            <Sidebar
-              selectedTribu={selectedTribu}
-              setSelectedTribu={setSelectedTribu}
-              search={search}
-              setSearch={setSearch}
-            />
-          </aside>
+          // ESCRITORIO: sidebar + mapa lado a lado
+          <>
+            <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
+              <Sidebar
+                selectedTribu={selectedTribu}
+                setSelectedTribu={setSelectedTribu}
+                search={search}
+                setSearch={setSearch}
+              />
+            </aside>
+            <main className="map-container" id="map">
+              <MapPage
+                selectedTribu={selectedTribu}
+                search={search}
+                onDataLoaded={setHasResults}
+              />
+            </main>
+          </>
         )}
-
-        <main className="map-container" id="map">
-          {/* MÓVIL en MAPA: botón flotante (no se muestra en escritorio) */}
-          {isMobile && mobileView === "map" && (
-            <div className="bm-button-wrapper">
-              <button
-                className="bm-toggle-mobile"
-                onClick={() => setMobileView("list")}
-              >
-                Mostrar lista
-              </button>
-            </div>
-          )}
-
-          {/* El mapa se renderiza siempre en escritorio; en móvil solo cuando toca */}
-          {(!isMobile || mobileView === "map") && (
-            <MapPage
-              selectedTribu={selectedTribu}
-              search={search}
-              onDataLoaded={setHasResults}
-            />
-          )}
-        </main>
       </div>
     </>
   );
