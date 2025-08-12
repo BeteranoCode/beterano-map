@@ -2,12 +2,14 @@
 /* ✅ IMPORTACIÓN MODERNA */
 @use "./_mixins.scss" as *;
 @use "./_variables.scss" as *;
-/* ⚠️ Legacy/paquete general primero, NUNCA al final */
+
+/* ⚠️ Legacy/paquete general primero */
 @use "./components/_components.scss" as *;
-/* Luego nuestros componentes específicos que DEBEN ganar */
+
+/* Luego nuestros componentes que DEBEN ganar */
 @use "./components/_sidebar.scss" as *;
-@use "./components/_map.scss" as *;       // ← necesita ir después de _components.scss
-@use "./components/_toggle.scss" as *;    // ← oculta las clases viejas y define bm-*
+@use "./components/_map.scss" as *;       // wrapper absolute+inset en _map.scss
+@use "./components/_toggle.scss" as *;    // oculta legacy y define bm-*
 
 /* RESET */
 html, body {
@@ -18,7 +20,7 @@ html, body {
   overflow: hidden;
 }
 
-/* 🔝 Header dinámico */
+/* 🔝 Header dinámico (no debe cubrir todo) */
 #header-container {
   width: 100%;
   position: fixed;
@@ -26,26 +28,20 @@ html, body {
   left: 0;
   z-index: 9999;
   height: auto !important;       /* solo alto real */
-  max-height: none !important;   /* no forzar altura completa */
-  pointer-events: none;          /* no intercepta el mapa */
+  max-height: none !important;
+  pointer-events: none;          /* no intercepta el mapa/lista */
 }
-
-/* El header real sí debe permitir clics en sus elementos */
-#header-container * {
-  pointer-events: auto;
-}
+#header-container * { pointer-events: auto; }
 
 /* React App debajo del header */
 #root {
   position: absolute;
   top: var(--header-offset, 85px);
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
+  left: 0; right: 0; bottom: 0;
   height: calc(100% - var(--header-offset, 85px));
   display: flex;
   flex-direction: row;
+  overflow: hidden;
 }
 
 /* Layout principal */
@@ -77,17 +73,17 @@ html, body {
 .map-container {
   flex: 1 1 auto;
   height: 100%;
-  position: relative;
-  min-width: 0; /* evita colapsos en flex */
-  display: flex; /* asegura que el wrapper crezca */
-  z-index: 1;    /* aseguramos que el mapa esté por encima de fondos */
+  position: relative;  /* imprescindible para wrapper absolute */
+  min-width: 0;
+  display: block;      /* evita efectos colaterales de flex padres */
+  z-index: 1;
 }
 
-/* 🌍 Leaflet */
+/* 🌍 Leaflet (el contenedor real lo ajusta _map.scss) */
 .leaflet-container {
   height: 100% !important;
   width: 100% !important;
-  position: relative; /* controlado también en _map.scss */
+  position: relative;
 }
 
 /* 🧪 Modo local: variable simulada si no hay header externo */
@@ -95,8 +91,14 @@ body.local-dev #header-container {
   background: #f8f8f8;
   border-bottom: 1px solid #ddd;
 }
-body.local-dev {
-  --header-offset: 125px;
+body.local-dev { --header-offset: 125px; }
+
+/* 🧭 Centrar navegación en escritorio */
+@media (min-width: 1024px) {
+  #site-header { display: flex; align-items: center; }
+  #site-header .nav-wrapper {
+    margin: 0 auto;                 /* centrado entre logo e iconos */
+    display: flex;
+    justify-content: center;
+  }
 }
-
-
