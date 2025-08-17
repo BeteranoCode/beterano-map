@@ -1,0 +1,16 @@
+{
+  "ui.showMap": "Afficher la carte",
+  "ui.showList": "Afficher la liste",
+  "sidebar.title": "Explorer",
+  "sidebar.searchPlaceholder": "Rechercher par nom, ville ou pays",
+  "filter.restauradores": "Restaurateurs",
+  "filter.gruas": "Dépanneuses",
+  "filter.desguaces": "Casses",
+  "filter.propietarios": "Propriétaires",
+  "filter.abandonos": "Véhicules abandonnés",
+  "filter.rent_tools": "Location d’outils",
+  "filter.rent_space": "Location d’espaces",
+  "filter.rent_service": "Services",
+  "filter.rent_knowledge": "Formation",
+  "filter.shops": "Boutiques"
+}

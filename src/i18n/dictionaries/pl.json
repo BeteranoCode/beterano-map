@@ -1,0 +1,16 @@
+{
+  "ui.showMap": "Pokaż mapę",
+  "ui.showList": "Pokaż listę",
+  "sidebar.title": "Odkrywaj",
+  "sidebar.searchPlaceholder": "Szukaj po nazwie, mieście lub kraju",
+  "filter.restauradores": "Renowatorzy",
+  "filter.gruas": "Holowniki",
+  "filter.desguaces": "Złomowiska",
+  "filter.propietarios": "Właściciele",
+  "filter.abandonos": "Porzucone pojazdy",
+  "filter.rent_tools": "Wypożyczalnia narzędzi",
+  "filter.rent_space": "Wynajem przestrzeni",
+  "filter.rent_service": "Usługi",
+  "filter.rent_knowledge": "Szkolenia",
+  "filter.shops": "Sklepy"
+}

@@ -1,0 +1,16 @@
+{
+  "ui.showMap": "Mostrar mapa",
+  "ui.showList": "Mostrar lista",
+  "sidebar.title": "Explorar",
+  "sidebar.searchPlaceholder": "Buscar por nombre, ciudad o país",
+  "filter.restauradores": "Restauradores",
+  "filter.gruas": "Grúas",
+  "filter.desguaces": "Desguaces",
+  "filter.propietarios": "Propietarios",
+  "filter.abandonos": "Vehículos abandonados",
+  "filter.rent_tools": "Alquiler de herramientas",
+  "filter.rent_space": "Alquiler de espacios",
+  "filter.rent_service": "Servicios",
+  "filter.rent_knowledge": "Formación",
+  "filter.shops": "Tiendas"
+}

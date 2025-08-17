@@ -1,0 +1,16 @@
+{
+  "ui.showMap": "Karte anzeigen",
+  "ui.showList": "Liste anzeigen",
+  "sidebar.title": "Entdecken",
+  "sidebar.searchPlaceholder": "Suche nach Name, Stadt oder Land",
+  "filter.restauradores": "Restauratoren",
+  "filter.gruas": "Abschleppdienste",
+  "filter.desguaces": "Schrottplätze",
+  "filter.propietarios": "Besitzer",
+  "filter.abandonos": "Verlassene Fahrzeuge",
+  "filter.rent_tools": "Werkzeugverleih",
+  "filter.rent_space": "Raumvermietung",
+  "filter.rent_service": "Dienstleistungen",
+  "filter.rent_knowledge": "Schulungen",
+  "filter.shops": "Shops"
+}

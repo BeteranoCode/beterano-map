@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "./components/Sidebar";
 import MapPage from "./pages/Map";
+import { t } from "./i18n";
 
 function App() {
   const [selectedTribu, setSelectedTribu] = useState("restauradores");
@@ -53,18 +54,16 @@ function App() {
   return (
     <>
       <div className="layout-container">
-        {/* MÓVIL: si estamos en LISTA, botón inline dentro del sidebar (no tapa la búsqueda) */}
         {isMobile ? (
           mobileView === "list" ? (
             <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
               <div className="bm-button-inline">
                 <button
-                  /* id eliminado para no forzar 200px */
                   className="bm-toggle-mobile toggle-mobile-view"
                   onClick={() => setMobileView("map")}
-                  aria-label="Mostrar mapa"
+                  aria-label={t("ui.showMap")}
                 >
-                  Mostrar mapa
+                  {t("ui.showMap")}
                 </button>
               </div>
               <Sidebar
@@ -76,15 +75,13 @@ function App() {
             </aside>
           ) : (
             <>
-              {/* Vista MAPA en móvil: botón flotante */}
               <div className="bm-button-wrapper">
                 <button
-                  /* id eliminado para no forzar 200px */
                   className="bm-toggle-mobile toggle-mobile-view"
                   onClick={() => setMobileView("list")}
-                  aria-label="Mostrar lista"
+                  aria-label={t("ui.showList")}
                 >
-                  Mostrar lista
+                  {t("ui.showList")}
                 </button>
               </div>
               <main className="map-container" id="map">
@@ -97,7 +94,6 @@ function App() {
             </>
           )
         ) : (
-          // ESCRITORIO: sidebar + mapa lado a lado
           <>
             <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
               <Sidebar

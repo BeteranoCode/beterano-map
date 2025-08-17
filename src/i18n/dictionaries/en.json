@@ -1,0 +1,16 @@
+{
+  "ui.showMap": "Show map",
+  "ui.showList": "Show list",
+  "sidebar.title": "Explore",
+  "sidebar.searchPlaceholder": "Search by name, city or country",
+  "filter.restauradores": "Restorers",
+  "filter.gruas": "Tow trucks",
+  "filter.desguaces": "Scrapyards",
+  "filter.propietarios": "Owners",
+  "filter.abandonos": "Abandoned vehicles",
+  "filter.rent_tools": "Tool rental",
+  "filter.rent_space": "Space rental",
+  "filter.rent_service": "Services",
+  "filter.rent_knowledge": "Training",
+  "filter.shops": "Shops"
+}

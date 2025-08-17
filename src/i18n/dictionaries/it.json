@@ -1,0 +1,16 @@
+{
+  "ui.showMap": "Mostra mappa",
+  "ui.showList": "Mostra elenco",
+  "sidebar.title": "Esplora",
+  "sidebar.searchPlaceholder": "Cerca per nome, città o paese",
+  "filter.restauradores": "Restauratori",
+  "filter.gruas": "Carri attrezzi",
+  "filter.desguaces": "Sfasciacarrozze",
+  "filter.propietarios": "Proprietari",
+  "filter.abandonos": "Veicoli abbandonati",
+  "filter.rent_tools": "Noleggio attrezzi",
+  "filter.rent_space": "Noleggio spazi",
+  "filter.rent_service": "Servizi",
+  "filter.rent_knowledge": "Formazione",
+  "filter.shops": "Negozi"
+}

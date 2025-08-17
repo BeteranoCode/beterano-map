@@ -1,0 +1,16 @@
+{
+  "ui.showMap": "Kaart tonen",
+  "ui.showList": "Lijst tonen",
+  "sidebar.title": "Verkennen",
+  "sidebar.searchPlaceholder": "Zoek op naam, stad of land",
+  "filter.restauradores": "Restaurateurs",
+  "filter.gruas": "Sleepdiensten",
+  "filter.desguaces": "Sloopbedrijven",
+  "filter.propietarios": "Eigenaren",
+  "filter.abandonos": "Achtergelaten voertuigen",
+  "filter.rent_tools": "Gereedschap verhuur",
+  "filter.rent_space": "Ruimte verhuur",
+  "filter.rent_service": "Diensten",
+  "filter.rent_knowledge": "Training",
+  "filter.shops": "Winkels"
+}
