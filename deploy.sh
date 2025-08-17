@@ -1,86 +1,132 @@
 #!/bin/bash
 set -e
 
-# === Config ===
-REQUIRED_BRANCH="main"
+# =========================================
+# Config
+# =========================================
+TARGET_BRANCH="main"  # por defecto
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --branch)
+      TARGET_BRANCH="$2"; shift 2;;
+    *)
+      echo "Uso: bash deploy.sh [--branch main|dev]"; exit 1;;
+  esac
+done
 
-# 🧭 Asegura que estamos en un repo git
-git rev-parse --is-inside-work-tree > /dev/null 2>&1 || {
-  echo "❌ ERROR: Ejecuta dentro de un repositorio Git."; exit 1;
+# =========================================
+# Helpers
+# =========================================
+die(){ echo "❌ $1"; exit 1; }
+info(){ echo "👉 $1"; }
+
+require_clean_tree(){
+  git diff --quiet || die "Tienes cambios sin commit (working tree)."
+  git diff --cached --quiet || die "Tienes cambios indexados sin commit."
 }
 
-# 🧭 Verifica rama actual
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-if [ "$CURRENT_BRANCH" != "$REQUIRED_BRANCH" ]; then
-  echo "❌ Estás en '$CURRENT_BRANCH'. Cambia a '$REQUIRED_BRANCH' antes de desplegar."
-  exit 1
-fi
+is_inside_git || true
+is_inside_git(){
+  git rev-parse --is-inside-work-tree > /dev/null 2>&1
+}
 
-# 💾 Verifica árbol limpio
-if ! git diff --quiet || ! git diff --cached --quiet; then
-  echo "⚠️ Tienes cambios sin commitear. Haz commit o stash antes del deploy."
-  exit 1
-fi
+is_submodule(){
+  # Devuelve 0 si estamos dentro de un submódulo (hay superproyecto)
+  [[ -n "$(git rev-parse --show-superproject-working-tree 2>/dev/null || true)" ]]
+}
 
-# 🔄 Asegura última versión
-echo "⬇️ Pull de '$REQUIRED_BRANCH'…"
-git pull --rebase origin "$REQUIRED_BRANCH"
+submodule_path(){
+  # Deriva la ruta del submódulo dentro del superproyecto a partir de .git dir
+  # .git/modules/<ruta/submodulo>
+  local gd
+  gd="$(git rev-parse --git-dir)" || return 1
+  echo "$gd" | sed -E 's#.git/modules/(.*)#\1#'
+}
 
-# 📦 Dependencias
+# =========================================
+# Checks iniciales
+# =========================================
+is_inside_git || die "Ejecuta dentro de un repo Git."
+
+CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+[[ "$CURRENT_BRANCH" == "$TARGET_BRANCH" ]] || die "Estás en '$CURRENT_BRANCH'. Cambia a '$TARGET_BRANCH' (git checkout $TARGET_BRANCH)."
+
+require_clean_tree
+
+info "Sincronizando '$TARGET_BRANCH'…"
+git pull --rebase origin "$TARGET_BRANCH"
+
+# =========================================
+# Dependencias y build
+# =========================================
 if [ ! -d "node_modules" ]; then
-  echo "📦 Instalando dependencias…"
+  info "Instalando dependencias…"
   npm ci || npm install
 fi
 
-# ✅ Vite disponible
 npx --no vite --version > /dev/null 2>&1 || {
-  echo "❌ Vite no disponible. Reinstalando deps…"
   rm -rf node_modules package-lock.json
   npm ci || npm install
 }
 
-# 🛠️ Build
-echo "🔧 Compilando…"
-npm run build || { echo "❌ Falló la compilación"; exit 1; }
+info "Compilando…"
+npm run build || die "Falló la compilación"
 
-# 📁 Verificación de dist
-[ -d "dist" ] || { echo "❌ No existe 'dist/'."; exit 1; }
-if [ -z "$(ls -A dist)" ]; then
-  echo "⚠️ 'dist/' está vacía. Continuo, pero no habrá cambios visibles."
-fi
+[ -d dist ] || die "No existe 'dist/'"
+[ -f dist/index.html ] || die "No existe 'dist/index.html'"
 
-# 🌐 SPA 404 + nojekyll
-cp dist/index.html dist/404.html 2>/dev/null || true
+cp dist/index.html dist/404.html || true
 touch dist/.nojekyll
 
-# (Opcional) CNAME desde archivo o variable de entorno
-if [ -n "$CNAME_DOMAIN" ]; then
-  echo "$CNAME_DOMAIN" > dist/CNAME
-elif [ -f "CNAME" ]; then
-  cp CNAME dist/CNAME
-fi
-
-# 🔄 Limpia rama temporal
+# =========================================
+# Deploy a gh-pages (del propio beterano-map)
+# =========================================
+# Rama temporal limpia
 git show-ref --verify --quiet refs/heads/deploy-temp && git branch -D deploy-temp
-
-# 🪄 Rama temporal
-echo "🔀 Creando rama 'deploy-temp'…"
 git checkout -b deploy-temp
 
-# 🧹 Elimina todo del árbol de trabajo
+# vaciar árbol y copiar dist
 git rm -rf . > /dev/null 2>&1 || true
-
-# 📤 Copia build
 cp -r dist/* ./
 
-# 📤 Commit + push forzado a gh-pages
 git add .
-git commit -m "🚀 Deploy automático desde dist"
+git commit -m "🚀 Deploy automático desde dist ($TARGET_BRANCH)"
 git push -f origin deploy-temp:gh-pages
 
-# 🔙 Regresa a main y limpia
-echo "🔄 Volviendo a '$REQUIRED_BRANCH'…"
-git checkout "$REQUIRED_BRANCH"
+git checkout "$TARGET_BRANCH"
 git branch -D deploy-temp || true
+info "✅ Deploy en gh-pages de beterano-map completado."
 
-echo "✅ Deploy completado con éxito en 'gh-pages'."
+# =========================================
+# Si estamos dentro de un superproyecto (beterano-web),
+# actualizamos el puntero del submódulo a este commit.
+# =========================================
+if is_submodule; then
+  SUPER_ROOT="$(git rev-parse --show-superproject-working-tree)"
+  SUB_PATH="$(submodule_path)"
+  THIS_SHA="$(git rev-parse --short HEAD)"
+
+  if [[ -n "$SUPER_ROOT" && -n "$SUB_PATH" ]]; then
+    info "Detectado superproyecto en: $SUPER_ROOT"
+    info "Ruta del submódulo: $SUB_PATH"
+    pushd "$SUPER_ROOT" > /dev/null
+
+      # Nos aseguramos de estar en la rama por defecto del superproyecto
+      SUPER_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+      info "Superproyecto en rama '$SUPER_BRANCH'."
+      require_clean_tree
+
+      # Añadimos el cambio del puntero del submódulo
+      git add "$SUB_PATH"
+      if git commit -m "chore(submodule): bump beterano-map to $THIS_SHA ($TARGET_BRANCH)"; then
+        git push origin "$SUPER_BRANCH"
+        info "✅ Actualizado submódulo en superproyecto y pusheado."
+      else
+        info "ℹ️ No hubo cambios de puntero que commitear en superproyecto."
+      fi
+
+    popd > /dev/null
+  fi
+fi
+
+info "🎉 Proceso finalizado."
