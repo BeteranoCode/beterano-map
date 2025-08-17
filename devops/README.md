@@ -244,43 +244,41 @@ bash deploy_web.sh
 
 
 ## 10) Diagrama de flujo
+
+
+```mermaid
 flowchart TD
-    A([Inicio]) --> B{¿Qué repo vas a tocar?}
+  A([Inicio]) --> B{¿Qué repo vas a tocar?}
 
-    %% ─────────────────────────────────
-    %% RUTA: beterano-map (desarrollo local)
-    %% ─────────────────────────────────
-    B -->|beterano-map| C{¿Estás en rama dev?}
-    C -->|No| C1[git checkout dev] --> D
-    C -->|Sí| D[./devops/dev-preview.sh\n(build + preview local)]
-    D --> E{¿Se ve OK en preview?}
-    E -->|No| F[Itera: edita código y vuelve a ejecutar\n ./devops/dev-preview.sh] --> D
-    E -->|Sí| G{¿Quieres publicar STAGING?}
-    G -->|Sí (automático)| H[./devops/publish-staging.sh\nCommit dev → Merge main → deploy.sh]
-    G -->|Sí (manual)| H2[Commit en dev → Push\nMerge dev→main → Push\nbash deploy.sh --branch main]
-    G -->|No| Z1[Deja cambios en dev o sólo merge a main] --> Z
+  %% ───── beterano-map (desarrollo local) ─────
+  B -->|beterano-map| C{¿Estás en rama dev?}
+  C -->|No| C1[git checkout dev] --> D[./devops/dev-preview.sh]
+  C -->|Sí| D
+  D --> E{¿Se ve OK en preview?}
+  E -->|No| D
+  E -->|Sí| G{¿Publicar STAGING?}
+  G -->|Sí (automático)| H[./devops/publish-staging.sh]
+  G -->|Sí (manual)| H2[Commit en dev → Merge dev→main → bash deploy.sh --branch main]
+  G -->|No| Z[Fin]
 
-    H --> I{¿Publicar PRODUCCIÓN?}
-    H2 --> I
-    I -->|Sí| J[Ir a repo: beterano-web]
-    J --> K[Actualizar submódulo beterano-map a main:\n git pull\n git submodule update --init --recursive\n git submodule update --remote --merge submodules/beterano-map\n git add submodules/beterano-map\n git commit -m 'chore(submodule): bump beterano-map'\n git push]
-    K --> L[bash deploy_web.sh\n(publica gh-pages de beterano-web)]
-    I -->|No| Z[Fin]
+  H --> I{¿Publicar PRODUCCIÓN?}
+  H2 --> I
+  I -->|Sí| J[Repo: beterano-web]
+  J --> K[Actualizar submódulo beterano-map a main]
+  K --> L[deploy_web.sh (gh-pages de beterano-web)]
+  I -->|No| Z
 
-    %% ─────────────────────────────────
-    %% RUTA: beterano-web (submódulo abierto)
-    %% ─────────────────────────────────
-    B -->|beterano-web (submódulo abierto)| M[Estás en beterano-web/submodules/beterano-map]
-    M --> N{¿Quieres STAGING?}
-    N -->|Sí| O[./devops/publish-staging.sh\n(o bash deploy.sh --branch main)\n➜ además hace bump del submódulo en beterano-web]
-    O --> I
-    N -->|No| Z
+  %% ───── beterano-web (submódulo abierto) ─────
+  B -->|beterano-web (submódulo)| M[en submodules/beterano-map/]
+  M --> N{¿STAGING?}
+  N -->|Sí| O[bash deploy.sh --branch main (hace bump del submódulo)]
+  O --> I
+  N -->|No| Z
 
-    %% ─────────────────────────────────
-    %% RUTA: beterano-web-header (CDN del header)
-    %% ─────────────────────────────────
-    B -->|beterano-web-header| P[Trabaja y publica su gh-pages]
-    P --> Q[Rompe caché en consumidores:\n sube ?v= en la URL del header-loader]
-    Q --> R{¿El consumidor es beterano-map?}
-    R -->|Sí| S[Actualiza el loader en index.html\n y, si procede, repite STAGING/PROD]
-    R -->|No| Z
+  %% ───── beterano-web-header (CDN) ─────
+  B -->|beterano-web-header| P[Publica su gh-pages]
+  P --> Q[Rompe caché con ?v= en loader]
+  Q --> R{¿Consumidor = beterano-map?}
+  R -->|Sí| S[Actualiza loader y repite STAGING/PROD]
+  R -->|No| Z
+```
