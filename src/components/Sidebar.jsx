@@ -1,5 +1,5 @@
 // src/components/Sidebar.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { t } from "@/i18n";
 
 // Lista de tribus por clave (los labels salen del diccionario i18n)
@@ -35,6 +35,14 @@ const DATA_MAP = {
 };
 
 export default function Sidebar({ selectedTribu, setSelectedTribu, search, setSearch }) {
+  // 🔁 Forzar re-render cuando cambia el idioma global
+  const [, force] = useState(0);
+  useEffect(() => {
+    const onLang = () => force((x) => x + 1);
+    window.addEventListener("btr:langchange", onLang);
+    return () => window.removeEventListener("btr:langchange", onLang);
+  }, []);
+
   const data = DATA_MAP[selectedTribu] || [];
 
   // Búsqueda rápida (igual que en el mapa)
@@ -93,7 +101,9 @@ export default function Sidebar({ selectedTribu, setSelectedTribu, search, setSe
             background: "#fff",
             boxShadow: "0 1px 6px #0001"
           }}>
-            <div style={{ fontWeight: 600, fontSize: 16 }}>{item.nombre || item.titulo || t("sidebar.unnamed")}</div>
+            <div style={{ fontWeight: 600, fontSize: 16 }}>
+              {item.nombre || item.titulo || t("sidebar.unnamed")}
+            </div>
             <div style={{ fontSize: 13, color: "#666" }}>
               {item.ciudad && <>{item.ciudad}, </>}
               {item.pais}
