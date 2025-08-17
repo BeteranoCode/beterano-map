@@ -247,37 +247,45 @@ bash deploy_web.sh
 
 ```mermaid
 flowchart TD
-  A([Inicio]) --> B{¿Qué repo?}
+  A([Inicio]) --> B{¿Qué repositorio?}
 
-  %% ───── beterano-map (desarrollo local) ─────
-  B -->|beterano-map| C{¿Rama dev?}
-  C -->|No| C1[git checkout dev] --> D[./devops/dev-preview.sh<br/>build + preview]
-  C -->|Sí| D
-  D --> E{¿OK en preview?}
-  E -->|No| D
-  E -->|Sí| G{¿Publicar STAGING?}
-  G -->|Automático| H[./devops/publish-staging.sh<br/>commit en dev + merge a main + deploy]
-  G -->|Manual| H2[commit en dev + push<br/>merge dev->main + push<br/>bash deploy.sh --branch main]
-  G -->|No| Z[Fin / dejar en dev o solo merge a main]
+  %% ───────── beterano-map (flujo local → staging) ─────────
+  subgraph M[beterano-map]
+    B -->|beterano-map| C{¿En rama dev?}
+    C -->|No| C1[checkout dev] --> D[iniciar dev-preview.sh]
+    C -->|Sí| D
+    D --> E{¿Preview OK?}
+    E -->|No| D
+    E -->|Sí| F{¿Publicar STAGING?}
+    F -->|Automático| G[usar publish-staging.sh]
+    F -->|Manual| G2[commit en dev → merge a main → deploy]
+    G --> H{¿Publicar PRODUCCIÓN?}
+    G2 --> H
+  end
 
-  H --> I{¿Publicar PRODUCCIÓN?}
-  H2 --> I
-  I -->|Sí| J[Repo: beterano-web]
-  J --> K[Actualizar submódulo beterano-map a main<br/>git pull<br/>git submodule update --init --recursive<br/>git submodule update --remote --merge submodules/beterano-map<br/>git add submodules/beterano-map<br/>git commit -m &quot;chore(submodule): bump beterano-map&quot;<br/>git push]
-  K --> L[deploy_web.sh<br/>publica gh-pages de beterano-web]
-  I -->|No| Z
+  %% ───────── beterano-web (producción) ─────────
+  subgraph W[beterano-web]
+    H -->|Sí| I[actualizar submódulo beterano-map]
+    I --> J[deploy de beterano-web a gh-pages]
+  end
 
-  %% ───── beterano-web (submódulo abierto) ─────
-  B -->|beterano-web (submódulo)| M[en submodules/beterano-map/]
-  M --> N{¿STAGING?}
-  N -->|Sí| O[bash deploy.sh --branch main<br/>actualiza puntero del submódulo]
-  O --> I
-  N -->|No| Z
+  H -->|No| Z[Fin]
 
-  %% ───── beterano-web-header (CDN) ─────
-  B -->|beterano-web-header| P[Publica su gh-pages]
-  P --> Q[Romper caché en consumidores<br/>subir ?v= en loader]
-  Q --> R{¿Consumidor = beterano-map?}
-  R -->|Sí| S[Actualizar loader en index.html<br/>repetir STAGING/PROD]
-  R -->|No| Z
+  %% ───────── beterano-web (submódulo abierto) ─────────
+  subgraph S[beterano-web (submódulo)]
+    B -->|beterano-web (submódulo)| S1[abrir submodules/beterano-map]
+    S1 --> S2{¿Publicar STAGING?}
+    S2 -->|Sí| S3[ejecutar deploy (branch main)]
+    S3 --> H
+    S2 -->|No| Z
+  end
+
+  %% ───────── beterano-web-header (CDN del header) ─────────
+  subgraph Hdr[beterano-web-header]
+    B -->|beterano-web-header| H1[publicar header]
+    H1 --> H2[actualizar versión en loader (?v=)]
+    H2 --> H3{¿Consumidor es beterano-map?}
+    H3 -->|Sí| H4[actualizar loader y repetir staging/prod]
+    H3 -->|No| Z
+  end
 ```
