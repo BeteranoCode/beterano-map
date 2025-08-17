@@ -1,77 +1,86 @@
 #!/bin/bash
 set -e
 
-# 📍 Verificar si estamos dentro de un repositorio Git
-if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-  echo "❌ ERROR: Este script debe ejecutarse dentro de un repositorio Git."
+# === Config ===
+REQUIRED_BRANCH="main"
+
+# 🧭 Asegura que estamos en un repo git
+git rev-parse --is-inside-work-tree > /dev/null 2>&1 || {
+  echo "❌ ERROR: Ejecuta dentro de un repositorio Git."; exit 1;
+}
+
+# 🧭 Verifica rama actual
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [ "$CURRENT_BRANCH" != "$REQUIRED_BRANCH" ]; then
+  echo "❌ Estás en '$CURRENT_BRANCH'. Cambia a '$REQUIRED_BRANCH' antes de desplegar."
   exit 1
 fi
 
-# 📍 Verificar si hay cambios sin guardar
+# 💾 Verifica árbol limpio
 if ! git diff --quiet || ! git diff --cached --quiet; then
-  echo "⚠️ Tienes cambios sin guardar. Por favor haz commit o stash antes de hacer deploy."
+  echo "⚠️ Tienes cambios sin commitear. Haz commit o stash antes del deploy."
   exit 1
 fi
 
-# 📦 Verificar si node_modules existe
+# 🔄 Asegura última versión
+echo "⬇️ Pull de '$REQUIRED_BRANCH'…"
+git pull --rebase origin "$REQUIRED_BRANCH"
+
+# 📦 Dependencias
 if [ ! -d "node_modules" ]; then
-  echo "📦 node_modules no encontrado. Ejecutando npm install..."
-  npm install || {
-    echo "⚠️ npm install falló. Intentando limpieza profunda..."
-    rm -rf node_modules package-lock.json
-    npm install || { echo "❌ npm install falló incluso tras limpiar. Revisa manualmente."; exit 1; }
-  }
+  echo "📦 Instalando dependencias…"
+  npm ci || npm install
 fi
 
-# ✅ Verificar si vite está disponible
-if ! npx --no vite --version > /dev/null 2>&1; then
-  echo "❌ Vite no está instalado o hay un error en node_modules. Intentando reparar..."
+# ✅ Vite disponible
+npx --no vite --version > /dev/null 2>&1 || {
+  echo "❌ Vite no disponible. Reinstalando deps…"
   rm -rf node_modules package-lock.json
-  npm install || { echo "❌ npm install falló. Revisa tu package.json"; exit 1; }
-fi
+  npm ci || npm install
+}
 
-# 🛠️ Compilar el proyecto
-echo "🔧 Compilando el proyecto..."
+# 🛠️ Build
+echo "🔧 Compilando…"
 npm run build || { echo "❌ Falló la compilación"; exit 1; }
 
-# 📁 Verificar carpeta dist/
-if [ ! -d "dist" ]; then
-  echo "❌ ERROR: No existe la carpeta dist/. Ejecuta 'npm run build' antes del deploy."
-  exit 1
-fi
-
-# ⚠️ Advertir si dist/ está vacía
+# 📁 Verificación de dist
+[ -d "dist" ] || { echo "❌ No existe 'dist/'."; exit 1; }
 if [ -z "$(ls -A dist)" ]; then
-  echo "⚠️ ADVERTENCIA: La carpeta dist/ está vacía. El deploy no copiará nada."
+  echo "⚠️ 'dist/' está vacía. Continuo, pero no habrá cambios visibles."
 fi
 
-# 🔄 Borrar rama 'deploy-temp' si existe
-if git show-ref --verify --quiet refs/heads/deploy-temp; then
-  echo "🧹 Borrando rama existente 'deploy-temp'..."
-  git branch -D deploy-temp
+# 🌐 SPA 404 + nojekyll
+cp dist/index.html dist/404.html 2>/dev/null || true
+touch dist/.nojekyll
+
+# (Opcional) CNAME desde archivo o variable de entorno
+if [ -n "$CNAME_DOMAIN" ]; then
+  echo "$CNAME_DOMAIN" > dist/CNAME
+elif [ -f "CNAME" ]; then
+  cp CNAME dist/CNAME
 fi
 
-# 🪄 Crear rama temporal de trabajo
-echo "🔀 Creando rama temporal 'deploy-temp'..."
+# 🔄 Limpia rama temporal
+git show-ref --verify --quiet refs/heads/deploy-temp && git branch -D deploy-temp
+
+# 🪄 Rama temporal
+echo "🔀 Creando rama 'deploy-temp'…"
 git checkout -b deploy-temp
 
-# 🧹 Limpiar contenido del repositorio
-git rm -rf . > /dev/null 2>&1
+# 🧹 Elimina todo del árbol de trabajo
+git rm -rf . > /dev/null 2>&1 || true
 
-# 📂 Copiar archivos desde dist
+# 📤 Copia build
 cp -r dist/* ./
 
-# 📤 Commit y push a gh-pages
+# 📤 Commit + push forzado a gh-pages
 git add .
 git commit -m "🚀 Deploy automático desde dist"
 git push -f origin deploy-temp:gh-pages
 
-# 🔄 Volver a la rama main
-echo "🔄 Volviendo a la rama main..."
-git checkout main
+# 🔙 Regresa a main y limpia
+echo "🔄 Volviendo a '$REQUIRED_BRANCH'…"
+git checkout "$REQUIRED_BRANCH"
+git branch -D deploy-temp || true
 
-# 🗑️ Borrar rama temporal
-echo "🗑️ Borrando rama 'deploy-temp'..."
-git branch -D deploy-temp
-
-echo "✅ Deploy completado con éxito."
+echo "✅ Deploy completado con éxito en 'gh-pages'."
