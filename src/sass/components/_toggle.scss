@@ -7,8 +7,8 @@
 }
 
 /* ===== Botón flotante (móvil, vista mapa) ===== */
-@media (min-width: 769px) { 
-  .bm-button-wrapper { display: none; } 
+@media (min-width: 769px) {
+  .bm-button-wrapper { display: none; }
 }
 
 .bm-button-wrapper {
@@ -27,9 +27,10 @@
 }
 
 /* ===== Botón inline (móvil, vista lista) ===== */
+/* ⬅️ IMPORTANTE: top relativo al contenedor con scroll (sidebar), NO al header */
 .bm-button-inline {
   position: sticky;
-  top: calc(var(--header-offset, 85px) + 8px);
+  top: 8px;               /* antes: calc(var(--header-offset, 85px) + 8px) */
   z-index: 2;
   display: flex;
   justify-content: center;
@@ -98,11 +99,9 @@
     padding-top: var(--mobile-toggle-offset) !important;
   }
 
-  /* ✅ vista lista: reservar espacio bajo el botón inline
+  /* vista lista: reservar espacio bajo el botón inline
      para que buscador + tribus empiecen debajo */
-  .sidebar {
-    position: relative;
-  }
+  .sidebar { position: relative; }
   .sidebar .sidebar__inner {
     padding-top: var(--mobile-toggle-offset);
   }
