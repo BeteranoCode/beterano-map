@@ -3,14 +3,18 @@
   "ui.showList": "Lijst tonen",
   "sidebar.title": "Verkennen",
   "sidebar.searchPlaceholder": "Zoek op naam, stad of land",
+  "sidebar.noResults": "Geen resultaten.",
+  "sidebar.unnamed": "Naamloos",
+
   "filter.restauradores": "Restaurateurs",
   "filter.gruas": "Sleepdiensten",
   "filter.desguaces": "Sloopbedrijven",
-  "filter.propietarios": "Eigenaren",
   "filter.abandonos": "Achtergelaten voertuigen",
-  "filter.rent_tools": "Gereedschap verhuur",
+  "filter.propietarios": "Eigenaren",
+  "filter.rent_knowledge": "Kennis verhuur",
+  "filter.rent_service": "Dienst verhuur",
   "filter.rent_space": "Ruimte verhuur",
-  "filter.rent_service": "Diensten",
-  "filter.rent_knowledge": "Training",
+  "filter.rent_tools": "Gereedschap verhuur",
   "filter.shops": "Winkels"
 }
+
