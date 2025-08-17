@@ -8,7 +8,7 @@
 
 /* Luego nuestros componentes que DEBEN ganar */
 @use "./components/_sidebar.scss" as *;
-@use "./components/_map.scss" as *;       // wrapper absolute+inset en _map.scss
+@use "./components/_map.scss" as *;       // puede definir estilos adicionales
 @use "./components/_toggle.scss" as *;    // oculta legacy y define bm-*
 
 /* RESET */
@@ -29,16 +29,16 @@ html, body {
   z-index: 9999;
   height: auto !important;       /* solo alto real */
   max-height: none !important;
-  pointer-events: none;          /* no intercepta el mapa/lista */
+  pointer-events: none;           /* no intercepta el mapa/lista */
 }
 #header-container * { pointer-events: auto; }
 
-/* React App debajo del header */
+/* ✅ React App DEBAJO del header (sin absolute) */
 #root {
-  position: absolute;
-  top: var(--header-offset, 85px);
-  left: 0; right: 0; bottom: 0;
-  height: calc(100% - var(--header-offset, 85px));
+  position: relative;
+  margin-top: var(--header-offset, 96px);
+  height: calc(100% - var(--header-offset, 96px));
+  width: 100%;
   display: flex;
   flex-direction: row;
   overflow: hidden;
@@ -73,17 +73,26 @@ html, body {
 .map-container {
   flex: 1 1 auto;
   height: 100%;
-  position: relative;  /* imprescindible para wrapper absolute */
+  position: relative;  /* padre del wrapper absolute */
   min-width: 0;
-  display: block;      /* evita efectos colaterales de flex padres */
+  display: block;
   z-index: 1;
 }
 
-/* 🌍 Leaflet (el contenedor real lo ajusta _map.scss) */
+/* 🔧 Wrapper del mapa (el que ves en DevTools con 0x1011) */
+.map-leaflet-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* 🌍 Leaflet: ocupa todo el espacio del wrapper */
 .leaflet-container {
-  height: 100% !important;
+  position: absolute;
+  inset: 0;
   width: 100% !important;
-  position: relative;
+  height: 100% !important;
 }
 
 /* 🧪 Modo local: variable simulada si no hay header externo */
