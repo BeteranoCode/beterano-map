@@ -1,4 +1,5 @@
 @use "sass:math";
+
 /* ✅ IMPORTACIÓN MODERNA */
 @use "./_mixins.scss" as *;
 @use "./_variables.scss" as *;
@@ -6,10 +7,11 @@
 /* ⚠️ Legacy/paquete general primero */
 @use "./components/_components.scss" as *;
 
-/* Luego nuestros componentes que DEBEN ganar */
+/* Nuestros componentes que deben ganar */
 @use "./components/_sidebar.scss" as *;
-@use "./components/_map.scss" as *;       // puede definir estilos adicionales
-@use "./components/_toggle.scss" as *;    // oculta legacy y define bm-*
+@use "./components/_map.scss" as *;
+@use "./components/_toggle.scss" as *;
+@use "./components/_panel.scss" as *;   /* estilos del modal */
 
 /* RESET */
 html, body {
@@ -20,20 +22,19 @@ html, body {
   overflow: hidden;
 }
 
-/* 🔝 Header dinámico (no debe cubrir todo) */
+/* 🔝 Header dinámico */
 #header-container {
   width: 100%;
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   z-index: 9999;
-  height: auto !important;       /* solo alto real */
+  height: auto !important;
   max-height: none !important;
-  pointer-events: none;           /* no intercepta el mapa/lista */
+  pointer-events: none;
 }
 #header-container * { pointer-events: auto; }
 
-/* ✅ React App DEBAJO del header (sin absolute) */
+/* React App debajo del header */
 #root {
   position: relative;
   margin-top: var(--header-offset, 96px);
@@ -44,7 +45,7 @@ html, body {
   overflow: hidden;
 }
 
-/* Layout principal */
+/* Layout principal (flex: sidebar + mapa) */
 .layout-container {
   display: flex;
   height: 100%;
@@ -57,29 +58,17 @@ html, body {
   }
 }
 
-/* 📑 Sidebar */
-.sidebar {
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
-
-  @media (min-width: 769px) {
-    width: 320px;
-    flex: 0 0 320px;
-  }
-}
-
 /* 🗺️ Contenedor del mapa */
 .map-container {
   flex: 1 1 auto;
   height: 100%;
-  position: relative;  /* padre del wrapper absolute */
+  position: relative;
   min-width: 0;
   display: block;
   z-index: 1;
 }
 
-/* 🔧 Wrapper del mapa (el que ves en DevTools con 0x1011) */
+/* Wrapper del mapa (absoluto dentro del contenedor) */
 .map-leaflet-wrapper {
   position: absolute;
   inset: 0;
@@ -87,7 +76,7 @@ html, body {
   height: 100%;
 }
 
-/* 🌍 Leaflet: ocupa todo el espacio del wrapper */
+/* Leaflet ocupa todo */
 .leaflet-container {
   position: absolute;
   inset: 0;
@@ -95,18 +84,15 @@ html, body {
   height: 100% !important;
 }
 
-/* 🧪 Modo local: variable simulada si no hay header externo */
-body.local-dev #header-container {
-  background: #f8f8f8;
-  border-bottom: 1px solid #ddd;
-}
+/* Modo local: offset simulado si no hay header */
+body.local-dev #header-container { background: #f8f8f8; border-bottom: 1px solid #ddd; }
 body.local-dev { --header-offset: 125px; }
 
-/* 🧭 Centrar navegación en escritorio */
+/* 🧭 Centrar navegación en escritorio (header externo) */
 @media (min-width: 1024px) {
   #site-header { display: flex; align-items: center; }
   #site-header .nav-wrapper {
-    margin: 0 auto;                 /* centrado entre logo e iconos */
+    margin: 0 auto;
     display: flex;
     justify-content: center;
   }
