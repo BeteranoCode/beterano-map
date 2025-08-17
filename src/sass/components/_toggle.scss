@@ -93,18 +93,17 @@
     flex: 0 0 auto;
   }
 
-  /* cuando existe el botón flotante como hermano antes de .layout-container (vista mapa) */
+  /* vista mapa: el botón flotante deja espacio arriba */
   .bm-button-wrapper ~ .layout-container {
     padding-top: var(--mobile-toggle-offset) !important;
   }
 
-  /* ✅ FIX: vista lista — reservar espacio bajo el botón inline
-     para que el contenido (search + tribus + cards) empiece debajo */
+  /* ✅ vista lista: reservar espacio bajo el botón inline
+     para que buscador + tribus empiecen debajo */
   .sidebar {
     position: relative;
   }
-  .sidebar .bm-button-inline + .sidebar__inner {
-    /* igual que el offset del botón móvil */
+  .sidebar .sidebar__inner {
     padding-top: var(--mobile-toggle-offset);
   }
 }
