@@ -3,11 +3,13 @@
 
 /* ===== Vars útiles ===== */
 :root {
-  --mobile-toggle-offset: 72px; /* altura del botón + respiración */
+  --mobile-toggle-offset: 72px; /* altura aprox. del botón + respiración */
 }
 
 /* ===== Botón flotante (móvil, vista mapa) ===== */
-@media (min-width: 769px) { .bm-button-wrapper { display: none; } }
+@media (min-width: 769px) {
+  .bm-button-wrapper { display: none; }
+}
 
 .bm-button-wrapper {
   position: fixed;
@@ -20,19 +22,23 @@
   z-index: 500;
   pointer-events: none; /* sólo el botón captura eventos */
 }
+.bm-button-wrapper .bm-toggle-mobile {
+  pointer-events: auto;
+}
 
 /* ===== Botón inline (móvil, vista lista) ===== */
+/* top relativo al contenedor con scroll (sidebar) */
 .bm-button-inline {
   position: sticky;
-  top: calc(var(--header-offset, 85px) + 8px);
+  top: 8px;
   z-index: 2;
   display: flex;
   justify-content: center;
-  padding: 4px 0 8px;
+  padding: 4px 0 8px;   /* deja un pequeño respiro debajo del botón */
   background: transparent;
 }
 
-/* ==== Estilo base (clases actuales) ==== */
+/* ==== Estilo base ==== */
 .bm-toggle-mobile,
 .toggle-mobile-view {
   background: #fcd20b;
@@ -45,6 +51,7 @@
   padding: 10px 16px;
   line-height: 1.1;
   white-space: nowrap;
+  text-align: center;
 }
 
 /* ==== Compatibilidad legacy con #bm-toggle SOLO en escritorio ==== */
@@ -77,7 +84,7 @@
 
 /* ===== Ajustes específicos para móvil ===== */
 @media (max-width: 768px) {
-  /* tamaño y centrado del botón (50% del ancho) */
+  /* tamaño y centrado del botón */
   .toggle-mobile-view,
   .bm-toggle-mobile {
     width: 50% !important;
@@ -85,12 +92,16 @@
     margin: 8px auto;
     display: block;
     flex: 0 0 auto;
-    align-self: center;
-    text-align: center;
   }
 
-  /* cuando existe el botón flotante como hermano antes de .layout-container */
+  /* vista mapa: el botón flotante deja espacio arriba */
   .bm-button-wrapper ~ .layout-container {
     padding-top: var(--mobile-toggle-offset) !important;
+  }
+
+  /* vista lista: ⛔️ sin padding extra; el botón sticky ya ocupa su altura */
+  .sidebar { position: relative; }
+  .sidebar .sidebar__inner {
+    padding-top: 0; /* <— QUITAMOS EL OFFSET QUE CREABA HUECO */
   }
 }
