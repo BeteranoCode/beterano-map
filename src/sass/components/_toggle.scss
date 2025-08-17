@@ -27,14 +27,14 @@
 }
 
 /* ===== Botón inline (móvil, vista lista) ===== */
-/* ⬅️ IMPORTANTE: top relativo al contenedor con scroll (sidebar), NO al header */
+/* top relativo al contenedor con scroll (sidebar) */
 .bm-button-inline {
   position: sticky;
-  top: 8px;               /* antes: calc(var(--header-offset, 85px) + 8px) */
+  top: 8px;
   z-index: 2;
   display: flex;
   justify-content: center;
-  padding: 4px 0 8px;
+  padding: 4px 0 8px;   /* deja un pequeño respiro debajo del botón */
   background: transparent;
 }
 
@@ -99,10 +99,9 @@
     padding-top: var(--mobile-toggle-offset) !important;
   }
 
-  /* vista lista: reservar espacio bajo el botón inline
-     para que buscador + tribus empiecen debajo */
+  /* vista lista: ⛔️ sin padding extra; el botón sticky ya ocupa su altura */
   .sidebar { position: relative; }
   .sidebar .sidebar__inner {
-    padding-top: var(--mobile-toggle-offset);
+    padding-top: 0; /* <— QUITAMOS EL OFFSET QUE CREABA HUECO */
   }
 }
