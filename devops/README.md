@@ -247,37 +247,37 @@ bash deploy_web.sh
 
 ```mermaid
 flowchart TD
-  A([Inicio]) --> B{¿Qué repo vas a tocar?}
+  A([Inicio]) --> B{¿Qué repo?}
 
   %% ───── beterano-map (desarrollo local) ─────
-  B -->|beterano-map| C{¿Estás en rama dev?}
-  C -->|No| C1[git checkout dev] --> D[./devops/dev-preview.sh<br/>build + preview local]
+  B -->|beterano-map| C{¿Rama dev?}
+  C -->|No| C1[git checkout dev] --> D[./devops/dev-preview.sh<br/>build + preview]
   C -->|Sí| D
-  D --> E{¿Se ve OK en preview?}
+  D --> E{¿OK en preview?}
   E -->|No| D
   E -->|Sí| G{¿Publicar STAGING?}
-  G -->|Sí automático| H[./devops/publish-staging.sh<br/>commit dev → merge main → deploy.sh]
-  G -->|Sí manual| H2[Commit en dev + push<br/>merge dev→main + push<br/>bash deploy.sh --branch main]
-  G -->|No| Z[Fin / o dejar en dev / o solo merge a main]
+  G -->|Automático| H[./devops/publish-staging.sh<br/>commit en dev + merge a main + deploy]
+  G -->|Manual| H2[commit en dev + push<br/>merge dev->main + push<br/>bash deploy.sh --branch main]
+  G -->|No| Z[Fin / dejar en dev o solo merge a main]
 
   H --> I{¿Publicar PRODUCCIÓN?}
   H2 --> I
-  I -->|Sí| J[Ir a repo: beterano-web]
-  J --> K[Actualizar submódulo beterano-map a main<br/>git pull<br/>git submodule update --init --recursive<br/>git submodule update --remote --merge submodules/beterano-map<br/>git add submodules/beterano-map<br/>git commit -m "chore(submodule): bump beterano-map"<br/>git push]
+  I -->|Sí| J[Repo: beterano-web]
+  J --> K[Actualizar submódulo beterano-map a main<br/>git pull<br/>git submodule update --init --recursive<br/>git submodule update --remote --merge submodules/beterano-map<br/>git add submodules/beterano-map<br/>git commit -m &quot;chore(submodule): bump beterano-map&quot;<br/>git push]
   K --> L[deploy_web.sh<br/>publica gh-pages de beterano-web]
   I -->|No| Z
 
   %% ───── beterano-web (submódulo abierto) ─────
-  B -->|beterano-web (submódulo)| M[Estás en beterano-web/submodules/beterano-map]
-  M --> N{¿Quieres STAGING?}
-  N -->|Sí| O[bash deploy.sh --branch main<br/>hace bump del submódulo en beterano-web]
+  B -->|beterano-web (submódulo)| M[en submodules/beterano-map/]
+  M --> N{¿STAGING?}
+  N -->|Sí| O[bash deploy.sh --branch main<br/>actualiza puntero del submódulo]
   O --> I
   N -->|No| Z
 
   %% ───── beterano-web-header (CDN) ─────
   B -->|beterano-web-header| P[Publica su gh-pages]
-  P --> Q[Rompe caché en consumidores<br/>sube ?v= en loader]
+  P --> Q[Romper caché en consumidores<br/>subir ?v= en loader]
   Q --> R{¿Consumidor = beterano-map?}
-  R -->|Sí| S[Actualiza loader en index.html<br/>y repite STAGING/PROD]
+  R -->|Sí| S[Actualizar loader en index.html<br/>repetir STAGING/PROD]
   R -->|No| Z
 ```
