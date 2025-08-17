@@ -3,14 +3,18 @@
   "ui.showList": "Pokaż listę",
   "sidebar.title": "Odkrywaj",
   "sidebar.searchPlaceholder": "Szukaj po nazwie, mieście lub kraju",
+  "sidebar.noResults": "Brak wyników.",
+  "sidebar.unnamed": "Bez nazwy",
+
   "filter.restauradores": "Renowatorzy",
   "filter.gruas": "Holowniki",
   "filter.desguaces": "Złomowiska",
-  "filter.propietarios": "Właściciele",
   "filter.abandonos": "Porzucone pojazdy",
-  "filter.rent_tools": "Wypożyczalnia narzędzi",
+  "filter.propietarios": "Właściciele",
+  "filter.rent_knowledge": "Wynajem wiedzy",
+  "filter.rent_service": "Wynajem usług",
   "filter.rent_space": "Wynajem przestrzeni",
-  "filter.rent_service": "Usługi",
-  "filter.rent_knowledge": "Szkolenia",
+  "filter.rent_tools": "Wynajem narzędzi",
   "filter.shops": "Sklepy"
 }
+

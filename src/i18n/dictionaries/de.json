@@ -3,14 +3,17 @@
   "ui.showList": "Liste anzeigen",
   "sidebar.title": "Entdecken",
   "sidebar.searchPlaceholder": "Suche nach Name, Stadt oder Land",
+  "sidebar.noResults": "Keine Ergebnisse.",
+  "sidebar.unnamed": "Ohne Namen",
   "filter.restauradores": "Restauratoren",
   "filter.gruas": "Abschleppdienste",
   "filter.desguaces": "Schrottplätze",
-  "filter.propietarios": "Besitzer",
   "filter.abandonos": "Verlassene Fahrzeuge",
-  "filter.rent_tools": "Werkzeugverleih",
+  "filter.propietarios": "Besitzer",
+  "filter.rent_knowledge": "Wissensvermietung",
+  "filter.rent_service": "Servicevermietung",
   "filter.rent_space": "Raumvermietung",
-  "filter.rent_service": "Dienstleistungen",
-  "filter.rent_knowledge": "Schulungen",
+  "filter.rent_tools": "Werkzeugverleih",
   "filter.shops": "Shops"
 }
+
