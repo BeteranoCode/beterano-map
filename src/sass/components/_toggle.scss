@@ -3,7 +3,7 @@
 
 /* ===== Vars útiles ===== */
 :root {
-  --mobile-toggle-offset: 72px; /* altura del botón + respiración */
+  --mobile-toggle-offset: 72px; /* altura aprox. del botón + respiración */
 }
 
 /* ===== Botón flotante (móvil, vista mapa) ===== */
@@ -22,9 +22,8 @@
   z-index: 500;
   pointer-events: none; /* sólo el botón captura eventos */
 }
-
 .bm-button-wrapper .bm-toggle-mobile {
-  pointer-events: auto; /* el botón sí recibe clics */
+  pointer-events: auto;
 }
 
 /* ===== Botón inline (móvil, vista lista) ===== */
@@ -84,6 +83,7 @@
 
 /* ===== Ajustes específicos para móvil ===== */
 @media (max-width: 768px) {
+  /* tamaño y centrado del botón */
   .toggle-mobile-view,
   .bm-toggle-mobile {
     width: 50% !important;
@@ -93,8 +93,18 @@
     flex: 0 0 auto;
   }
 
-  /* cuando existe el botón flotante como hermano antes de .layout-container */
+  /* cuando existe el botón flotante como hermano antes de .layout-container (vista mapa) */
   .bm-button-wrapper ~ .layout-container {
     padding-top: var(--mobile-toggle-offset) !important;
+  }
+
+  /* ✅ FIX: vista lista — reservar espacio bajo el botón inline
+     para que el contenido (search + tribus + cards) empiece debajo */
+  .sidebar {
+    position: relative;
+  }
+  .sidebar .bm-button-inline + .sidebar__inner {
+    /* igual que el offset del botón móvil */
+    padding-top: var(--mobile-toggle-offset);
   }
 }
