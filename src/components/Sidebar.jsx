@@ -3,7 +3,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { t } from "@/i18n";
 import FilterModal from "./filters/FilterModal";
 
-// Lista de tribus por clave (labels salen del diccionario i18n)
 const TRIBUS = [
   "restauradores",
   "gruas",
@@ -17,7 +16,7 @@ const TRIBUS = [
   "shops",
 ];
 
-// Datos (local JSON)
+// Datos locales
 import restauradores from "../data/restauradores.json";
 import gruas from "../data/gruas.json";
 import desguaces from "../data/desguaces.json";
@@ -34,6 +33,14 @@ const DATA_MAP = {
   rent_knowledge, rent_service, rent_space, rent_tools, shops,
 };
 
+// 🔎 helper: match array de filtros (skills, categorías…) contra string/array del item
+function someMatch(filterValues, itemValue) {
+  if (!Array.isArray(filterValues) || !filterValues.length) return true;
+  if (itemValue == null) return false;
+  const haystack = Array.isArray(itemValue) ? itemValue.map(String) : String(itemValue).split(/[;,]/).map(s=>s.trim());
+  return filterValues.some(v => haystack.some(h => h.toLowerCase().includes(String(v).toLowerCase())));
+}
+
 export default function Sidebar({
   selectedTribu,
   setSelectedTribu,
@@ -42,7 +49,7 @@ export default function Sidebar({
   filters = {},
   onApplyFilters = () => {},
 }) {
-  // Re-render cuando cambia idioma (si el header dispara evento)
+  // Re-render on language change
   const [, force] = useState(0);
   useEffect(() => {
     const onLang = () => force(x => x + 1);
@@ -55,29 +62,45 @@ export default function Sidebar({
   }, []);
 
   const [showFilters, setShowFilters] = useState(false);
-
   const data = useMemo(() => DATA_MAP[selectedTribu] || [], [selectedTribu]);
 
-  // Búsqueda + filtros básicos (pais + campos específicos según tribu)
   const filtered = useMemo(() => {
     const q = (search || "").toLowerCase();
+
     return (data || []).filter(item => {
+      // 🔍 Texto libre
       const matchesSearch =
         !q ||
-        item?.nombre?.toLowerCase().includes(q) ||
-        item?.ciudad?.toLowerCase().includes(q) ||
-        item?.pais?.toLowerCase().includes(q) ||
-        item?.descripcion?.toLowerCase().includes(q);
+        item?.nombre?.toLowerCase?.().includes(q) ||
+        item?.titulo?.toLowerCase?.().includes(q) ||
+        item?.ciudad?.toLowerCase?.().includes(q) ||
+        item?.pais?.toLowerCase?.().includes(q) ||
+        item?.descripcion?.toLowerCase?.().includes(q);
 
-      // Filtros comunes
+      // 🌍 País
       const matchPais = !filters.pais || item?.pais === filters.pais;
 
-      // Filtros por tribu (ejemplos)
+      // 🧩 Skills (Nivel 2, genérico): intenta en varias propiedades
+      const matchSkills =
+        someMatch(filters.skills, item.skills) ||
+        someMatch(filters.skills, item.especialidad) ||
+        someMatch(filters.skills, item.servicios) ||
+        someMatch(filters.skills, item.tags);
+
+      // 🚗 Vehículo (Nivel 2, cascada)
+      // buscamos en propiedades comunes que solemos usar en datos: marca/modelo/generacion/vehiculo
+      const byMarca = !filters.veh_marca || [item.marca, item.make, item.veh_marca, item.vehiculo?.marca].some(v => String(v||"").toLowerCase() === String(filters.veh_marca).toLowerCase());
+      const byModelo = !filters.veh_modelo || [item.modelo, item.model, item.veh_modelo, item.vehiculo?.modelo].some(v => String(v||"").toLowerCase() === String(filters.veh_modelo).toLowerCase());
+      const byGen   = !filters.veh_gen || [item.generacion, item.generation, item.veh_gen, item.vehiculo?.generacion].some(v => String(v||"").toLowerCase() === String(filters.veh_gen).toLowerCase());
+      const matchVehiculo = byMarca && byModelo && byGen;
+
+      // 🎯 Reglas específicas por tribu (mantengo tus casos previos)
       let matchByTribu = true;
+
       if (selectedTribu === "abandonos") {
-        if (filters.vehiculo) {
+        if (filters.vehiculo_text) {
           matchByTribu =
-            item?.vehiculo?.toLowerCase?.().includes(filters.vehiculo.toLowerCase());
+            item?.vehiculo?.toLowerCase?.().includes(filters.vehiculo_text.toLowerCase());
         }
         if (matchByTribu && filters.estado) {
           matchByTribu = item?.estado === filters.estado;
@@ -107,7 +130,7 @@ export default function Sidebar({
         matchByTribu = filters.rubro.some(e => rub.includes(e));
       }
 
-      return matchesSearch && matchPais && matchByTribu;
+      return matchesSearch && matchPais && matchSkills && matchVehiculo && matchByTribu;
     });
   }, [data, search, filters, selectedTribu]);
 
@@ -129,13 +152,12 @@ export default function Sidebar({
           onClick={() => setShowFilters(true)}
           title="Filtrar"
         >
-          {/* icono simple inline */}
           <span className="btn-icon" aria-hidden>⫶</span>
           <span className="btn-text">{t("ui.filter") ?? "Filtrar"}</span>
         </button>
       </div>
 
-      {/* TRIBUS */}
+      {/* TRIBUS (Nivel 1 set de chips) */}
       <div className="tribu-filters" role="tablist" aria-label={t("sidebar.title")}>
         {TRIBUS.map(key => {
           const active = key === selectedTribu;
@@ -152,7 +174,7 @@ export default function Sidebar({
         })}
       </div>
 
-      {/* LISTADO: 2 columnas en desktop */}
+      {/* LISTADO */}
       <div className="cards">
         {filtered.length === 0 && (
           <div className="cards__empty">{t("sidebar.noResults")}</div>
