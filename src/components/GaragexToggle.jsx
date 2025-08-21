@@ -1,28 +1,27 @@
-// src/components/GaragexToggle.jsx
 import React from "react";
 
-export default function GaragexToggle({ isOpen, onToggle }) {
-  return (
-    <>
-      {/* Botón centrado en header (Escritorio) */}
-      <button
-        type="button"
-        className={`garagex-btn ${isOpen ? "open" : ""}`}
-        aria-label="Abrir Garagex"
-        onClick={onToggle}
-      >
-        <img src="/assets/garagex-icon.png" alt="Garagex" />
-      </button>
-
-      {/* FAB inferior izquierdo (Móvil) */}
+export default function GaragexToggle({ isOpen, onToggle, isMobile }) {
+  const imgSrc = "/assets/garagex-icon.png"; // estás usando PNG
+  if (isMobile) {
+    return (
       <button
         type="button"
         className={`garagex-fab ${isOpen ? "open" : ""}`}
-        aria-label="Abrir Garagex"
         onClick={onToggle}
+        aria-label="Abrir Garagex"
       >
-        <img src="/assets/garagex-icon.png" alt="Garagex" />
+        <img src={imgSrc} alt="Garagex" />
       </button>
-    </>
+    );
+  }
+  return (
+    <button
+      type="button"
+      className={`garagex-btn ${isOpen ? "open" : ""}`}
+      onClick={onToggle}
+      aria-label="Abrir Garagex"
+    >
+      <img src={imgSrc} alt="Garagex" />
+    </button>
   );
 }

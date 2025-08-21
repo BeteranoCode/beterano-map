@@ -51,6 +51,7 @@ $gx-z: 9800;
 @media (max-width: 768px) {
   .garagex-btn { display: none; }
   .garagex-fab { display: grid; }
+  .gx-topdrawer { display: none !important; } /* no mostrar el panel superior en móvil */
 }
 @media (min-width: 769px) {
   .garagex-btn { display: grid; }
