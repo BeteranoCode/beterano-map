@@ -4,6 +4,10 @@ import Sidebar from "./components/Sidebar";
 import MapPage from "./pages/Map";
 import { t } from "./i18n";
 
+/* ✅ Garagex */
+import GaragexToggle from "./components/GaragexToggle";
+import GaragexPanel from "./components/GaragexPanel";
+
 function App() {
   const [selectedTribu, setSelectedTribu] = useState("restauradores");
   const [search, setSearch] = useState("");
@@ -12,6 +16,11 @@ function App() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hasResults, setHasResults] = useState(true);
   const [headerReady, setHeaderReady] = useState(false);
+
+  /* ✅ Estado Garagex */
+  const [garageOpen, setGarageOpen] = useState(false);
+  const toggleGarage = () => setGarageOpen(v => !v);
+  const closeGarage = () => setGarageOpen(false);
 
   // Calcula offset del header externo con observadores robustos
   useEffect(() => {
@@ -85,7 +94,7 @@ function App() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Cerrar menú al cambiar idioma
+  // Cerrar menú del header al cambiar idioma
   useEffect(() => {
     const closeMenu = () => {
       document.querySelector(".nav-wrapper")?.classList.remove("open");
@@ -177,6 +186,10 @@ function App() {
           </main>
         </>
       )}
+
+      {/* 🔑 Garagex: botón + panel (siempre montados encima del mapa) */}
+      <GaragexToggle isOpen={garageOpen} onToggle={toggleGarage} />
+      <GaragexPanel open={garageOpen} onClose={closeGarage} />
     </div>
   );
 }
