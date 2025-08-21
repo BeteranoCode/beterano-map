@@ -7,6 +7,7 @@ import { t } from "./i18n";
 /* ✅ Garagex */
 import GaragexToggle from "./components/GaragexToggle";
 import GaragexPanel from "./components/GaragexPanel";
+import MobileDock from "./components/MobileDock";
 
 function App() {
   const [selectedTribu, setSelectedTribu] = useState("restauradores");
@@ -19,8 +20,14 @@ function App() {
 
   /* ✅ Estado Garagex */
   const [garageOpen, setGarageOpen] = useState(false);
-  const toggleGarage = () => setGarageOpen(v => !v);
+  const toggleGarage = () => setGarageOpen((v) => !v);
   const closeGarage = () => setGarageOpen(false);
+
+  // Handlers placeholder (sustituye por navegación real)
+  const goCalendar = () => console.log("Calendario");
+  const goMarketplace = () => console.log("Marketplace");
+  const goNews = () => console.log("News");
+  const goMechAI = () => console.log("Mech AI");
 
   // Calcula offset del header externo con observadores robustos
   useEffect(() => {
@@ -100,7 +107,7 @@ function App() {
       document.querySelector(".nav-wrapper")?.classList.remove("open");
     };
     const langEvents = ["btr:lang-changed", "btr:langchange", "beteranoHeaderLangChange"];
-    langEvents.forEach(ev => window.addEventListener(ev, closeMenu));
+    langEvents.forEach((ev) => window.addEventListener(ev, closeMenu));
 
     const onDocClick = (e) => {
       const t = e.target;
@@ -112,7 +119,7 @@ function App() {
     document.addEventListener("click", onDocClick);
 
     return () => {
-      langEvents.forEach(ev => window.removeEventListener(ev, closeMenu));
+      langEvents.forEach((ev) => window.removeEventListener(ev, closeMenu));
       document.removeEventListener("click", onDocClick);
     };
   }, []);
@@ -187,9 +194,24 @@ function App() {
         </>
       )}
 
-      {/* 🔑 Garagex: botón + panel (siempre montados encima del mapa) */}
-      <GaragexToggle isOpen={garageOpen} onToggle={toggleGarage} isMobile={isMobile} />
+      {/* 🔑 Panel Garagex (común a ambas vistas) */}
       <GaragexPanel open={garageOpen} onClose={closeGarage} />
+
+      {/* 🔘 Toggle/Dock según viewport */}
+      {isMobile ? (
+        // Mostrar dock SOLO cuando el mapa está visible en móvil
+        mobileView === "map" ? (
+          <MobileDock
+            onCenterClick={toggleGarage}
+            onCalendar={goCalendar}
+            onMarket={goMarketplace}
+            onNews={goNews}
+            onMechAI={goMechAI}
+          />
+        ) : null
+      ) : (
+        <GaragexToggle isOpen={garageOpen} onToggle={toggleGarage} isMobile={false} />
+      )}
     </div>
   );
 }
