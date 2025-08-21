@@ -1,21 +1,34 @@
 /* Barra inferior estilo dock para móvil */
 .mobile-dock {
+  /* ✨ Variables de control */
+  --btn: 52px;            /* tamaño botón pequeño */
+  --pad-v: 12px;          /* padding vertical */
+  --pad-h: 16px;          /* padding horizontal */
+  --center: 88px;         /* diámetro botón central Garagex */
+  --gap-center: 112px;    /* hueco reservado en la parrilla */
+
   position: fixed;
   left: 0; right: 0; bottom: 0;
-  height: 92px;
-  background: #ffd024;            /* amarillo */
+
+  /* ✅ Altura calculada SOLO con botones pequeños */
+  height: calc(var(--btn) + var(--pad-v) * 2);
+
+  background: #ffd024;
   border-radius: 28px 28px 0 0;
   box-shadow: 0 -10px 30px rgba(0,0,0,.18);
   z-index: 9808;
+
   display: grid;
-  grid-template-columns: 1fr 1fr 112px 1fr 1fr; /* hueco central para el botón */
-  align-items: end;
-  padding: 14px 16px 18px;
+  grid-template-columns: 1fr 1fr var(--gap-center) 1fr 1fr; /* 2 izq | hueco | 2 dcha */
+  align-items: center;                       /* centra verticalmente los pequeños */
+  padding: var(--pad-v) var(--pad-h);
+  gap: 12px;                                 /* opcional: separación entre pequeños */
 }
 
-/* Botones laterales */
+/* Botones laterales (pequeños) */
 .mobile-dock .dock-btn {
-  height: 52px; width: 52px;
+  width: var(--btn);
+  height: var(--btn);
   border-radius: 16px;
   background: #ffd84a;
   display: grid; place-items: center;
@@ -26,12 +39,15 @@
 
 .mobile-dock .emoji { line-height: 1; }
 
-/* Botón central elevado */
+/* Botón central elevado (no afecta a la altura del dock) */
 .mobile-dock .dock-center {
   position: absolute;
   left: 50%; transform: translateX(-50%);
-  bottom: 18px;
-  width: 88px; height: 88px;
+  /* ✅ Colócalo para que “muerda” el dock por arriba sin cambiar su altura */
+  bottom: calc(var(--pad-v) + (var(--btn) / 2) - (var(--center) / 2));
+
+  width: var(--center);
+  height: var(--center);
   border-radius: 999px;
   border: 8px solid #ffdc3a;
   background: #111;
@@ -45,7 +61,7 @@
   width: 70%; height: 70%; object-fit: contain;
 }
 
-/* Sólo visible en móvil */
+/* Solo visible en móvil */
 @media (min-width: 901px) {
   .mobile-dock { display: none; }
 }
