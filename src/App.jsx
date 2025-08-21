@@ -188,7 +188,7 @@ function App() {
       )}
 
       {/* 🔑 Garagex: botón + panel (siempre montados encima del mapa) */}
-      <GaragexToggle isOpen={garageOpen} onToggle={toggleGarage} />
+      <GaragexToggle isOpen={garageOpen} onToggle={toggleGarage} isMobile={isMobile} />
       <GaragexPanel open={garageOpen} onClose={closeGarage} />
     </div>
   );
