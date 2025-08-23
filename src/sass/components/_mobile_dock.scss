@@ -1,62 +1,71 @@
-/* Mobile dock con 5 botones y center elevado */
+/* Mobile dock minimal: 5 botones + centro elevado */
 .mobile-dock {
-  /* variables */
-  --btn: 52px;           /* tamaño de botón pequeño */
-  --pad-v: 12px;         /* padding vertical */
-  --pad-h: 16px;         /* padding horizontal */
-  --center: 88px;        /* diámetro del botón central */
-  --gap-center: 112px;   /* hueco reservado para el botón central */
+  /* ====== variables ====== */
+  --btn: 52px;            /* tamaño botón pequeño */
+  --pad-v: 10px;
+  --pad-h: 16px;
+  --center: 88px;         /* diámetro del botón central (area interior negra) */
+  --ring: 8px;            /* borde anillo amarillo del botón central */
+  --gap-extra: 24px;      /* margen de seguridad a cada lado del centro */
+  /* Hueco central = diámetro total del centro + margen */
+  --gap-center: calc(var(--center) + (var(--ring) * 2) + var(--gap-extra));
 
   position: fixed;
   left: 0; right: 0; bottom: 0;
-  height: calc(var(--btn) + var(--pad-v) * 2);  /* altura solo con botones pequeños */
+  height: calc(var(--btn) + var(--pad-v) * 2);   /* solo depende del botón pequeño */
   background: #ffd024;
-  border-radius: 28px 28px 0 0;
-  box-shadow: 0 -10px 30px rgba(0,0,0,.18);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -8px 24px rgba(0,0,0,.16);
   z-index: 9808;
 
   display: grid;
-  grid-template-columns: 1fr 1fr var(--gap-center) 1fr 1fr; /* 2 izq | hueco | 2 dcha */
+  /* 2 a la izquierda | HUECO REAL centro | 2 a la derecha (pegados a la derecha) */
+  grid-template-columns: auto auto var(--gap-center) auto auto;
+  justify-content: space-between;
   align-items: center;
   padding: var(--pad-v) var(--pad-h);
   gap: 12px;
 }
 
-/* botones pequeños */
+/* ====== botones pequeños: estilo minimal ====== */
 .mobile-dock .dock-btn {
   width: var(--btn);
   height: var(--btn);
-  border-radius: 16px;
-  background: #ffd84a;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;     /* sin relieve */
+  box-shadow: none;            /* sin sombra */
   display: grid;
   place-items: center;
-  box-shadow: 0 6px 14px rgba(0,0,0,.12), inset 0 0 0 2px rgba(0,0,0,.05);
-  border: 0;
-  font-size: 26px;
-}
-.mobile-dock .emoji { line-height: 1; }
+  font-size: 24px;
+  color: #111;
 
-/* botón central elevado (no afecta a la altura del dock) */
+  /* feedback sutil */
+  transition: transform .12s ease, background-color .12s ease;
+}
+.mobile-dock .dock-btn:active { transform: scale(.96); }
+.mobile-dock .dock-btn:hover { background: rgba(0,0,0,.06); }
+
+/* ====== botón central elevado (no afecta a la altura del dock) ====== */
 .mobile-dock .dock-center {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  /* mordiendo el dock sin alterar su altura */
   bottom: calc(var(--pad-v) + (var(--btn) / 2) - (var(--center) / 2));
   width: var(--center);
   height: var(--center);
   border-radius: 999px;
-  border: 8px solid #ffdc3a;
+  border: var(--ring) solid #ffdc3a;   /* anillo amarillo */
   background: #111;
   display: grid;
   place-items: center;
-  box-shadow: 0 12px 28px rgba(0,0,0,.28);
+  box-shadow: 0 12px 26px rgba(0,0,0,.26);
   z-index: 9810;
   padding: 0;
 }
 .mobile-dock .dock-center img {
-  width: 70%;
-  height: 70%;
-  object-fit: contain;
+  width: 70%; height: 70%; object-fit: contain;
 }
 
 /* solo móvil */
