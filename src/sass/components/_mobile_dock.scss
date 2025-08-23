@@ -1,15 +1,13 @@
 /* Mobile dock minimal: 5 botones + centro integrado */
 .mobile-dock {
   /* ====== variables base ====== */
-  --center-base: 88px;                 /* tamaño base anterior del central */
-  --center: calc(var(--center-base) * 0.7); /* central -30% respecto a base */
-  --dock-h: calc(var(--center-base) * (1 / 3)); /* altura dock (ligera, ahorra mapa) */
+  --center-base: 88px;                        /* tamaño base previo */
+  --center: calc(var(--center-base) * 0.7);   /* central -30% */
+  --dock-h: calc(var(--center-base) * (1 / 3)); /* altura del dock */
 
   --pad-h: 16px;
-  --gap-extra: 24px;
-  --gap-center: calc(var(--center) + var(--gap-extra));
 
-  /* botones laterales: altura ligada al dock para centrar verticalmente */
+  /* botones laterales: centrados verticalmente por altura del dock */
   --btn: clamp(28px, calc(var(--dock-h) - 8px), 44px);
 
   /* iconos internos: -20% */
@@ -24,8 +22,9 @@
   z-index: 9808;
 
   display: grid;
-  grid-template-columns: var(--btn) var(--btn) var(--gap-center) var(--btn) var(--btn);
-  align-items: center;              /* << centra verticalmente contenidos */
+  /* 🔒 2 izq | GARAGEX (col 3) | 2 dcha (todo con ancho fijo) */
+  grid-template-columns: var(--btn) var(--btn) var(--center) var(--btn) var(--btn);
+  align-items: center;         /* centra verticalmente todo */
   justify-content: space-between;
   padding: 4px var(--pad-h);
   column-gap: 12px;
@@ -44,7 +43,7 @@
   cursor: pointer;
 }
 
-/* íconos svg dentro del botón (20% más pequeños) */
+/* íconos svg -20% */
 .mobile-dock .dock-icon {
   width: calc(var(--btn) * 0.6 * var(--icon-scale));
   height: calc(var(--btn) * 0.6 * var(--icon-scale));
@@ -52,17 +51,18 @@
 }
 
 /* ====== botón central integrado (mismo color, sin sombra) ====== */
+/* ⚠️ Ahora es un item del grid, columna 3 */
 .mobile-dock .dock-center {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  /* centrado vertical en el dock */
-  bottom: calc((var(--dock-h) - var(--center)) / 2);
+  /* sin posicionamiento absoluto */
+  position: static;
+  grid-column: 3;               /* ocupa la columna central del grid */
+  justify-self: center;
+  align-self: center;
 
   width: var(--center);
   height: var(--center);
   border-radius: 50%;
-  background: #ffd024;   /* mismo color del dock */
+  background: #ffd024;          /* mismo color que el dock */
   border: none;
   box-shadow: none;
 
@@ -72,6 +72,7 @@
   padding: 0;
   pointer-events: auto;
 }
+
 .mobile-dock .dock-center img {
   width: 70%;
   height: 70%;
