@@ -4,14 +4,14 @@ import React from "react";
 export default function MobileDock({
   onCalendar = () => {},
   onMechAI = () => {},
-  onCenterClick,               // abre/cierra Garagex
+  onCenterClick,
   onMarket = () => {},
   onNews = () => {},
   labels = { calendar: "Calendario", mech: "Mech AI", market: "Marketplace", news: "News" },
 }) {
   return (
     <nav className="mobile-dock" aria-label="Garagex dock">
-      {/* izquierda */}
+      {/* 2 izquierda */}
       <button className="dock-btn" onClick={onCalendar} aria-label={labels.calendar}>
         <span className="emoji" role="img" aria-hidden>📅</span>
       </button>
@@ -24,7 +24,7 @@ export default function MobileDock({
         <img src="/assets/garagex-icon.png" alt="Garagex" />
       </button>
 
-      {/* derecha */}
+      {/* 2 derecha */}
       <button className="dock-btn" onClick={onMarket} aria-label={labels.market}>
         <span className="emoji" role="img" aria-hidden>🏬</span>
       </button>
