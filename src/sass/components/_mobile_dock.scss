@@ -1,19 +1,22 @@
 /* Mobile dock minimal: 5 botones + centro integrado */
 .mobile-dock {
-  /* ====== variables ====== */
-  --btn: 52px;             /* tamaño botón pequeño */
+  /* ====== variables base ====== */
+  --btn: 52px;               /* tamaño botón pequeño */
   --pad-h: 16px;
-  --center: 88px;          /* diámetro del botón central */
-  --ring: 0px;             /* sin aro, homogéneo con el dock */
-  --gap-extra: 24px;       /* aire a cada lado del central */
-  /* Hueco central = diámetro total del centro + margen */
+  --center-base: 88px;       /* diámetro anterior (base) del botón central */
+  --center: calc(var(--center-base) * 0.7);  /* 🔽 30% más pequeño */
+  --ring: 0px;               /* sin aro: homogéneo con el dock */
+  --gap-extra: 24px;
+
+  /* Hueco central según el nuevo tamaño */
   --gap-center: calc(var(--center) + (var(--ring) * 2) + var(--gap-extra));
+
+  /* 🔽 altura del dock = 1/3 del diámetro base (→ 33% más que el 1/4 previo) */
+  --dock-h: calc(var(--center-base) * (1 / 3));
 
   position: fixed;
   inset: auto 0 0 0;
-
-  /* 🔽 Altura = 1/4 del diámetro del central (barra fina) */
-  height: calc(var(--center) * 0.25);
+  height: var(--dock-h);
 
   background: #ffd024;
   border-radius: 20px 20px 0 0;
@@ -21,7 +24,7 @@
   z-index: 9808;
 
   display: grid;
-  /* 🔒 columnas con ancho fijo: 2 izq | hueco centro | 2 dcha */
+  /* 2 izq | hueco central | 2 dcha con anchos fijos */
   grid-template-columns: var(--btn) var(--btn) var(--gap-center) var(--btn) var(--btn);
   align-items: center;
   justify-content: space-between;
@@ -44,31 +47,30 @@
 }
 .mobile-dock .dock-btn:hover { background: rgba(0,0,0,.06); }
 .mobile-dock .dock-btn:active { transform: scale(.96); }
-
-/* emojis/íconos */
 .mobile-dock .emoji { line-height: 1; }
 
-/* ====== botón central integrado (mismo color) ====== */
+/* ====== botón central integrado (mismo color, sin sombra) ====== */
 .mobile-dock .dock-center {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  /* sobresale solo un 20% del diámetro por encima del dock */
-  bottom: calc(var(--center) * 0.20);
+
+  /* centrado vertical dentro del dock (sin sobresalir) */
+  bottom: calc((var(--dock-h) - var(--center)) / 2);
 
   width: var(--center);
   height: var(--center);
   border-radius: 50%;
-  background: #ffd024;   /* homogéneo con el dock */
+  background: #ffd024;  /* mismo color que el dock */
   border: none;
-  box-shadow: none;       /* sin relieve */
+  box-shadow: none;
+
   display: grid;
   place-items: center;
   z-index: 9810;
   padding: 0;
-  pointer-events: auto;   /* clickeable */
+  pointer-events: auto;
 }
-
 .mobile-dock .dock-center img {
   width: 70%;
   height: 70%;
