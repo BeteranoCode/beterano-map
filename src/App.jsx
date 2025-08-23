@@ -124,6 +124,17 @@ function App() {
     };
   }, []);
 
+  // 👉 Mostrar dock sólo en móvil + mapa
+  const showMobileDock = isMobile && mobileView === "map";
+
+  // Añade clase al body cuando el dock está visible (por si quieres estilos globales)
+  useEffect(() => {
+    const cls = "has-mobile-dock";
+    if (showMobileDock) document.body.classList.add(cls);
+    else document.body.classList.remove(cls);
+    return () => document.body.classList.remove(cls);
+  }, [showMobileDock]);
+
   const isLocal = location.hostname === "localhost";
   if (!headerReady && !isLocal) return null;
 
@@ -199,14 +210,19 @@ function App() {
 
       {/* 🔘 Toggle/Dock según viewport */}
       {isMobile ? (
-        // Mostrar dock SOLO cuando el mapa está visible en móvil
-        mobileView === "map" ? (
+        showMobileDock ? (
           <MobileDock
             onCenterClick={toggleGarage}
             onCalendar={goCalendar}
             onMarket={goMarketplace}
             onNews={goNews}
             onMechAI={goMechAI}
+            labels={{
+              calendar: t("ui.calendar") ?? "Calendario",
+              mech: "Mech AI",
+              market: "Marketplace",
+              news: "News",
+            }}
           />
         ) : null
       ) : (
