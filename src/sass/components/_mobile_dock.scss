@@ -60,11 +60,11 @@
   width: var(--center);
   height: var(--center);
   border-radius: 999px;
-  border: var(--ring) solid #ffdc3a;
-  background: #111;
+  border: none;
+  background:#ffd024;
   display: grid;
   place-items: center;
-  box-shadow: 0 12px 26px rgba(0,0,0,.26);
+  box-shadow: 0 12px 26px rgba(0,0,0,.18);
   z-index: 9810;
   padding: 0;
 }
