@@ -3,33 +3,43 @@
   /* ====== variables ====== */
   --btn: 52px;            /* tamaño botón pequeño */
   --pad-h: 16px;
-  --center: 88px;         /* diámetro del botón central (círculo negro) */
-  --ring: 8px;            /* anillo amarillo del central */
-  --gap-extra: 24px;      /* aire a cada lado del central */
-  --gap-center: calc(var(--center) + (var(--ring) * 2) + var(--gap-extra));
+  --center: 88px;         /* diámetro del botón central */
+  --gap-extra: 16px;      /* aire a cada lado del central */
+  --gap-center: calc(var(--center) + var(--gap-extra)); /* hueco real del centro */
 
   position: fixed;
   left: 0; right: 0; bottom: 0;
 
-  /* 🔽 Altura ~ mitad del botón central (sin depender del botón pequeño) */
-  height: calc((var(--center) / 2) + var(--ring) + 12px);
+  /* 🔽 altura = 1/4 del círculo central (barra fina) */
+  height: calc(var(--center) / 4);
 
   background: #ffd024;
-  border-radius: 24px 24px 0 0;
-  box-shadow: 0 -8px 24px rgba(0,0,0,.16);
+  border-radius: 20px 20px 0 0;
+  box-shadow: none;
   z-index: 9808;
 
+  /* ====== GRID con spacers para alinear extremos ====== */
   display: grid;
-  grid-template-columns: auto auto var(--gap-center) auto auto; /* 2 | hueco | 2 */
-  justify-content: space-between;
+  grid-template-columns:
+    1fr                    /* spacer izquierdo */
+    max-content            /* botón izq 1 */
+    max-content            /* botón izq 2 */
+    var(--gap-center)      /* hueco Garagex */
+    max-content            /* botón der 1 */
+    max-content            /* botón der 2 */
+    1fr;                   /* spacer derecho */
   align-items: center;
-
-  /* 🔽 padding vertical reducido; el central ya ajusta la altura visual */
-  padding: 6px var(--pad-h) 0;
-  gap: 12px;
+  gap: 10px;
+  padding: 0 var(--pad-h);
 }
 
-/* ====== RESET antipisado (deja el botón plano sí o sí) ====== */
+/* ====== colocar cada botón por orden, evitando solapes ====== */
+.mobile-dock .dock-btn:nth-of-type(1) { grid-column: 2; } /* izq 1 */
+.mobile-dock .dock-btn:nth-of-type(2) { grid-column: 3; } /* izq 2 */
+.mobile-dock .dock-btn:nth-of-type(3) { grid-column: 5; } /* der 1 */
+.mobile-dock .dock-btn:nth-of-type(4) { grid-column: 6; } /* der 2 */
+
+/* ====== RESET: botones planos/minimal ====== */
 .mobile-dock .dock-btn {
   all: unset;
   box-sizing: border-box;
@@ -48,26 +58,28 @@
 /* emojis/íconos */
 .mobile-dock .emoji { line-height: 1; }
 
-/* ====== botón central elevado ====== */
+/* ====== botón central: color homogéneo con el dock, sin sombra ====== */
 .mobile-dock .dock-center {
+  grid-column: 4;                 /* ocupa el hueco central virtual */
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-
-  /* 🔽 la mitad del botón queda dentro del dock, mitad fuera */
-  bottom: 0;
+  /* 🔽 sobresale un 20% hacia arriba */
+  bottom: calc(var(--center) * 0.20);
 
   width: var(--center);
   height: var(--center);
-  border-radius: 999px;
+  border-radius: 50%;
+  background: #ffd024;            /* mismo color del dock */
   border: none;
-  background:#ffd024;
+  box-shadow: none;
+
   display: grid;
   place-items: center;
-  box-shadow: 0 12px 26px rgba(0,0,0,.18);
   z-index: 9810;
   padding: 0;
 }
+
 .mobile-dock .dock-center img {
   width: 70%;
   height: 70%;
