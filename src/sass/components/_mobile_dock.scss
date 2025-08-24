@@ -3,15 +3,14 @@
   /* === variables === */
   --center-base: 88px;
 
-  /* Central: partíamos de 0.7*base; +30% */
-  --center: calc(var(--center-base) * 0.7 * 1.30);
+  /* Central: partíamos de 0.7*base *1.30; reducimos -10% */
+  --center: calc(var(--center-base) * 0.7 * 1.30 * 0.9);
 
-  /* Dock: +20% y con límite mínimo decente */
-  /* (si antes te salían 35px, esto lo sube a ~56–64px) */
-  --dock-h: clamp(56px, calc(var(--center) * 0.55), 80px);
+  /* Dock: +20% respecto antes y ahora -10% */
+  --dock-h: clamp(50px, calc(var(--center) * 0.55 * 0.9), 72px);
 
   --pad-h: 16px;
-  --btn: clamp(32px, calc(var(--dock-h) - 12px), 56px);
+  --btn: clamp(28px, calc(var(--dock-h) - 12px), 52px);
   --icon-scale: 0.8;
 
   position: fixed;
@@ -26,13 +25,10 @@
   display: grid;
   grid-template-columns: var(--btn) var(--btn) var(--center) var(--btn) var(--btn);
 
-  /* ⛳ forzamos que la fila del grid mida la altura del dock */
   grid-auto-rows: var(--dock-h);
-  align-items: stretch;     /* cada celda ocupa toda la altura */
+  align-items: stretch;
   justify-content: space-between;
   column-gap: 12px;
-
-  /* nada de recortes del central sobresaliente */
   overflow: visible;
 }
 
@@ -45,16 +41,16 @@
   height: 100%;
 
   display: flex;
-  align-items: center;      /* centra el SVG verticalmente */
+  align-items: center;
   justify-content: center;
 
   border-radius: 12px;
   color: #111;
   cursor: pointer;
-  line-height: 0;           /* sin baseline */
+  line-height: 0;
 }
 
-/* SVG minimal (20% más pequeños) */
+/* SVG minimal (-20%) */
 .mobile-dock .dock-icon {
   display: block;
   width: calc(min(var(--btn), var(--dock-h)) * 0.6 * var(--icon-scale));
@@ -63,12 +59,12 @@
 
 /* ===== Botón central (Garagex) ===== */
 .mobile-dock .dock-center {
-  position: relative;       /* item del grid */
+  position: relative;
   grid-column: 3;
   justify-self: center;
   align-self: center;
 
-  /* sobresale un 20% de la altura del dock hacia arriba */
+  /* sobresale un 20% de la altura del dock */
   transform: translateY(calc(-0.20 * var(--dock-h)));
 
   width: var(--center);
