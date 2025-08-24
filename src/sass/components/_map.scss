@@ -42,3 +42,10 @@
   min-height: 0;
   position: relative; /* ← antes estaba absolute: lo quitamos */
 }
+
+.leaflet-marker-icon.is-highlighted {
+  filter: drop-shadow(0 0 6px rgba(255, 208, 36, .9));
+  transform: scale(1.05);
+  transition: transform .15s ease, filter .15s ease;
+}
+
