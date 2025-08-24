@@ -3,11 +3,11 @@
   /* === variables === */
   --center-base: 88px;
 
-  /* Central: partíamos de 0.7*base *1.30; reducimos -10% */
-  --center: calc(var(--center-base) * 0.7 * 1.30 * 0.9);
+  /* Central: -20% respecto al tamaño actual */
+  --center: calc(var(--center-base) * 0.7 * 1.30 * 0.8);
 
-  /* Dock: +20% respecto antes y ahora -10% */
-  --dock-h: clamp(50px, calc(var(--center) * 0.55 * 0.9), 72px);
+  /* Dock: -10% respecto al tamaño actual */
+  --dock-h: clamp(50px, calc(var(--center) * 0.55 * (10/9)), 72px);
 
   --pad-h: 16px;
   --btn: clamp(28px, calc(var(--dock-h) - 12px), 52px);
