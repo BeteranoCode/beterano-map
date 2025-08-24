@@ -1,16 +1,16 @@
-/* Mobile dock minimal: 5 botones + centro integrado */
+/* Mobile dock minimal: 5 botones + centro integrado/sobresaliente */
 .mobile-dock {
   /* ====== variables base ====== */
-  --center-base: 88px;                        /* tamaño base previo */
-  --center: calc(var(--center-base) * 0.7);   /* central -30% */
-  --dock-h: calc(var(--center-base) * (1 / 3)); /* altura del dock */
+  --center-base: 88px;                         /* tamaño de referencia */
+  --center: calc(var(--center-base) * 0.7);    /* central -30% */
+  --dock-h: calc(var(--center-base) * (1 / 3));/* altura del dock */
 
   --pad-h: 16px;
 
-  /* botones laterales: centrados verticalmente por altura del dock */
+  /* ancho de columnas laterales (los “huecos violetas”) */
   --btn: clamp(28px, calc(var(--dock-h) - 8px), 44px);
 
-  /* iconos internos: -20% */
+  /* escala de iconos (−20%) */
   --icon-scale: 0.8;
 
   position: fixed;
@@ -22,67 +22,69 @@
   z-index: 9808;
 
   display: grid;
-  /* 🔒 2 izq | GARAGEX (col 3) | 2 dcha (todo con ancho fijo) */
+  /* 2 izq | centro | 2 dcha (todo con ancho fijo) */
   grid-template-columns: var(--btn) var(--btn) var(--center) var(--btn) var(--btn);
-  align-items: center;         /* centra verticalmente todo */
+
+  /* ⛳️ los items estiran a la altura exacta del dock (huecos morados) */
+  align-items: stretch;
   justify-content: space-between;
 
-  /* ❗ sin padding vertical para no descentrar */
+  /* sin padding vertical para que el centro geométrico coincida */
   padding: 0 var(--pad-h);
-
   column-gap: 12px;
 }
 
-/* ====== botones pequeños planos ====== */
+/* ====== botones laterales integrados en la celda ====== */
 .mobile-dock .dock-btn {
   all: unset;
   box-sizing: border-box;
-  transform: translateY(-0.5px);
 
-  /* ⛳ centrar contenido perfectamente */
+  /* ocupan la celda completa (hueco morado) */
+  width: 100%;
+  height: 100%;
+
+  /* centrado perfecto del SVG */
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  width: var(--btn);
-  height: var(--btn);
   border-radius: 12px;
   color: #111;
   cursor: pointer;
-
-  /* evita arrastre de línea */
   line-height: 0;
 }
 
-/* íconos svg -20% y sin baseline */
+/* SVG minimal (stroke negro) — 20% más pequeño del tamaño útil */
 .mobile-dock .dock-icon {
   display: block;
-  width: calc(var(--btn) * 0.6 * var(--icon-scale));
-  height: calc(var(--btn) * 0.6 * var(--icon-scale));
+  /* tamaño del icono basado en el lado menor disponible */
+  width: calc(min(var(--btn), var(--dock-h)) * 0.6 * var(--icon-scale));
+  height: calc(min(var(--btn), var(--dock-h)) * 0.6 * var(--icon-scale));
 }
 
-/* ====== botón central integrado (mismo color, sin sombra) ====== */
-/* ⚠️ Ahora es un item del grid, columna 3 */
+/* ====== botón central integrado, sobresaliendo un 20% del dock ====== */
 .mobile-dock .dock-center {
-  position: static;
-  grid-column: 3;               /* ocupa la columna central del grid */
+  position: relative;          /* sigue siendo item del grid */
+  grid-column: 3;              /* columna central */
   justify-self: center;
+
+  /* ocupa su celda, pero lo elevamos 20% de la altura del dock */
   align-self: center;
-  transform: translateY(-0.5px);
+  transform: translateY(calc(-0.20 * var(--dock-h)));
+
   width: var(--center);
   height: var(--center);
   border-radius: 50%;
-  background: #ffd024;          /* mismo color que el dock */
+  background: #ffd024;         /* mismo color que el dock */
   border: none;
   box-shadow: none;
 
-  /* ⛳ centrar el logotipo */
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
   line-height: 0;
-  z-index: 9810;
+  z-index: 9810;               /* por encima de los laterales */
   padding: 0;
   pointer-events: auto;
 }
