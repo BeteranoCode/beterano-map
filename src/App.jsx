@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import MapPage from "./pages/Map";
-import { t } from "./i18n";
+import { t, i18n } from "./i18n";
 
 /* ✅ Garagex */
 import GaragexToggle from "./components/GaragexToggle";
@@ -22,6 +22,13 @@ function App() {
   const [garageOpen, setGarageOpen] = useState(false);
   const toggleGarage = () => setGarageOpen((v) => !v);
   const closeGarage = () => setGarageOpen(false);
+
+  // 👉 selección desde la sidebar que debe centrar/realzar en el mapa
+  const [selectedPlaceId, setSelectedPlaceId] = useState(null);
+  const handleSelectPlace = (id) => {
+    setSelectedPlaceId(id);
+    if (isMobile) setMobileView("map");
+  };
 
   // Handlers placeholder (sustituye por navegación real)
   const goCalendar = () => console.log("Calendario");
@@ -101,27 +108,38 @@ function App() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Cerrar menú del header al cambiar idioma
+  /* ===== Fix idioma: aplicar “es” sin recargar y forzar re-render ===== */
+  const [langVersion, setLangVersion] = useState(0);
+
   useEffect(() => {
-    const closeMenu = () => {
-      document.querySelector(".nav-wrapper")?.classList.remove("open");
+    const normalize = (code) => {
+      if (!code) return null;
+      const c = String(code).toLowerCase().replace("_", "-");
+      if (c.startsWith("es")) return "es";
+      if (c.startsWith("en")) return "en";
+      if (c.startsWith("fr")) return "fr";
+      if (c.startsWith("de")) return "de";
+      return c;
     };
-    const langEvents = ["btr:lang-changed", "btr:langchange", "beteranoHeaderLangChange"];
-    langEvents.forEach((ev) => window.addEventListener(ev, closeMenu));
 
-    const onDocClick = (e) => {
-      const t = e.target;
-      if (!t) return;
-      const clickedLang =
-        t.closest?.("#language-selector, .language-menu, [data-lang], .language-option");
-      if (clickedLang) closeMenu();
+    const applyLang = (langCode) => {
+      const target = normalize(langCode);
+      if (target && i18n?.changeLanguage) {
+        i18n.changeLanguage(target);
+      } else if (t?.setLocale) {
+        t.setLocale(target);
+      }
+      setLangVersion((v) => v + 1);
     };
-    document.addEventListener("click", onDocClick);
 
-    return () => {
-      langEvents.forEach((ev) => window.removeEventListener(ev, closeMenu));
-      document.removeEventListener("click", onDocClick);
+    const onAny = (e) => {
+      const code = e?.detail?.lang || e?.detail || window.__btr_lang;
+      applyLang(code);
     };
+
+    const evts = ["btr:lang-changed", "btr:langchange", "beteranoHeaderLangChange", "languagechange"];
+    evts.forEach((ev) => window.addEventListener(ev, onAny));
+    return () => evts.forEach((ev) => window.removeEventListener(ev, onAny));
   }, []);
 
   // 👉 Mostrar dock sólo en móvil + mapa
@@ -139,7 +157,8 @@ function App() {
   if (!headerReady && !isLocal) return null;
 
   return (
-    <div className="layout-container">
+    // clave para re-render cuando cambia idioma
+    <div key={langVersion} className="layout-container">
       {isMobile ? (
         mobileView === "list" ? (
           <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
@@ -159,6 +178,7 @@ function App() {
               setSearch={setSearch}
               filters={filters}
               onApplyFilters={setFilters}
+              onSelectPlace={handleSelectPlace}   // 👈 NUEVO
             />
           </aside>
         ) : (
@@ -178,6 +198,7 @@ function App() {
                 search={search}
                 filters={filters}
                 onDataLoaded={setHasResults}
+                selectedPlaceId={selectedPlaceId}  // 👈 NUEVO
               />
             </main>
           </>
@@ -192,6 +213,7 @@ function App() {
               setSearch={setSearch}
               filters={filters}
               onApplyFilters={setFilters}
+              onSelectPlace={handleSelectPlace}     // 👈 NUEVO
             />
           </aside>
           <main className="map-container" id="map">
@@ -200,6 +222,7 @@ function App() {
               search={search}
               filters={filters}
               onDataLoaded={setHasResults}
+              selectedPlaceId={selectedPlaceId}      // 👈 NUEVO
             />
           </main>
         </>

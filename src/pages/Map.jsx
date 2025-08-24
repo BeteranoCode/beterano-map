@@ -96,21 +96,24 @@ function matchesSearch(item, search = "") {
   return haystack.includes(search.toLowerCase());
 }
 
-/* Pinta Marker o Circle según precision */
-function renderFeature(item, icon, map) {
+function getItemId(it) {
+  return it?.id ?? it?.uuid ?? `${it?.nombre ?? "item"}_${getPoint(it)?.lat ?? "?"}_${getPoint(it)?.lng ?? "?"}`;
+}
+
+/* Pinta Marker o Circle según precision y registra markers en un Map() */
+function Feature({ item, icon, map, registerMarker }) {
   const precision = getPrecision(item);
   const pt = getPoint(item);
   const name = item?.nombre || "Sin nombre";
+  const id = getItemId(item);
 
   if (!pt) return null;
 
-  // Buffer: círculo con radio en km
   if (precision === "buffer") {
     const km = Number(item?.ubicacion?.buffer_km) || 10;
     const radius = km * 1000;
     return (
       <Circle
-        key={`buf-${name}-${pt.lat}-${pt.lng}`}
         center={[pt.lat, pt.lng]}
         radius={radius}
         pathOptions={{ color: "#0c7", fillColor: "#0c7", fillOpacity: 0.25 }}
@@ -127,10 +130,15 @@ function renderFeature(item, icon, map) {
     );
   }
 
-  // TODO (futuro): city/admin2/admin1 -> pintar polígonos GeoJSON
-  // De momento, cualquier otra cosa cae a 'point'
+  // Marker con ref para registrar
   return (
-    <Marker key={`pin-${name}-${pt.lat}-${pt.lng}`} position={[pt.lat, pt.lng]} icon={icon}>
+    <Marker
+      position={[pt.lat, pt.lng]}
+      icon={icon}
+      ref={(node) => {
+        if (node) registerMarker(id, node);
+      }}
+    >
       <Popup>
         <strong>{name}</strong>
         {item.ciudad ? <div><b>ciudad:</b> {item.ciudad}</div> : null}
@@ -142,7 +150,7 @@ function renderFeature(item, icon, map) {
 }
 
 /* ───────── Componente principal ───────── */
-export default function MapPage({ selectedTribu, search, onDataLoaded }) {
+export default function MapPage({ selectedTribu, search, onDataLoaded, selectedPlaceId }) {
   const [data, setData] = useState([]);
   const wrapperRef = useRef(null);
 
@@ -150,6 +158,15 @@ export default function MapPage({ selectedTribu, search, onDataLoaded }) {
     () => icons[selectedTribu] || icons.restauradores,
     [selectedTribu]
   );
+
+  // refs para map y markers
+  const mapRef = useRef(null);
+  const markersRef = useRef(new Map()); // id -> L.Marker
+
+  const registerMarker = (id, marker) => {
+    if (!id || !marker) return;
+    markersRef.current.set(id, marker);
+  };
 
   useEffect(() => {
     fetch(`/beterano-map/data/${selectedTribu}.json`)
@@ -166,7 +183,27 @@ export default function MapPage({ selectedTribu, search, onDataLoaded }) {
         setData([]);
         if (onDataLoaded) onDataLoaded(false);
       });
+
+    // limpiar registro al cambiar dataset
+    markersRef.current.clear();
   }, [selectedTribu, search, onDataLoaded]);
+
+  // cuando seleccionan un lugar en la lista -> centrar y destacar
+  useEffect(() => {
+    if (!selectedPlaceId) return;
+    const marker = markersRef.current.get(String(selectedPlaceId));
+    const map = mapRef.current;
+    if (marker && map) {
+      const ll = marker.getLatLng();
+      map.setView(ll, Math.max(map.getZoom(), 10), { animate: true });
+      marker.openPopup?.();
+      // highlight
+      marker._icon?.classList.add("is-highlighted");
+      markersRef.current.forEach((m, id) => {
+        if (id !== String(selectedPlaceId)) m._icon?.classList.remove("is-highlighted");
+      });
+    }
+  }, [selectedPlaceId]);
 
   return (
     <div className="map-leaflet-wrapper" ref={wrapperRef}>
@@ -175,7 +212,10 @@ export default function MapPage({ selectedTribu, search, onDataLoaded }) {
         zoom={5}
         className="leaflet-container"
         style={{ height: "100%", width: "100%" }}
-        whenReady={(ctx) => setTimeout(() => ctx.target.invalidateSize(), 0)}
+        whenReady={(ctx) => {
+          mapRef.current = ctx.target;
+          setTimeout(() => ctx.target.invalidateSize(), 0);
+        }}
       >
         <FixMapSize deps={[selectedTribu, data.length, search]} observeEl={wrapperRef.current} />
 
@@ -185,20 +225,35 @@ export default function MapPage({ selectedTribu, search, onDataLoaded }) {
         />
 
         {/* Render genérico para TODOS los JSON */}
-        <MapContent data={data} icon={currentIcon} search={search} />
+        <MapContent
+          data={data}
+          icon={currentIcon}
+          search={search}
+          registerMarker={registerMarker}
+        />
       </MapContainer>
     </div>
   );
 }
 
 /* Subcomponente para acceder a useMap y pintar features */
-function MapContent({ data, icon, search }) {
+function MapContent({ data, icon, search, registerMarker }) {
   const map = useMap();
 
   return (
     <>
       {Array.isArray(data) &&
-        data.filter((it) => matchesSearch(it, search)).map((it, i) => renderFeature(it, icon, map))}
+        data
+          .filter((it) => matchesSearch(it, search))
+          .map((it) => (
+            <Feature
+              key={getItemId(it)}
+              item={it}
+              icon={icon}
+              map={map}
+              registerMarker={registerMarker}
+            />
+          ))}
     </>
   );
 }
