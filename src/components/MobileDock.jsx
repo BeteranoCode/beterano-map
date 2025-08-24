@@ -55,9 +55,10 @@ export default function MobileDock({
       </button>
 
       {/* centro */}
-      <button className="dock-center" onClick={onCenterClick} aria-label="Garagex">
-        <img src="/assets/garagex-icon.png" alt="Garagex" />
+      <button className="dock-center" aria-label="Garagex" onClick={onCenterClick}>
+      <img src="/assets/garagex-icon.svg" alt="Garagex" />
       </button>
+
 
       {/* 2 derecha */}
       <button className="dock-btn" onClick={onMarket} aria-label={labels.market}>
