@@ -3,10 +3,10 @@
   /* === variables === */
   --center-base: 88px;
 
-  /* Central: -20% respecto al tamaño actual */
+  /* Central: -20% respecto al tamaño anterior */
   --center: calc(var(--center-base) * 0.7 * 1.30 * 0.8);
 
-  /* Dock: -10% respecto al tamaño actual */
+  /* Dock: -10% respecto al tamaño anterior */
   --dock-h: clamp(50px, calc(var(--center) * 0.55 * (10/9)), 72px);
 
   --pad-h: 16px;
@@ -50,11 +50,17 @@
   line-height: 0;
 }
 
-/* SVG minimal (-20%) */
-.mobile-dock .dock-icon {
+/* ===== Iconos SVG (laterales) ===== */
+.mobile-dock .dock-icon,
+.mobile-dock .dock-btn svg {
   display: block;
   width: calc(min(var(--btn), var(--dock-h)) * 0.6 * var(--icon-scale));
   height: calc(min(var(--btn), var(--dock-h)) * 0.6 * var(--icon-scale));
+  stroke: #111;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* ===== Botón central (Garagex) ===== */
@@ -83,12 +89,16 @@
   pointer-events: auto;
 }
 
-.mobile-dock .dock-center img {
+/* ===== Logo Garagex (SVG o <img>) ===== */
+.mobile-dock .dock-center img,
+.mobile-dock .dock-center svg {
   width: 70%;
   height: 70%;
   object-fit: contain;
   display: block;
   pointer-events: none;
+  stroke: #111;         /* si es SVG inline */
+  fill: none;           /* estilo minimal */
 }
 
 /* solo móvil */
