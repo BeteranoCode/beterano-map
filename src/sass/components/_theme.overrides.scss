@@ -1,51 +1,57 @@
 /* ⛳ Overrides de color para imponer el amarillo pastel */
 :root {
-  /* por si quieres tunear rápido desde aquí */
+  /* Ajustes rápidos desde aquí */
   --accent: var(--yellow-main);
   --accent-hover: var(--yellow-strong);
   --accent-surface: var(--yellow-light);
 }
 
-/* Botón “Mostrar lista” (móvil) */
+/* === Botón “Mostrar lista” (móvil) === */
 .toggle-mobile-view,
 button.toggle-mobile-view {
   background: var(--accent) !important;
   color: var(--black) !important;
-  border: 1px solid var(--accent) !important;
+  border: none !important;
+  font-weight: 600;
+  border-radius: 24px;
 }
 .toggle-mobile-view:hover {
   background: var(--accent-hover) !important;
 }
 
-/* Mobile dock (barra inferior) */
+/* === Mobile dock (barra inferior) === */
 .mobile-dock {
   background: var(--accent) !important;
   color: var(--black) !important;
   border-top: 1px solid var(--accent-hover) !important;
 }
 
-/* Por si hay botones del dock con fondo propio */
+/* === Botones/iconos dentro del dock === */
+/* Transparentes, solo icono negro, para homogeneizar con el fondo */
 .mobile-dock button,
 .mobile-dock .dock-btn,
 .mobile-dock .btn {
-  background: var(--accent-surface) !important;
+  background: transparent !important;
+  border: none !important;
   color: var(--black) !important;
-  border: 1px solid var(--accent) !important;
+  box-shadow: none !important;
 }
 .mobile-dock button:hover,
 .mobile-dock .dock-btn:hover,
 .mobile-dock .btn:hover {
-  background: var(--accent-hover) !important;
+  background: rgba(0, 0, 0, 0.05) !important; /* efecto hover sutil */
 }
 
-/* Chips/etiquetas/badges si existen */
-.chip, .tag, .badge--accent {
+/* === Chips/etiquetas/badges (si existen) === */
+.chip,
+.tag,
+.badge--accent {
   background: var(--accent-surface) !important;
   color: var(--black) !important;
   border: 1px solid var(--accent) !important;
 }
 
-/* Botones primarios genéricos por si hay clases reutilizadas */
+/* === Botones primarios genéricos (compatibilidad) === */
 .btn-primary,
 .btn--primary,
 button.primary {
