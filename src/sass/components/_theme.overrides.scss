@@ -44,22 +44,24 @@ button.toggle-mobile-view {
   background: rgba(0, 0, 0, 0.05) !important;
 }
 
-/* === Botón central GarageX === */
-.mobile-dock .dock-btn.garagex {
+/* === Botón central GarageX (dock-center) === */
+.mobile-dock .dock-center {
   background: var(--white) !important;
   border: 2px solid var(--accent) !important;
   border-radius: 50% !important;
-  width: 64px;   /* tamaño círculo */
-  height: 64px;
+  width: 72px;   /* círculo más grande y estable */
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   z-index: 2;
-  /* sobresale un 20% de la altura del dock */
+  /* sobresale un 20% por encima del dock */
   transform: translateY(-20%);
+  flex: 0 0 auto !important; /* evita que flex lo achique */
 }
-.mobile-dock .dock-btn.garagex:hover {
+
+.mobile-dock .dock-center:hover {
   background: var(--accent-hover) !important;
 }
 
