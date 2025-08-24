@@ -1,6 +1,5 @@
 /* ⛳ Overrides de color para imponer el amarillo pastel */
 :root {
-  /* Ajustes rápidos desde aquí */
   --accent: var(--yellow-main);
   --accent-hover: var(--yellow-strong);
   --accent-surface: var(--yellow-light);
@@ -24,10 +23,13 @@ button.toggle-mobile-view {
   background: var(--accent) !important;
   color: var(--black) !important;
   border-top: 1px solid var(--accent-hover) !important;
+  position: relative;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 
 /* === Botones/iconos dentro del dock === */
-/* Transparentes, solo icono negro, para homogeneizar con el fondo */
 .mobile-dock button,
 .mobile-dock .dock-btn,
 .mobile-dock .btn {
@@ -39,10 +41,29 @@ button.toggle-mobile-view {
 .mobile-dock button:hover,
 .mobile-dock .dock-btn:hover,
 .mobile-dock .btn:hover {
-  background: rgba(0, 0, 0, 0.05) !important; /* efecto hover sutil */
+  background: rgba(0, 0, 0, 0.05) !important;
 }
 
-/* === Chips/etiquetas/badges (si existen) === */
+/* === Botón central GarageX === */
+.mobile-dock .dock-btn.garagex {
+  background: var(--white) !important;
+  border: 2px solid var(--accent) !important;
+  border-radius: 50% !important;
+  width: 64px;   /* tamaño círculo */
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  /* sobresale un 20% de la altura del dock */
+  transform: translateY(-20%);
+}
+.mobile-dock .dock-btn.garagex:hover {
+  background: var(--accent-hover) !important;
+}
+
+/* === Chips/etiquetas/badges === */
 .chip,
 .tag,
 .badge--accent {
@@ -51,7 +72,7 @@ button.toggle-mobile-view {
   border: 1px solid var(--accent) !important;
 }
 
-/* === Botones primarios genéricos (compatibilidad) === */
+/* === Botones primarios genéricos === */
 .btn-primary,
 .btn--primary,
 button.primary {
