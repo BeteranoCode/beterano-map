@@ -1,51 +1,105 @@
-/* Barra inferior estilo dock para móvil */
+/* Mobile dock: 2 | center | 2  */
 .mobile-dock {
+  /* === variables === */
+  --center-base: 88px;
+
+  /* Central: -20% respecto al tamaño anterior */
+  --center: calc(var(--center-base) * 0.7 * 1.30 * 0.8);
+
+  /* Dock: -10% respecto al tamaño anterior */
+  --dock-h: clamp(50px, calc(var(--center) * 0.55 * (10/9)), 72px);
+
+  --pad-h: 16px;
+  --btn: clamp(28px, calc(var(--dock-h) - 12px), 52px);
+  --icon-scale: 0.8;
+
   position: fixed;
   left: 0; right: 0; bottom: 0;
-  height: 92px;
-  background: #ffd024;            /* amarillo */
-  border-radius: 28px 28px 0 0;
-  box-shadow: 0 -10px 30px rgba(0,0,0,.18);
+  height: calc(var(--dock-h) + env(safe-area-inset-bottom, 0px));
+  padding: 0 var(--pad-h) env(safe-area-inset-bottom, 0px);
+  background: #ffd024;
+  border-radius: 20px 20px 0 0;
+  box-shadow: none;
   z-index: 9808;
+
   display: grid;
-  grid-template-columns: 1fr 1fr 112px 1fr 1fr; /* hueco central para el botón */
-  align-items: end;
-  padding: 14px 16px 18px;
+  grid-template-columns: var(--btn) var(--btn) var(--center) var(--btn) var(--btn);
+
+  grid-auto-rows: var(--dock-h);
+  align-items: stretch;
+  justify-content: space-between;
+  column-gap: 12px;
+  overflow: visible;
 }
 
-/* Botones laterales */
+/* ===== Botones laterales ===== */
 .mobile-dock .dock-btn {
-  height: 52px; width: 52px;
-  border-radius: 16px;
-  background: #ffd84a;
-  display: grid; place-items: center;
-  box-shadow: 0 6px 14px rgba(0,0,0,.12), inset 0 0 0 2px rgba(0,0,0,.05);
-  border: 0;
-  font-size: 26px;
+  all: unset;
+  box-sizing: border-box;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+  color: #111;
+  cursor: pointer;
+  line-height: 0;
 }
 
-.mobile-dock .emoji { line-height: 1; }
+/* ===== Iconos SVG (laterales) ===== */
+.mobile-dock .dock-icon,
+.mobile-dock .dock-btn svg {
+  display: block;
+  width: calc(min(var(--btn), var(--dock-h)) * 0.6 * var(--icon-scale));
+  height: calc(min(var(--btn), var(--dock-h)) * 0.6 * var(--icon-scale));
+  stroke: #111;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 
-/* Botón central elevado */
+/* ===== Botón central (Garagex) ===== */
 .mobile-dock .dock-center {
-  position: absolute;
-  left: 50%; transform: translateX(-50%);
-  bottom: 18px;
-  width: 88px; height: 88px;
-  border-radius: 999px;
-  border: 8px solid #ffdc3a;
-  background: #111;
-  display: grid; place-items: center;
-  box-shadow: 0 12px 28px rgba(0,0,0,.28);
+  position: relative;
+  grid-column: 3;
+  justify-self: center;
+  align-self: center;
+
+  /* sobresale un 20% de la altura del dock */
+  transform: translateY(calc(-0.20 * var(--dock-h)));
+
+  width: var(--center);
+  height: var(--center);
+  border-radius: 50%;
+  background: #ffd024;
+  border: none;
+  box-shadow: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  line-height: 0;
   z-index: 9810;
-  padding: 0;
+  pointer-events: auto;
 }
 
-.mobile-dock .dock-center img {
-  width: 70%; height: 70%; object-fit: contain;
+/* ===== Logo Garagex (SVG o <img>) ===== */
+.mobile-dock .dock-center img,
+.mobile-dock .dock-center svg {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  stroke: #111;         /* si es SVG inline */
+  fill: none;           /* estilo minimal */
 }
 
-/* Sólo visible en móvil */
-@media (min-width: 901px) {
-  .mobile-dock { display: none; }
-}
+/* solo móvil */
+@media (min-width: 901px) { .mobile-dock { display: none; } }

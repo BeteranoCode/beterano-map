@@ -13,6 +13,8 @@
 @use "./components/_toggle.scss" as *;
 @use "./components/_panel.scss" as *;   /* estilos del modal */
 
+@use "./components/_theme.overrides.scss" as *;
+
 /* RESET */
 html, body {
   margin: 0;

@@ -1,0 +1,89 @@
+/* ⛳ Overrides de color para imponer el amarillo pastel */
+:root {
+  --accent: var(--yellow-main);
+  --accent-hover: var(--yellow-strong);
+  --accent-surface: var(--yellow-light);
+}
+
+/* === Botón “Mostrar lista” (móvil) === */
+.toggle-mobile-view,
+button.toggle-mobile-view {
+  background: var(--accent) !important;
+  color: var(--black) !important;
+  border: none !important;
+  font-weight: 600;
+  border-radius: 24px;
+}
+.toggle-mobile-view:hover {
+  background: var(--accent-hover) !important;
+}
+
+/* === Mobile dock (barra inferior) === */
+.mobile-dock {
+  background: var(--accent) !important;
+  color: var(--black) !important;
+  border-top: 1px solid var(--accent-hover) !important;
+  position: relative;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+/* === Botones/iconos dentro del dock === */
+.mobile-dock button,
+.mobile-dock .dock-btn,
+.mobile-dock .btn {
+  background: transparent !important;
+  border: none !important;
+  color: var(--black) !important;
+  box-shadow: none !important;
+}
+.mobile-dock button:hover,
+.mobile-dock .dock-btn:hover,
+.mobile-dock .btn:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* === Botón central GarageX (dock-center) === */
+.mobile-dock .dock-center {
+  background: var(--white) !important;
+  border: 2px solid var(--accent) !important;
+  border-radius: 50% !important;
+  width: 72px;   /* círculo más grande y estable */
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  /* sobresale un 20% por encima del dock */
+  transform: translateY(-20%);
+  flex: 0 0 auto !important; /* evita que flex lo achique */
+}
+
+.mobile-dock .dock-center:hover {
+  background: var(--accent-hover) !important;
+}
+
+/* === Chips/etiquetas/badges === */
+.chip,
+.tag,
+.badge--accent {
+  background: var(--accent-surface) !important;
+  color: var(--black) !important;
+  border: 1px solid var(--accent) !important;
+}
+
+/* === Botones primarios genéricos === */
+.btn-primary,
+.btn--primary,
+button.primary {
+  background: var(--accent) !important;
+  color: var(--black) !important;
+  border: 1px solid var(--accent) !important;
+}
+.btn-primary:hover,
+.btn--primary:hover,
+button.primary:hover {
+  background: var(--accent-hover) !important;
+}
