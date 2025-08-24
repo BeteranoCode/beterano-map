@@ -1,0 +1,60 @@
+/* ⛳ Overrides de color para imponer el amarillo pastel */
+:root {
+  /* por si quieres tunear rápido desde aquí */
+  --accent: var(--yellow-main);
+  --accent-hover: var(--yellow-strong);
+  --accent-surface: var(--yellow-light);
+}
+
+/* Botón “Mostrar lista” (móvil) */
+.toggle-mobile-view,
+button.toggle-mobile-view {
+  background: var(--accent) !important;
+  color: var(--black) !important;
+  border: 1px solid var(--accent) !important;
+}
+.toggle-mobile-view:hover {
+  background: var(--accent-hover) !important;
+}
+
+/* Mobile dock (barra inferior) */
+.mobile-dock {
+  background: var(--accent) !important;
+  color: var(--black) !important;
+  border-top: 1px solid var(--accent-hover) !important;
+}
+
+/* Por si hay botones del dock con fondo propio */
+.mobile-dock button,
+.mobile-dock .dock-btn,
+.mobile-dock .btn {
+  background: var(--accent-surface) !important;
+  color: var(--black) !important;
+  border: 1px solid var(--accent) !important;
+}
+.mobile-dock button:hover,
+.mobile-dock .dock-btn:hover,
+.mobile-dock .btn:hover {
+  background: var(--accent-hover) !important;
+}
+
+/* Chips/etiquetas/badges si existen */
+.chip, .tag, .badge--accent {
+  background: var(--accent-surface) !important;
+  color: var(--black) !important;
+  border: 1px solid var(--accent) !important;
+}
+
+/* Botones primarios genéricos por si hay clases reutilizadas */
+.btn-primary,
+.btn--primary,
+button.primary {
+  background: var(--accent) !important;
+  color: var(--black) !important;
+  border: 1px solid var(--accent) !important;
+}
+.btn-primary:hover,
+.btn--primary:hover,
+button.primary:hover {
+  background: var(--accent-hover) !important;
+}
