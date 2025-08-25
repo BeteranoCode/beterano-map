@@ -1,4 +1,4 @@
-/* Mobile dock: 2 | center | 2  */
+/* ================== Contenciones para que el dock fijo no se “pegue” ================== */
 html,
 body,
 #root,
@@ -22,15 +22,17 @@ body.has-mobile-dock .map-leaflet-wrapper {
   margin-bottom: 0 !important;
 }
 
-/* ================== DOCK ================== */
+/* ================== DOCK (2 | center | 2) ================== */
 .mobile-dock {
   /* === variables === */
   --center-base: 88px;
 
-  /* Central actual (-30% vs base) */
-  --center: calc(var(--center-base) * 0.7);
-  /* Altura del dock compacta (la que teníamos antes) */
-  --dock-h: clamp(50px, calc(var(--center) * 0.55), 72px);
+  /* ⬇️ mismas proporciones que en gh-pages */
+  /* Central: -20% respecto al tamaño anterior */
+  --center: calc(var(--center-base) * 0.7 * 1.30 * 0.8);
+
+  /* Dock: -10% respecto al tamaño anterior */
+  --dock-h: clamp(50px, calc(var(--center) * 0.55 * (10/9)), 72px);
 
   --pad-h: 16px;
   --btn: clamp(28px, calc(var(--dock-h) - 12px), 52px);
@@ -45,21 +47,22 @@ body.has-mobile-dock .map-leaflet-wrapper {
   width: 100vw !important;
   height: calc(var(--dock-h) + env(safe-area-inset-bottom, 0px));
   padding: 0 var(--pad-h) env(safe-area-inset-bottom, 0px);
-  background: #ffd024;
+
+  /* 🎨 color pastel igual a gh-pages */
+  background: #FBE493;
   border-radius: 20px 20px 0 0;
   box-shadow: none;
-  z-index: 20000 !important; /* > Leaflet panes/popups */
+  z-index: 20000 !important; /* por encima de Leaflet panes/popups */
 
   display: grid;
   grid-template-columns: var(--btn) var(--btn) var(--center) var(--btn) var(--btn);
   grid-auto-rows: var(--dock-h);
-  align-items: center;
+  align-items: stretch;        /* como en gh-pages */
   justify-content: space-between;
   column-gap: 12px;
   overflow: visible;
 
-  /* si algún ancestro tiene transform, lo anulamos arriba;
-     aquí redundamos por si acaso */
+  /* redundancia defensiva */
   transform: none !important;
 }
 
@@ -67,21 +70,31 @@ body.has-mobile-dock .map-leaflet-wrapper {
 .mobile-dock .dock-btn {
   all: unset;
   box-sizing: border-box;
+
   width: 100%;
   height: 100%;
-  display: grid;
-  place-items: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   border-radius: 12px;
   color: #111;
   cursor: pointer;
   line-height: 0;
 }
 
-/* SVG minimal (-20%) — tamaño estable */
-.mobile-dock .dock-icon {
+/* ===== Iconos SVG (laterales) — estilo gh-pages ===== */
+.mobile-dock .dock-icon,
+.mobile-dock .dock-btn svg {
+  display: block;
   width: calc(min(var(--btn), var(--dock-h)) * 0.6 * var(--icon-scale));
   height: calc(min(var(--btn), var(--dock-h)) * 0.6 * var(--icon-scale));
-  display: block;
+  stroke: #111;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* ===== Botón central (Garagex) ===== */
@@ -91,23 +104,26 @@ body.has-mobile-dock .map-leaflet-wrapper {
   justify-self: center;
   align-self: center;
 
-  /* sobresale 20% de la altura del dock */
+  /* sobresale un 20% de la altura del dock */
   transform: translateY(calc(-0.20 * var(--dock-h)));
 
   width: var(--center);
   height: var(--center);
   border-radius: 50%;
-  background: #ffd024;
+  background: #FBE493;   /* mismo color que el dock pastel */
   border: none;
   box-shadow: none;
 
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   line-height: 0;
   z-index: 20002;
   pointer-events: auto;
 }
 
+/* ===== Logo Garagex (SVG o <img>) — estilo minimal ===== */
 .mobile-dock .dock-center img,
 .mobile-dock .dock-center svg {
   width: 70%;
@@ -115,6 +131,8 @@ body.has-mobile-dock .map-leaflet-wrapper {
   object-fit: contain;
   display: block;
   pointer-events: none;
+  stroke: #111;   /* si es SVG inline */
+  fill: none;
 }
 
 /* solo móvil */
