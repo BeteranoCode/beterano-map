@@ -1,28 +1,26 @@
 /* Mobile dock: 2 | center | 2  */
 .mobile-dock {
   /* === variables === */
-  --center-base: 88px;                 /* referencia histórica */
-  --center: calc(var(--center-base) * 0.70); /* central -30% */
-
-  /* ⚙️ Altura del dock (restaurada) */
-  --dock-h: 56px;
+  --center-base: 88px;
+  --center: calc(var(--center-base) * 0.7); /* tamaño integrado */
+  --dock-h: 56px;                           /* altura fija (no crece con SVG) */
 
   --pad-h: 16px;
+  --btn: clamp(28px, calc(var(--dock-h) - 12px), 44px);
+  --icon: 24px;                             /* tamaño fijo icono */
+  --icon-scale: 1;
 
-  /* Botón lateral (restaurado) */
-  --btn: 40px;
-
-  /* Iconos internos -20% */
-  --icon-scale: 0.8;
-
+  /* 👇 Fijo y siempre visible por encima del mapa */
   position: fixed;
-  left: 0; right: 0; bottom: 0;
-  height: calc(var(--dock-h) + env(safe-area-inset-bottom, 0px));
-  padding: 0 var(--pad-h) env(safe-area-inset-bottom, 0px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--dock-h);
+  padding: 0 var(--pad-h);
   background: #ffd024;
   border-radius: 20px 20px 0 0;
   box-shadow: none;
-  z-index: 9999; /* sobre el mapa y panes leaflet */
+  z-index: 10020;                           /* más alto que cualquier pane de Leaflet */
 
   display: grid;
   grid-template-columns: var(--btn) var(--btn) var(--center) var(--btn) var(--btn);
@@ -37,25 +35,22 @@
 .mobile-dock .dock-btn {
   all: unset;
   box-sizing: border-box;
-  width: var(--btn);
-  height: var(--btn);
-  display: grid;
-  place-items: center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 12px;
   color: #111;
   cursor: pointer;
   line-height: 0;
-  /* Evita que el contenido crezca el botón */
-  flex: 0 0 var(--btn);
 }
 
-/* SVG minimal (-20%) y tamaño fijo: no crece el alto del dock */
-.mobile-dock .dock-icon,
-.mobile-dock .dock-btn > svg {
+/* SVG minimal, tamaño controlado (no crece el dock) */
+.mobile-dock .dock-icon {
   display: block;
-  width: calc(var(--btn) * 0.6 * var(--icon-scale));
-  height: calc(var(--btn) * 0.6 * var(--icon-scale));
-  flex: none;
+  width: var(--icon);
+  height: var(--icon);
 }
 
 /* ===== Botón central (Garagex) ===== */
@@ -64,26 +59,22 @@
   grid-column: 3;
   justify-self: center;
   align-self: center;
-
-  /* sobresale un 20% de la altura del dock */
-  transform: translateY(calc(-0.20 * var(--dock-h)));
-
+  transform: translateY(calc(-0.20 * var(--dock-h))); /* sobresale un 20% */
   width: var(--center);
   height: var(--center);
   border-radius: 50%;
-  background: #ffd024;  /* homogéneo con el dock */
+  background: #ffd024;
   border: none;
   box-shadow: none;
-
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   line-height: 0;
-  z-index: 1;
+  z-index: 10022; /* por si acaso sobre el dock */
   pointer-events: auto;
 }
 
-.mobile-dock .dock-center img,
-.mobile-dock .dock-center svg {
+.mobile-dock .dock-center img {
   width: 70%;
   height: 70%;
   object-fit: contain;
