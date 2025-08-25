@@ -4,16 +4,12 @@
 @use "./_mixins.scss" as *;
 @use "./_variables.scss" as *;
 
-/* ⚠️ Legacy/paquete general primero */
-@use "./components/_components.scss" as *;
-
 /* Nuestros componentes que deben ganar */
 @use "./components/_sidebar.scss" as *;
 @use "./components/_map.scss" as *;
 @use "./components/_toggle.scss" as *;
 @use "./components/_panel.scss" as *;   /* estilos del modal */
-
-@use "./components/_theme.overrides.scss" as *;
+@use "./components/_components.scss" as *;
 
 /* RESET */
 html, body {

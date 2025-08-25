@@ -1,26 +1,54 @@
 /* Mobile dock: 2 | center | 2  */
+html,
+body,
+#root,
+.layout-container {
+  /* Evita que un transform/overflow cree un containing block
+     y “pegue” o recorte el position:fixed del dock */
+  transform: none !important;
+  overflow: visible !important;
+}
+
+/* seguridad extra: el mapa jamás debe pasar por encima */
+.map-leaflet-wrapper,
+.leaflet-container {
+  z-index: 0 !important;
+}
+
+/* cuando el dock está visible, no añadimos huecos al mapa */
+body.has-mobile-dock .map-container,
+body.has-mobile-dock .map-leaflet-wrapper {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* ================== DOCK ================== */
 .mobile-dock {
   /* === variables === */
   --center-base: 88px;
-  --center: calc(var(--center-base) * 0.7); /* tamaño integrado */
-  --dock-h: 56px;                           /* altura fija (no crece con SVG) */
+
+  /* Central actual (-30% vs base) */
+  --center: calc(var(--center-base) * 0.7);
+  /* Altura del dock compacta (la que teníamos antes) */
+  --dock-h: clamp(50px, calc(var(--center) * 0.55), 72px);
 
   --pad-h: 16px;
-  --btn: clamp(28px, calc(var(--dock-h) - 12px), 44px);
-  --icon: 24px;                             /* tamaño fijo icono */
-  --icon-scale: 1;
+  --btn: clamp(28px, calc(var(--dock-h) - 12px), 52px);
+  --icon-scale: 0.8;
 
-  /* 👇 Fijo y siempre visible por encima del mapa */
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: var(--dock-h);
-  padding: 0 var(--pad-h);
+  /* ⬇️ SIEMPRE flotante sobre el mapa */
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+
+  width: 100vw !important;
+  height: calc(var(--dock-h) + env(safe-area-inset-bottom, 0px));
+  padding: 0 var(--pad-h) env(safe-area-inset-bottom, 0px);
   background: #ffd024;
   border-radius: 20px 20px 0 0;
   box-shadow: none;
-  z-index: 10020;                           /* más alto que cualquier pane de Leaflet */
+  z-index: 20000 !important; /* > Leaflet panes/popups */
 
   display: grid;
   grid-template-columns: var(--btn) var(--btn) var(--center) var(--btn) var(--btn);
@@ -29,6 +57,10 @@
   justify-content: space-between;
   column-gap: 12px;
   overflow: visible;
+
+  /* si algún ancestro tiene transform, lo anulamos arriba;
+     aquí redundamos por si acaso */
+  transform: none !important;
 }
 
 /* ===== Botones laterales ===== */
@@ -37,20 +69,19 @@
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   border-radius: 12px;
   color: #111;
   cursor: pointer;
   line-height: 0;
 }
 
-/* SVG minimal, tamaño controlado (no crece el dock) */
+/* SVG minimal (-20%) — tamaño estable */
 .mobile-dock .dock-icon {
+  width: calc(min(var(--btn), var(--dock-h)) * 0.6 * var(--icon-scale));
+  height: calc(min(var(--btn), var(--dock-h)) * 0.6 * var(--icon-scale));
   display: block;
-  width: var(--icon);
-  height: var(--icon);
 }
 
 /* ===== Botón central (Garagex) ===== */
@@ -59,22 +90,26 @@
   grid-column: 3;
   justify-self: center;
   align-self: center;
-  transform: translateY(calc(-0.20 * var(--dock-h))); /* sobresale un 20% */
+
+  /* sobresale 20% de la altura del dock */
+  transform: translateY(calc(-0.20 * var(--dock-h)));
+
   width: var(--center);
   height: var(--center);
   border-radius: 50%;
   background: #ffd024;
   border: none;
   box-shadow: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+  display: grid;
+  place-items: center;
   line-height: 0;
-  z-index: 10022; /* por si acaso sobre el dock */
+  z-index: 20002;
   pointer-events: auto;
 }
 
-.mobile-dock .dock-center img {
+.mobile-dock .dock-center img,
+.mobile-dock .dock-center svg {
   width: 70%;
   height: 70%;
   object-fit: contain;
@@ -83,4 +118,6 @@
 }
 
 /* solo móvil */
-@media (min-width: 901px) { .mobile-dock { display: none; } }
+@media (min-width: 901px) {
+  .mobile-dock { display: none; }
+}
