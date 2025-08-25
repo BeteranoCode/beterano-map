@@ -19,12 +19,6 @@
   width: 100%;
   height: 100%;
   min-width: 0;
-
-  /*@media (max-width: 768px) {
-    position: absolute;
-    inset: 0;
-  }
-  */  
 }
 
 .leaflet-container {
@@ -34,7 +28,6 @@
   min-height: 0;
 }
 
-
 /* Contenedor real de Leaflet */
 .leaflet-container {
   height: 100% !important;
@@ -43,9 +36,26 @@
   position: relative; /* ← antes estaba absolute: lo quitamos */
 }
 
+/* === Móvil: mapa a pantalla completa, aunque lo tape el dock === */
+@media (max-width: 768px) {
+  .map-container,
+  .map-leaflet-wrapper,
+  .leaflet-container {
+    height: calc(100dvh - var(--header-offset, 85px)) !important;
+    min-height: calc(100dvh - var(--header-offset, 85px)) !important;
+  }
+
+  /* Cuando el dock está visible, quitamos padding/hueco inferior */
+  body.has-mobile-dock .map-container,
+  body.has-mobile-dock .map-leaflet-wrapper {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+  }
+}
+
+/* Marcador resaltado */
 .leaflet-marker-icon.is-highlighted {
   filter: drop-shadow(0 0 6px rgba(255, 208, 36, .9));
   transform: scale(1.05);
   transition: transform .15s ease, filter .15s ease;
 }
-
