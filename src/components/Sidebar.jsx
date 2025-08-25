@@ -1,6 +1,6 @@
 // src/components/Sidebar.jsx
 import React, { useEffect, useMemo, useState } from "react";
-import { t } from "@/i18n";
+import { t } from "../i18n"; // ← ruta directa a src/i18n
 import FilterModal from "./filters/FilterModal";
 
 const TRIBUS = [
@@ -37,8 +37,12 @@ const DATA_MAP = {
 function someMatch(filterValues, itemValue) {
   if (!Array.isArray(filterValues) || !filterValues.length) return true;
   if (itemValue == null) return false;
-  const haystack = Array.isArray(itemValue) ? itemValue.map(String) : String(itemValue).split(/[;,]/).map(s=>s.trim());
-  return filterValues.some(v => haystack.some(h => h.toLowerCase().includes(String(v).toLowerCase())));
+  const haystack = Array.isArray(itemValue)
+    ? itemValue.map(String)
+    : String(itemValue).split(/[;,]/).map(s => s.trim());
+  return filterValues.some(v =>
+    haystack.some(h => h.toLowerCase().includes(String(v).toLowerCase()))
+  );
 }
 
 export default function Sidebar({
@@ -49,13 +53,15 @@ export default function Sidebar({
   filters = {},
   onApplyFilters = () => {},
 }) {
-  // Re-render on language change
+  // Re-render cuando cambia el idioma
   const [, force] = useState(0);
   useEffect(() => {
     const onLang = () => force(x => x + 1);
-    window.addEventListener("btr:langchange", onLang);
-    window.addEventListener("btr:lang-changed", onLang);
+    window.addEventListener("i18n:loaded", onLang);       // ← nuestro evento
+    window.addEventListener("btr:langchange", onLang);    // compat
+    window.addEventListener("btr:lang-changed", onLang);  // compat
     return () => {
+      window.removeEventListener("i18n:loaded", onLang);
       window.removeEventListener("btr:langchange", onLang);
       window.removeEventListener("btr:lang-changed", onLang);
     };
@@ -80,7 +86,7 @@ export default function Sidebar({
       // 🌍 País
       const matchPais = !filters.pais || item?.pais === filters.pais;
 
-      // 🧩 Skills (Nivel 2, genérico): intenta en varias propiedades
+      // 🧩 Skills (Nivel 2, genérico)
       const matchSkills =
         someMatch(filters.skills, item.skills) ||
         someMatch(filters.skills, item.especialidad) ||
@@ -88,13 +94,15 @@ export default function Sidebar({
         someMatch(filters.skills, item.tags);
 
       // 🚗 Vehículo (Nivel 2, cascada)
-      // buscamos en propiedades comunes que solemos usar en datos: marca/modelo/generacion/vehiculo
-      const byMarca = !filters.veh_marca || [item.marca, item.make, item.veh_marca, item.vehiculo?.marca].some(v => String(v||"").toLowerCase() === String(filters.veh_marca).toLowerCase());
-      const byModelo = !filters.veh_modelo || [item.modelo, item.model, item.veh_modelo, item.vehiculo?.modelo].some(v => String(v||"").toLowerCase() === String(filters.veh_modelo).toLowerCase());
-      const byGen   = !filters.veh_gen || [item.generacion, item.generation, item.veh_gen, item.vehiculo?.generacion].some(v => String(v||"").toLowerCase() === String(filters.veh_gen).toLowerCase());
+      const byMarca  = !filters.veh_marca  || [item.marca, item.make, item.veh_marca, item.vehiculo?.marca]
+        .some(v => String(v||"").toLowerCase() === String(filters.veh_marca).toLowerCase());
+      const byModelo = !filters.veh_modelo || [item.modelo, item.model, item.veh_modelo, item.vehiculo?.modelo]
+        .some(v => String(v||"").toLowerCase() === String(filters.veh_modelo).toLowerCase());
+      const byGen    = !filters.veh_gen    || [item.generacion, item.generation, item.veh_gen, item.vehiculo?.generacion]
+        .some(v => String(v||"").toLowerCase() === String(filters.veh_gen).toLowerCase());
       const matchVehiculo = byMarca && byModelo && byGen;
 
-      // 🎯 Reglas específicas por tribu (mantengo tus casos previos)
+      // 🎯 Reglas específicas por tribu
       let matchByTribu = true;
 
       if (selectedTribu === "abandonos") {
@@ -134,6 +142,11 @@ export default function Sidebar({
     });
   }, [data, search, filters, selectedTribu]);
 
+  // Al pulsar una card emitimos un evento (para que el mapa pueda enfocarla si lo implementas)
+  const focusOnMap = (item) => {
+    window.dispatchEvent(new CustomEvent("map:focus-item", { detail: { item } }));
+  };
+
   return (
     <div className="sidebar__inner">
       {/* HEADER: buscador + botón filtro */}
@@ -157,7 +170,7 @@ export default function Sidebar({
         </button>
       </div>
 
-      {/* TRIBUS (Nivel 1 set de chips) */}
+      {/* TRIBUS */}
       <div className="tribu-filters" role="tablist" aria-label={t("sidebar.title")}>
         {TRIBUS.map(key => {
           const active = key === selectedTribu;
@@ -180,7 +193,13 @@ export default function Sidebar({
           <div className="cards__empty">{t("sidebar.noResults")}</div>
         )}
         {filtered.map((item, i) => (
-          <article key={i} className="card card--list">
+          <article
+            key={i}
+            className="card card--list"
+            onClick={() => focusOnMap(item)}
+            role="button"
+            tabIndex={0}
+          >
             <header className="card__header">
               <h4 className="card__title">
                 {item.nombre || item.titulo || t("sidebar.unnamed")}
