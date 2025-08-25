@@ -5,7 +5,7 @@ import MapPage from "./pages/Map";
 import GaragexToggle from "./components/GaragexToggle";
 import GaragexPanel from "./components/GaragexPanel";
 import MobileDock from "./components/MobileDock";
-import { t, loadLang, getLang, i18n } from "./i18n";
+import { t, loadLang, getLang } from "./i18n";
 
 function App() {
   const [selectedTribu, setSelectedTribu] = useState("restauradores");
