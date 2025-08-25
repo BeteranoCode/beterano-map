@@ -1,29 +1,33 @@
 // src/i18n/index.js
+
 let currentLang = "es";
 let dict = {};
 
 /**
- * Carga un idioma dinámicamente desde ./dictionaries
+ * Carga un JSON de diccionario con ruta segura para Vite (dev, preview y gh-pages)
  */
+async function loadDictSafe(lang2) {
+  try {
+    const url = new URL(`./dictionaries/${lang2}.json`, import.meta.url);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (e) {
+    // fallback a ES
+    const urlEs = new URL("./dictionaries/es.json", import.meta.url);
+    const resEs = await fetch(urlEs);
+    if (!resEs.ok) throw e;
+    currentLang = "es";
+    return await resEs.json();
+  }
+}
+
 export async function loadLang(lang = currentLang) {
   currentLang = (lang || "es").slice(0, 2).toLowerCase();
-  try {
-    dict = await import(`./dictionaries/${currentLang}.json`).then((m) => m.default);
-  } catch {
-    dict = await import(`./dictionaries/es.json`).then((m) => m.default);
-    currentLang = "es";
-  }
-
-  // 🔔 Dispara un evento global para notificar al resto de la app
-  const ev = new CustomEvent("btr:lang-changed", { detail: { lang: currentLang } });
-  window.dispatchEvent(ev);
-
+  dict = await loadDictSafe(currentLang);
   return { lang: currentLang, dict };
 }
 
-/**
- * Traducción con interpolación de variables
- */
 export function t(key, vars = {}) {
   const raw = dict?.[key] ?? key;
   return Object.entries(vars).reduce(
@@ -32,18 +36,6 @@ export function t(key, vars = {}) {
   );
 }
 
-/**
- * Devuelve el idioma actual
- */
 export function getLang() {
   return currentLang;
 }
-
-/**
- * API estilo i18n clásico
- */
-export const i18n = {
-  changeLanguage: loadLang,
-  t,
-  getLang,
-};
