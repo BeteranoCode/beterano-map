@@ -11,7 +11,7 @@
     "email": "info@coolnvintage.com",
     "logo": "coolvintage.svg",
     "coordenadas": { "lat": 38.7169, "lng": -9.1399 },
-    "ubicacion": { "precision": "buffer", "point": { "lat": 38.7169, "lng": -9.1399 }, "buffer_km": 15 },
+    "ubicacion": { "precision": "buffer", "point": { "lat": 38.7169, "lng": -9.1399 }, "buffer_km": 0 },
     "privacidad": { "mostrar": "buffer" },
     "vehiculos": ["land-rover-range-rover-classic"]
   },
@@ -27,7 +27,7 @@
     "email": "contact@the-landrovers.com",
     "logo": "thelandrovers.svg",
     "coordenadas": { "lat": 52.3702, "lng": 4.8952 },
-    "ubicacion": { "precision": "point", "point": { "lat": 52.3702, "lng": 4.8952 } },
+    "ubicacion": { "precision": "point", "point": { "lat": 52.3702, "lng": 4.8952 }, "buffer_km": 0 },
     "privacidad": { "mostrar": "point" },
     "vehiculos": ["land-rover-range-rover-classic"]
   },
@@ -43,7 +43,7 @@
     "email": "info@staydogclassics.com",
     "logo": "staydog.svg",
     "coordenadas": { "lat": 53.5511, "lng": 9.9937 },
-    "ubicacion": { "precision": "buffer", "point": { "lat": 53.5511, "lng": 9.9937 }, "buffer_km": 15 },
+    "ubicacion": { "precision": "buffer", "point": { "lat": 53.5511, "lng": 9.9937 }, "buffer_km": 0 },
     "privacidad": { "mostrar": "buffer" },
     "vehiculos": ["mercedes-benz-claseg-w460"]
   },
@@ -59,7 +59,7 @@
     "email": "hello@roverhaul.com",
     "logo": "roverhaul.svg",
     "coordenadas": { "lat": 39.7392, "lng": -104.9903 },
-    "ubicacion": { "precision": "buffer", "point": { "lat": 39.7392, "lng": -104.9903 }, "buffer_km": 15 },
+    "ubicacion": { "precision": "buffer", "point": { "lat": 39.7392, "lng": -104.9903 }, "buffer_km": 0 },
     "privacidad": { "mostrar": "buffer" },
     "vehiculos": ["land-rover-range-rover-classic"]
   },
@@ -75,7 +75,7 @@
     "email": "contact@project88.co",
     "logo": "project88.svg",
     "coordenadas": { "lat": 28.6139, "lng": 77.209 },
-    "ubicacion": { "precision": "buffer", "point": { "lat": 28.6139, "lng": 77.209 }, "buffer_km": 15 },
+    "ubicacion": { "precision": "buffer", "point": { "lat": 28.6139, "lng": 77.209 }, "buffer_km": 0 },
     "privacidad": { "mostrar": "buffer" },
     "vehiculos": []
   },
@@ -91,7 +91,7 @@
     "email": "info@ruidosgarage.es",
     "logo": "ruidosgarage.svg",
     "coordenadas": { "lat": 36.7213, "lng": -4.4214 },
-    "ubicacion": { "precision": "buffer", "point": { "lat": 36.7213, "lng": -4.4214 }, "buffer_km": 15 },
+    "ubicacion": { "precision": "buffer", "point": { "lat": 36.7213, "lng": -4.4214 }, "buffer_km": 0 },
     "privacidad": { "mostrar": "buffer" },
     "vehiculos": []
   },
@@ -107,13 +107,14 @@
     "email": "info@brandloverlynx.com",
     "logo": "brandloverlynx.svg",
     "coordenadas": { "lat": 40.4168, "lng": -3.7038 },
-    "ubicacion": { "precision": "buffer", "point": { "lat": 40.4168, "lng": -3.7038 }, "buffer_km": 15 },
+    "ubicacion": { "precision": "buffer", "point": { "lat": 40.4168, "lng": -3.7038 }, "buffer_km": 0 },
     "privacidad": { "mostrar": "buffer" },
     "vehiculos": ["land-rover-range-rover-classic", "land-rover-defender-serie3","land-rover-defender-serie1"]
   },
   {
     "nombre": "RRC Barcelona",
     "pais": "España",
+    "pais_iso2": "ES",
     "ciudad": "Barcelona",
     "tipo": ["servicio", "espacio"],
     "descripcion": "Restauración de Range Rover Classic y otros Land Rover en Barcelona.",
@@ -122,7 +123,7 @@
     "email": "contact@rrc-barcelona.com",
     "logo": "rrcbarcelona.svg",
     "coordenadas": { "lat": 41.3874, "lng": 2.1686 },
-    "ubicacion": { "precision": "buffer", "point": { "lat": 41.3874, "lng": 2.1686 }, "buffer_km": 15 },
+    "ubicacion": { "precision": "buffer", "point": { "lat": 41.3874, "lng": 2.1686 }, "buffer_km": 0 },
     "privacidad": { "mostrar": "buffer" },
     "vehiculos": ["land-rover-range-rover-classic"]
   }
