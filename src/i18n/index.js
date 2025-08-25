@@ -22,12 +22,21 @@ async function loadDictSafe(lang2) {
   }
 }
 
+/** Carga idioma y deja currentLang + dict listos */
 export async function loadLang(lang = currentLang) {
-  currentLang = (lang || "es").slice(0, 2).toLowerCase();
+  currentLang = String(lang || "es").slice(0, 2).toLowerCase();
   dict = await loadDictSafe(currentLang);
+
+  // dispara un evento opcional por si alguien quiere reaccionar
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(
+      new CustomEvent("i18n:loaded", { detail: { lang: currentLang } })
+    );
+  }
   return { lang: currentLang, dict };
 }
 
+/** Traducción con sustitución {vars} */
 export function t(key, vars = {}) {
   const raw = dict?.[key] ?? key;
   return Object.entries(vars).reduce(
@@ -39,3 +48,14 @@ export function t(key, vars = {}) {
 export function getLang() {
   return currentLang;
 }
+
+/* ---------- Compatibilidad adicional ---------- */
+export const i18n = { t, loadLang, getLang };
+
+// Expón global para scripts externos que usen window.i18n
+if (typeof window !== "undefined") {
+  window.i18n = i18n;
+}
+
+// Permite `import i18n from "./i18n"`
+export default i18n;
