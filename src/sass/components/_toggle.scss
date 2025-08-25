@@ -13,14 +13,13 @@
 
 .bm-button-wrapper {
   position: fixed;
-  /* MISMA posición para “Mostrar lista” y “Mostrar mapa” */
-  top: calc(var(--header-offset, 85px) + 16px);
+  top: calc(var(--header-offset, 85px) + 8px);
   left: 0;
   width: 100%;
   display: flex;
   justify-content: center;
   background: transparent;
-  z-index: 3000;       /* por encima del mapa */
+  z-index: 500;
   pointer-events: none; /* sólo el botón captura eventos */
 }
 .bm-button-wrapper .bm-toggle-mobile {
@@ -28,10 +27,9 @@
 }
 
 /* ===== Botón inline (móvil, vista lista) ===== */
-/* sticky relativo al scroll del sidebar */
 .bm-button-inline {
   position: sticky;
-  top: 16px;
+  top: 8px;                  /* dentro del scroll de la sidebar */
   z-index: 2;
   display: flex;
   justify-content: center;
@@ -39,21 +37,28 @@
   background: transparent;
 }
 
-/* ==== Estilo base (compartido) ==== */
+/* ==== Estilo base unificado (lista/mapa) ==== */
 .bm-toggle-mobile,
 .toggle-mobile-view {
-  background: #ffd024;
-  color: #111;
-  font-weight: 800;
-  font-size: 20px;            /* ← MISMO tamaño para ambos textos */
+  background: #fcd20b;
+  color: #1a1a1a;
+  font-weight: 600;
+
+  /* ⬇️ Misma tipografía y altura en ambas vistas */
+  font-size: 1.1rem;
+  height: 46px;
+  padding: 0 24px;
+
   border: 0;
-  border-radius: 999px;
-  box-shadow: 0 2px 0 rgba(0,0,0,.18) inset, 0 6px 24px rgba(0,0,0,.16);
+  border-radius: 22px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
   cursor: pointer;
-  height: 48px;               /* ← MISMA altura para ambos */
-  min-width: 240px;           /* ← MISMO ancho mínimo */
-  padding: 0 20px;
-  line-height: 1;
+
+  /* Consistencia vertical */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;           /* sin “rebotes” por line-height */
   white-space: nowrap;
   text-align: center;
 }
@@ -75,7 +80,7 @@
   }
 }
 
-/* Quitar pseudo-iconos (“≡”) venga de donde venga */
+/* Quitar pseudo-iconos */
 #bm-toggle::before,
 #bm-toggle::after,
 .bm-toggle-mobile::before,
@@ -88,22 +93,26 @@
 
 /* ===== Ajustes específicos para móvil ===== */
 @media (max-width: 768px) {
-  /* centrado y anchura */
+  /* tamaño y centrado del botón (mismas medidas que el flotante) */
   .toggle-mobile-view,
   .bm-toggle-mobile {
-    width: auto !important;
-    max-width: 280px;
+    width: 50% !important;
+    max-width: 240px;
     margin: 8px auto;
-    display: block;
-    flex: 0 0 auto;
+    height: 46px;
+    padding: 0 24px;
+    font-size: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  /* vista mapa: el botón flotante deja espacio arriba */
+  /* vista mapa: offset para no tapar el botón flotante */
   .bm-button-wrapper ~ .layout-container {
     padding-top: var(--mobile-toggle-offset) !important;
   }
 
-  /* vista lista: sin padding extra; el sticky ya ocupa su altura */
+  /* vista lista: sin padding extra arriba */
   .sidebar { position: relative; }
   .sidebar .sidebar__inner {
     padding-top: 0;
