@@ -1,13 +1,11 @@
 // src/App.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import MapPage from "./pages/Map";
-import { t } from "./i18n";
-
-/* ✅ Garagex */
 import GaragexToggle from "./components/GaragexToggle";
 import GaragexPanel from "./components/GaragexPanel";
 import MobileDock from "./components/MobileDock";
+import { t, loadLang, getLang } from "./i18n";
 
 function App() {
   const [selectedTribu, setSelectedTribu] = useState("restauradores");
@@ -20,16 +18,74 @@ function App() {
 
   /* ✅ Estado Garagex */
   const [garageOpen, setGarageOpen] = useState(false);
-  const toggleGarage = () => setGarageOpen((v) => !v);
+  const toggleGarage = () => setGarageOpen(v => !v);
   const closeGarage = () => setGarageOpen(false);
 
-  // Handlers placeholder (sustituye por navegación real)
+  /* 🌐 Estado para forzar re-render cuando cambia el idioma */
+  const [langTick, setLangTick] = useState(0);
+
+  // ---- Navegación para el dock (placeholder) ----
   const goCalendar = () => console.log("Calendario");
   const goMarketplace = () => console.log("Marketplace");
   const goNews = () => console.log("News");
   const goMechAI = () => console.log("Mech AI");
 
-  // Calcula offset del header externo con observadores robustos
+  // =========== 1) Cargar idioma inicial ===========
+  useEffect(() => {
+    const initLang = async () => {
+      // 1) leído de localStorage (si lo usas) o del <html lang=".."> o del navegador
+      const stored =
+        localStorage.getItem("btr:lang") ||
+        document.documentElement.getAttribute("lang") ||
+        navigator.language ||
+        "es";
+      const wanted = String(stored).slice(0, 2).toLowerCase();
+
+      await loadLang(wanted);
+      // si quieres persistir:
+      localStorage.setItem("btr:lang", getLang());
+      setLangTick(x => x + 1); // fuerza re-render para que t() use el diccionario cargado
+    };
+    initLang();
+  }, []);
+
+  // =========== 2) Escuchar cambios de idioma del header ===========
+  useEffect(() => {
+    // API estilo i18next por compatibilidad
+    const onI18nChange = async (lng) => {
+      await loadLang(lng);
+      localStorage.setItem("btr:lang", getLang());
+      setLangTick(x => x + 1);
+      // Cierra el menú del header si estuviera abierto
+      document.querySelector(".nav-wrapper")?.classList.remove("open");
+    };
+
+    // Distintos eventos que el header puede emitir
+    const handlerFromEvent = async (e) => {
+      const cand =
+        e?.detail?.lang ||
+        e?.detail?.language ||
+        e?.target?.value ||
+        e?.target?.dataset?.lang ||
+        document.documentElement.getAttribute("lang");
+      const lng = (cand || "es").slice(0, 2).toLowerCase();
+      await onI18nChange(lng);
+    };
+
+    i18n.on("languageChanged", onI18nChange); // nuestro alias
+    window.addEventListener("btr:lang-changed", handlerFromEvent);
+    window.addEventListener("btr:langchange", handlerFromEvent);
+    window.addEventListener("beteranoHeaderLangChange", handlerFromEvent);
+
+    return () => {
+      i18n.off("languageChanged", onI18nChange);
+      window.removeEventListener("btr:lang-changed", handlerFromEvent);
+      window.removeEventListener("btr:langchange", handlerFromEvent);
+      window.removeEventListener("beteranoHeaderLangChange", handlerFromEvent);
+    };
+  }, []);
+
+  // =========== 3) Calcular offset del header externo ===========
   useEffect(() => {
     const isLocal = location.hostname === "localhost";
 
@@ -61,14 +117,12 @@ function App() {
 
     const headerContainer = document.getElementById("header-container") || document.body;
 
-    // Observa cambios de tamaño
     let ro;
     if (window.ResizeObserver) {
       ro = new ResizeObserver(() => computeOffset());
       ro.observe(headerContainer);
     }
 
-    // Observa cambios en el DOM (por si el header se inyecta más tarde)
     const mo = new MutationObserver(() => computeOffset());
     mo.observe(document.body, { childList: true, subtree: true });
 
@@ -81,7 +135,6 @@ function App() {
     document.addEventListener("beteranoHeaderReady", onHdrReady);
     window.addEventListener("beteranoHeaderReady", onHdrReady);
 
-    // Primer cálculo inmediato
     computeOffset();
 
     return () => {
@@ -94,40 +147,32 @@ function App() {
     };
   }, []);
 
-  // Detectar móvil al redimensionar
+  // =========== 4) Otras UX: cerrar menú idioma al clicar fuera ===========
+  useEffect(() => {
+    const closeMenu = () => {
+      document.querySelector(".nav-wrapper")?.classList.remove("open");
+    };
+    const onDocClick = (e) => {
+      const trg = e.target;
+      if (!trg) return;
+      const hit = trg.closest?.("#language-selector, .language-menu, [data-lang], .language-option");
+      if (hit) closeMenu();
+    };
+    document.addEventListener("click", onDocClick);
+    return () => document.removeEventListener("click", onDocClick);
+  }, []);
+
+  // =========== 5) Detectar móvil ===========
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Cerrar menú del header al cambiar idioma
-  useEffect(() => {
-    const closeMenu = () => {
-      document.querySelector(".nav-wrapper")?.classList.remove("open");
-    };
-    const langEvents = ["btr:lang-changed", "btr:langchange", "beteranoHeaderLangChange"];
-    langEvents.forEach((ev) => window.addEventListener(ev, closeMenu));
-
-    const onDocClick = (e) => {
-      const t = e.target;
-      if (!t) return;
-      const clickedLang =
-        t.closest?.("#language-selector, .language-menu, [data-lang], .language-option");
-      if (clickedLang) closeMenu();
-    };
-    document.addEventListener("click", onDocClick);
-
-    return () => {
-      langEvents.forEach((ev) => window.removeEventListener(ev, closeMenu));
-      document.removeEventListener("click", onDocClick);
-    };
-  }, []);
-
-  // 👉 Mostrar dock sólo en móvil + mapa
+  // Mostrar dock sólo en móvil + mapa
   const showMobileDock = isMobile && mobileView === "map";
 
-  // Añade clase al body cuando el dock está visible (por si quieres estilos globales)
+  // Añade clase al body cuando el dock está visible (por si necesitas estilos globales)
   useEffect(() => {
     const cls = "has-mobile-dock";
     if (showMobileDock) document.body.classList.add(cls);
@@ -135,11 +180,24 @@ function App() {
     return () => document.body.classList.remove(cls);
   }, [showMobileDock]);
 
+  // Evita parpadeos antes de tener header + idioma cargados
   const isLocal = location.hostname === "localhost";
-  if (!headerReady && !isLocal) return null;
+  const ready = headerReady && langTick > 0;
+  if (!ready && !isLocal) return null;
+
+  // Etiquetas del dock (memorizadas por idioma)
+  const dockLabels = useMemo(
+    () => ({
+      calendar: t("ui.calendar") || "Calendario",
+      mech: "Mech AI",
+      market: "Marketplace",
+      news: "News",
+    }),
+    [langTick]
+  );
 
   return (
-    <div className="layout-container">
+    <div className="layout-container" data-lang={getLang()}>
       {isMobile ? (
         mobileView === "list" ? (
           <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
@@ -205,7 +263,7 @@ function App() {
         </>
       )}
 
-      {/* 🔑 Panel Garagex (común a ambas vistas) */}
+      {/* 🔑 Panel Garagex */}
       <GaragexPanel open={garageOpen} onClose={closeGarage} />
 
       {/* 🔘 Toggle/Dock según viewport */}
@@ -217,12 +275,7 @@ function App() {
             onMarket={goMarketplace}
             onNews={goNews}
             onMechAI={goMechAI}
-            labels={{
-              calendar: t("ui.calendar") ?? "Calendario",
-              mech: "Mech AI",
-              market: "Marketplace",
-              news: "News",
-            }}
+            labels={dockLabels}
           />
         ) : null
       ) : (

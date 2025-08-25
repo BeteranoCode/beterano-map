@@ -13,13 +13,14 @@
 
 .bm-button-wrapper {
   position: fixed;
-  top: calc(var(--header-offset, 85px) + 8px);
+  /* MISMA posición para “Mostrar lista” y “Mostrar mapa” */
+  top: calc(var(--header-offset, 85px) + 16px);
   left: 0;
   width: 100%;
   display: flex;
   justify-content: center;
   background: transparent;
-  z-index: 500;
+  z-index: 3000;       /* por encima del mapa */
   pointer-events: none; /* sólo el botón captura eventos */
 }
 .bm-button-wrapper .bm-toggle-mobile {
@@ -27,29 +28,32 @@
 }
 
 /* ===== Botón inline (móvil, vista lista) ===== */
-/* top relativo al contenedor con scroll (sidebar) */
+/* sticky relativo al scroll del sidebar */
 .bm-button-inline {
   position: sticky;
-  top: 8px;
+  top: 16px;
   z-index: 2;
   display: flex;
   justify-content: center;
-  padding: 4px 0 8px;   /* deja un pequeño respiro debajo del botón */
+  padding: 4px 0 8px;
   background: transparent;
 }
 
-/* ==== Estilo base ==== */
+/* ==== Estilo base (compartido) ==== */
 .bm-toggle-mobile,
 .toggle-mobile-view {
-  background: #fcd20b;
-  font-weight: 600;
-  font-size: 1.1rem;
+  background: #ffd024;
+  color: #111;
+  font-weight: 800;
+  font-size: 20px;            /* ← MISMO tamaño para ambos textos */
   border: 0;
-  border-radius: 18px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  border-radius: 999px;
+  box-shadow: 0 2px 0 rgba(0,0,0,.18) inset, 0 6px 24px rgba(0,0,0,.16);
   cursor: pointer;
-  padding: 10px 16px;
-  line-height: 1.1;
+  height: 48px;               /* ← MISMA altura para ambos */
+  min-width: 240px;           /* ← MISMO ancho mínimo */
+  padding: 0 20px;
+  line-height: 1;
   white-space: nowrap;
   text-align: center;
 }
@@ -84,11 +88,11 @@
 
 /* ===== Ajustes específicos para móvil ===== */
 @media (max-width: 768px) {
-  /* tamaño y centrado del botón */
+  /* centrado y anchura */
   .toggle-mobile-view,
   .bm-toggle-mobile {
-    width: 50% !important;
-    max-width: 240px;
+    width: auto !important;
+    max-width: 280px;
     margin: 8px auto;
     display: block;
     flex: 0 0 auto;
@@ -99,9 +103,9 @@
     padding-top: var(--mobile-toggle-offset) !important;
   }
 
-  /* vista lista: ⛔️ sin padding extra; el botón sticky ya ocupa su altura */
+  /* vista lista: sin padding extra; el sticky ya ocupa su altura */
   .sidebar { position: relative; }
   .sidebar .sidebar__inner {
-    padding-top: 0; /* <— QUITAMOS EL OFFSET QUE CREABA HUECO */
+    padding-top: 0;
   }
 }

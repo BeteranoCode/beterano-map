@@ -1,5 +1,6 @@
+// src/pages/Map.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -47,20 +48,17 @@ function FixMapSize({ deps = [], observeEl }) {
   const map = useMap();
 
   useEffect(() => {
-    // 1) en montaje
     const t = setTimeout(() => map.invalidateSize(), 150);
     return () => clearTimeout(t);
   }, [map]);
 
   useEffect(() => {
-    // 2) si cambian dependencias (tribu, datos, búsqueda)
     const t = setTimeout(() => map.invalidateSize(), 150);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map, ...deps]);
 
   useEffect(() => {
-    // 3) si cambia tamaño del contenedor (sidebar abierto/cerrado, etc.)
     if (!observeEl) return;
     const ro = new ResizeObserver(() => map.invalidateSize());
     ro.observe(observeEl);
@@ -71,37 +69,88 @@ function FixMapSize({ deps = [], observeEl }) {
 }
 
 /* ───────── Helpers ───────── */
-function renderMarkers(data, icon, popupFields = ["nombre", "ciudad", "pais", "descripcion"], search = "") {
-  if (!Array.isArray(data)) return null;
-  return data
-    .filter(item =>
-      !search ||
-      [item.nombre, item.ciudad, item.pais, item.descripcion]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase()
-        .includes(search.toLowerCase())
-    )
-    .map((item, idx) => (
-      <Marker
-        key={item.nombre || item.id || idx}
-        position={[
-          item.coordenadas?.lat ?? item.lat,
-          item.coordenadas?.lng ?? item.lng
-        ]}
-        icon={icon}
+
+// Devuelve el punto {lat,lng} desde diferentes formatos (retrocompatible)
+function getPoint(item) {
+  const p = item?.ubicacion?.point || item?.coordenadas || null;
+  if (p && typeof p.lat === "number" && typeof p.lng === "number") return p;
+  if (typeof item?.lat === "number" && typeof item?.lng === "number") {
+    return { lat: item.lat, lng: item.lng };
+  }
+  return null;
+}
+
+// Devuelve la "precision" a pintar (privacidad.mostrar tiene prioridad)
+function getPrecision(item) {
+  const mostrar = item?.privacidad?.mostrar;
+  if (mostrar) return mostrar; // "buffer" | "point" | "city" | "admin2" | "admin1"
+  return item?.ubicacion?.precision || "point";
+}
+
+function matchesSearch(item, search = "") {
+  if (!search) return true;
+  const haystack = [item.nombre, item.ciudad, item.pais, item.descripcion]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return haystack.includes(search.toLowerCase());
+}
+
+function getItemId(it) {
+  return it?.id ?? it?.uuid ?? `${it?.nombre ?? "item"}_${getPoint(it)?.lat ?? "?"}_${getPoint(it)?.lng ?? "?"}`;
+}
+
+/* Pinta Marker o Circle según precision y registra markers en un Map() */
+function Feature({ item, icon, map, registerMarker }) {
+  const precision = getPrecision(item);
+  const pt = getPoint(item);
+  const name = item?.nombre || "Sin nombre";
+  const id = getItemId(item);
+
+  if (!pt) return null;
+
+  if (precision === "buffer") {
+    const km = Number(item?.ubicacion?.buffer_km) || 10;
+    const radius = km * 1000;
+    return (
+      <Circle
+        center={[pt.lat, pt.lng]}
+        radius={radius}
+        pathOptions={{ color: "#0c7", fillColor: "#0c7", fillOpacity: 0.25 }}
+        eventHandlers={{
+          click: (e) => map.fitBounds(e.target.getBounds(), { padding: [20, 20] }),
+        }}
       >
         <Popup>
-          {popupFields.map(field => item[field] && (
-            <div key={field}><b>{field}:</b> {item[field]}</div>
-          ))}
+          <strong>{name}</strong>
+          {km ? <div>Radio: {km} km</div> : null}
+          {item.descripcion ? <div>{item.descripcion}</div> : null}
         </Popup>
-      </Marker>
-    ));
+      </Circle>
+    );
+  }
+
+  // Marker con ref para registrar
+  return (
+    <Marker
+      position={[pt.lat, pt.lng]}
+      icon={icon}
+      ref={(node) => {
+        if (node) registerMarker(id, node);
+      }}
+    >
+      <Popup>
+        <strong>{name}</strong>
+        {item.ciudad ? <div><b>ciudad:</b> {item.ciudad}</div> : null}
+        {item.pais ? <div><b>pais:</b> {item.pais}</div> : null}
+        {item.descripcion ? <div>{item.descripcion}</div> : null}
+      </Popup>
+    </Marker>
+  );
 }
 
 /* ───────── Componente principal ───────── */
-export default function MapPage({ selectedTribu, search, onDataLoaded }) {
+export default function MapPage({ selectedTribu, search, onDataLoaded, selectedPlaceId }) {
   const [data, setData] = useState([]);
   const wrapperRef = useRef(null);
 
@@ -110,19 +159,22 @@ export default function MapPage({ selectedTribu, search, onDataLoaded }) {
     [selectedTribu]
   );
 
+  // refs para map y markers
+  const mapRef = useRef(null);
+  const markersRef = useRef(new Map()); // id -> L.Marker
+
+  const registerMarker = (id, marker) => {
+    if (!id || !marker) return;
+    markersRef.current.set(id, marker);
+  };
+
   useEffect(() => {
     fetch(`/beterano-map/data/${selectedTribu}.json`)
       .then(res => res.json())
       .then(json => {
         setData(json);
         if (onDataLoaded) {
-          const filtered = json.filter(item =>
-            !search || [item.nombre, item.ciudad, item.pais, item.descripcion]
-              .filter(Boolean)
-              .join(" ")
-              .toLowerCase()
-              .includes(search.toLowerCase())
-          );
+          const filtered = json.filter((it) => matchesSearch(it, search));
           onDataLoaded(filtered.length > 0);
         }
       })
@@ -131,7 +183,27 @@ export default function MapPage({ selectedTribu, search, onDataLoaded }) {
         setData([]);
         if (onDataLoaded) onDataLoaded(false);
       });
+
+    // limpiar registro al cambiar dataset
+    markersRef.current.clear();
   }, [selectedTribu, search, onDataLoaded]);
+
+  // cuando seleccionan un lugar en la lista -> centrar y destacar
+  useEffect(() => {
+    if (!selectedPlaceId) return;
+    const marker = markersRef.current.get(String(selectedPlaceId));
+    const map = mapRef.current;
+    if (marker && map) {
+      const ll = marker.getLatLng();
+      map.setView(ll, Math.max(map.getZoom(), 10), { animate: true });
+      marker.openPopup?.();
+      // highlight
+      marker._icon?.classList.add("is-highlighted");
+      markersRef.current.forEach((m, id) => {
+        if (id !== String(selectedPlaceId)) m._icon?.classList.remove("is-highlighted");
+      });
+    }
+  }, [selectedPlaceId]);
 
   return (
     <div className="map-leaflet-wrapper" ref={wrapperRef}>
@@ -141,7 +213,7 @@ export default function MapPage({ selectedTribu, search, onDataLoaded }) {
         className="leaflet-container"
         style={{ height: "100%", width: "100%" }}
         whenReady={(ctx) => {
-          // invalidamos en cuanto Leaflet termine de preparar capas
+          mapRef.current = ctx.target;
           setTimeout(() => ctx.target.invalidateSize(), 0);
         }}
       >
@@ -152,8 +224,36 @@ export default function MapPage({ selectedTribu, search, onDataLoaded }) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {renderMarkers(data, currentIcon, undefined, search)}
+        {/* Render genérico para TODOS los JSON */}
+        <MapContent
+          data={data}
+          icon={currentIcon}
+          search={search}
+          registerMarker={registerMarker}
+        />
       </MapContainer>
     </div>
+  );
+}
+
+/* Subcomponente para acceder a useMap y pintar features */
+function MapContent({ data, icon, search, registerMarker }) {
+  const map = useMap();
+
+  return (
+    <>
+      {Array.isArray(data) &&
+        data
+          .filter((it) => matchesSearch(it, search))
+          .map((it) => (
+            <Feature
+              key={getItemId(it)}
+              item={it}
+              icon={icon}
+              map={map}
+              registerMarker={registerMarker}
+            />
+          ))}
+    </>
   );
 }
