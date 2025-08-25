@@ -1,39 +1,30 @@
-/*.map-leaflet-wrapper {
-  flex: 1 1 auto;
-  width: 100%;
-  height: 100%;
-  position: relative;
-  min-width: 0;
-
-  @media (max-width: 768px) {
-    width: 100vw;
-    height: 100vh;
-    min-width: 0;
-  }
-}
-*/
-
 .map-leaflet-wrapper {
-  position: absolute; /* rellena map-container */
+  position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   min-width: 0;
+  z-index: 0; /* mapa por debajo del dock */
 }
 
 .leaflet-container {
   height: 100% !important;
   width: 100% !important;
+  min-height: 0;
   position: relative;
-  min-height: 0;
+  z-index: 0;
 }
 
-/* Contenedor real de Leaflet */
-.leaflet-container {
-  height: 100% !important;
-  width: 100% !important;
-  min-height: 0;
-  position: relative; /* ← antes estaba absolute: lo quitamos */
+/* Marcadores resaltados */
+.leaflet-marker-icon.is-highlighted {
+  filter: drop-shadow(0 0 6px rgba(255, 208, 36, .9));
+  transform: scale(1.05);
+  transition: transform .15s ease, filter .15s ease;
+}
+
+/* Anular transform: evita que el dock (fixed) se vuelva relativo */
+.layout-container {
+  transform: none !important;
 }
 
 /* === Móvil: mapa a pantalla completa, aunque lo tape el dock === */
@@ -45,17 +36,10 @@
     min-height: calc(100dvh - var(--header-offset, 85px)) !important;
   }
 
-  /* Cuando el dock está visible, quitamos padding/hueco inferior */
+  /* Sin hueco extra cuando está el dock */
   body.has-mobile-dock .map-container,
   body.has-mobile-dock .map-leaflet-wrapper {
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
   }
-}
-
-/* Marcador resaltado */
-.leaflet-marker-icon.is-highlighted {
-  filter: drop-shadow(0 0 6px rgba(255, 208, 36, .9));
-  transform: scale(1.05);
-  transition: transform .15s ease, filter .15s ease;
 }
