@@ -146,3 +146,62 @@
     }
   }
 }
+
+
+/* =================== Sidebar: top fijo + carrusel =================== */
+
+/* El envoltorio scrollea; el top queda fijo dentro */
+.sidebar {
+  /* nada aquí por ahora */
+}
+
+.sidebar__inner {
+  position: relative;
+}
+
+/* Franja superior fija (buscador + carrusel) */
+.sidebar__top {
+  position: sticky;
+  top: 8px;              /* queda debajo del botón sticky superior si lo hubiera */
+  z-index: 3;
+  padding-bottom: 8px;
+  background: #fff;      /* pinta fondo para que no se “mezcle” al hacer scroll */
+  /* opcional: un leve blur si usas backdrop-filter en el proyecto */
+}
+
+/* Carrusel horizontal de tribus */
+.tribu-scroller {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;           /* Firefox */
+  padding: 6px 0 2px;
+}
+.tribu-scroller::-webkit-scrollbar { display: none; } /* WebKit */
+
+.tribu-track {
+  display: inline-flex;
+  gap: 10px;
+  min-width: 100%;
+}
+
+/* Chip/btn de tribu (una sola fila) */
+.tribe-chip {
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 18px;
+  padding: 8px 14px;
+  background: #f1f3f5;
+  color: #111;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.tribe-chip.active {
+  background: #ffd024;
+}
+
+/* La lista queda debajo y usa todo el alto disponible */
+.cards {
+  /* sin toques especiales: el contenedor que scrollea es el aside */
+}
