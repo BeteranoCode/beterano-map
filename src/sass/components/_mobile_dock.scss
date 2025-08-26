@@ -44,7 +44,14 @@ body.has-mobile-dock .map-leaflet-wrapper {
   right: 0 !important;
   bottom: 0 !important;
 
-  width: 100vw !important;
+  /* ⚠️ Importante: evitar desbordes laterales en móvil
+     - 100vw incluye la barra de scroll y puede “salirse”.
+     - width:100% + box-sizing:border-box respeta el viewport real.
+     - max-width:100dvw como cinturón y tirantes. */
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 100dvw;
+
   height: calc(var(--dock-h) + env(safe-area-inset-bottom, 0px));
   padding: 0 var(--pad-h) env(safe-area-inset-bottom, 0px);
 
