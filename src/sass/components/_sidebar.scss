@@ -162,11 +162,16 @@
 /* Franja superior fija (buscador + carrusel) */
 .sidebar__top {
   position: sticky;
-  top: 8px;              /* queda debajo del botón sticky superior si lo hubiera */
-  z-index: 3;
-  padding-bottom: 8px;
-  background: #fff;      /* pinta fondo para que no se “mezcle” al hacer scroll */
-  /* opcional: un leve blur si usas backdrop-filter en el proyecto */
+    /* se fija JUSTO por debajo del botón inline */
+  top: calc(8px + var(--bm-inline-h, 74px));
+  z-index: 6;                       /* debajo del botón, encima de cards */
+  padding: 0 0 8px 0;
+
+  /* Fondo opaco pastel para evitar “traslucir” cards al hacer scroll */
+  background: #FBE493;
+
+  /* Separación visual suave del listado */
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
 
 /* Carrusel horizontal de tribus */

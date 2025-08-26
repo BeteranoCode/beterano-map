@@ -31,11 +31,15 @@
 .bm-button-inline {
   position: sticky;
   top: 8px;                  /* dentro del scroll de la sidebar */
-  z-index: 3;                /* por encima del contenido de la lista */
+  z-index: 7;                /* por encima del contenido de la lista */
   display: flex;
   justify-content: center;
   padding: 4px 0 8px;        /* respiración visual */
-  background: transparent;
+  /* Fondo opaco pastel para que no se vean cards por debajo */
+  background: #FBE493;
+    /* Exponemos su altura para calcular el offset del bloque de arriba */
+  /* Ajusta este valor si tu wrapper mide distinto en tu UI */
+  --bm-inline-h: 74px;
 }
 
 /* ==== Estilo base ==== */
