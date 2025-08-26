@@ -27,26 +27,28 @@
 }
 
 /* ===== Botón inline (móvil, vista lista) ===== */
-/* En móvil lo hacemos también FIXED para que comparta EXACTA posición. */
+/* top relativo al contenedor con scroll (sidebar) */
 .bm-button-inline {
-  position: sticky; /* desktop/tablet */
-  top: 8px;
-  z-index: 2;
+  position: sticky;
+  top: 8px;                  /* dentro del scroll de la sidebar */
+  z-index: 3;                /* por encima del contenido de la lista */
   display: flex;
   justify-content: center;
-  padding: 4px 0 8px;
+  padding: 4px 0 8px;        /* respiración visual */
   background: transparent;
 }
 
-/* ==== Estilo base unificado ==== */
+/* ==== Estilo base ==== */
 .bm-toggle-mobile,
 .toggle-mobile-view {
   background: #fcd20b;
   color: #1a1a1a;
   font-weight: 600;
 
+  /* Dimensiones unificadas */
+  --toggle-h: 46px;
+  height: var(--toggle-h);
   font-size: 1.1rem;
-  height: 46px;
   padding: 0 24px;
 
   border: 0;
@@ -60,6 +62,40 @@
   line-height: 1;
   white-space: nowrap;
   text-align: center;
+}
+
+/* 👇 Empuja la lista para que empiece justo debajo del botón sticky */
+@media (max-width: 768px) {
+  /* El contenedor del botón reserva espacio bajo él
+     para evitar solapar los chips al hacerse sticky */
+  .bm-button-inline {
+    /* botón (46px) + padding inferior (8px) ≈ 54px */
+    margin-bottom: calc(var(--toggle-h) + 8px);
+  }
+
+  .toggle-mobile-view,
+  .bm-toggle-mobile {
+    width: 50% !important;
+    max-width: 240px;
+    margin: 8px auto;
+    height: var(--toggle-h);
+    padding: 0 24px;
+    font-size: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* vista mapa: offset para no tapar el botón flotante */
+  .bm-button-wrapper ~ .layout-container {
+    padding-top: var(--mobile-toggle-offset) !important;
+  }
+
+  /* vista lista: sin padding extra en el propio inner */
+  .sidebar { position: relative; }
+  .sidebar .sidebar__inner {
+    padding-top: 0;
+  }
 }
 
 /* ==== Compatibilidad legacy con #bm-toggle SOLO en escritorio ==== */
@@ -79,7 +115,7 @@
   }
 }
 
-/* Quitar pseudo-iconos */
+/* Quitar pseudo-iconos (“≡”) venga de donde venga */
 #bm-toggle::before,
 #bm-toggle::after,
 .bm-toggle-mobile::before,
@@ -88,49 +124,4 @@
 .toggle-mobile-view::after {
   content: "" !important;
   display: none !important;
-}
-
-/* ===== Ajustes específicos para móvil ===== */
-@media (max-width: 768px) {
-  /* tamaño y centrado del botón */
-  .toggle-mobile-view,
-  .bm-toggle-mobile {
-    width: 50% !important;
-    max-width: 240px;
-    margin: 8px auto;
-    height: 46px;
-    padding: 0 24px;
-    font-size: 1.1rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* ⬇️ AHORA inline es fixed como el flotante */
-  .bm-button-inline {
-    position: fixed;
-    top: calc(var(--header-offset, 85px) + 8px);
-    left: 0;
-    right: 0;
-    width: 100%;
-    z-index: 501;
-    padding: 0;               /* no afecte a layout */
-    background: transparent;
-    pointer-events: none;     /* sólo el botón recibe clics */
-  }
-  .bm-button-inline .bm-toggle-mobile {
-    pointer-events: auto;
-    margin: 0 auto;
-  }
-
-  /* vista mapa: offset para no tapar el botón flotante */
-  .bm-button-wrapper ~ .layout-container {
-    padding-top: var(--mobile-toggle-offset) !important;
-  }
-
-  /* vista lista: sin padding extra arriba; el botón ya es overlay */
-  .sidebar { position: relative; }
-  .sidebar .sidebar__inner {
-    padding-top: 0;
-  }
 }
