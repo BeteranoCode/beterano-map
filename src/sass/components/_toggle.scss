@@ -3,7 +3,7 @@
 
 /* ===== Vars útiles ===== */
 :root {
-  --mobile-toggle-offset: 72px; /* altura del botón + respiración */
+  --mobile-toggle-offset: 72px; /* altura aprox. del botón + respiración */
 }
 
 /* ===== Botón flotante (móvil, vista mapa) ===== */
@@ -19,8 +19,8 @@
   display: flex;
   justify-content: center;
   background: transparent;
-  z-index: 10030;              /* por encima del mapa/dock */
-  pointer-events: none;        /* sólo el botón captura eventos */
+  z-index: 500;
+  pointer-events: none; /* sólo el botón captura eventos */
 }
 .bm-button-wrapper .bm-toggle-mobile {
   pointer-events: auto;
@@ -28,13 +28,14 @@
 
 /* ===== Botón inline (móvil, vista lista) ===== */
 .bm-button-inline {
+  /* ⬇️ igualamos estilo/posicionamiento al botón flotante */
   position: sticky;
-  top: 8px;                   /* dentro del scroll de la sidebar */
-  z-index: 2;
+  top: calc(var(--header-offset, 85px) + 8px);
+  z-index: 500;
   display: flex;
   justify-content: center;
-  padding: 4px 0 8px;
   background: transparent;
+  padding: 0; /* quitamos padding extra */
 }
 
 /* ==== Estilo base unificado (lista/mapa) ==== */
@@ -44,7 +45,7 @@
   color: #1a1a1a;
   font-weight: 600;
 
-  /* ⬇️ mismas medidas en ambas vistas */
+  /* ⬇️ Misma tipografía y altura en ambas vistas */
   font-size: 1.1rem;
   height: 46px;
   padding: 0 24px;
@@ -58,7 +59,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  line-height: 1;             /* evita variaciones por line-height */
+  line-height: 1;
   white-space: nowrap;
   text-align: center;
 }
@@ -93,7 +94,6 @@
 
 /* ===== Ajustes específicos para móvil ===== */
 @media (max-width: 768px) {
-  /* tamaño y centrado del botón (mismas medidas que el flotante) */
   .toggle-mobile-view,
   .bm-toggle-mobile {
     width: 50% !important;
@@ -107,12 +107,12 @@
     justify-content: center;
   }
 
-  /* vista mapa: deja espacio arriba para el flotante */
+  /* vista mapa: offset para no tapar el botón flotante */
   .bm-button-wrapper ~ .layout-container {
     padding-top: var(--mobile-toggle-offset) !important;
   }
 
-  /* vista lista: sin padding extra arriba; se usa sticky */
+  /* vista lista: sin padding extra arriba */
   .sidebar { position: relative; }
   .sidebar .sidebar__inner {
     padding-top: 0;
