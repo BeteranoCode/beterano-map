@@ -61,6 +61,7 @@ export default function Sidebar({
   filters = {},
   onApplyFilters = () => {},
 }) {
+  // Re-render on language change
   const [, force] = useState(0);
   useEffect(() => {
     const onLang = () => force((x) => x + 1);
@@ -148,22 +149,22 @@ export default function Sidebar({
     });
   }, [data, search, filters, selectedTribu]);
 
+  /* ===== Carrusel de tribus: refs + estado de flechas ===== */
   const scrollerRef = useRef(null);
   const [hasLeft, setHasLeft] = useState(false);
   const [hasRight, setHasRight] = useState(false);
 
-  // 👉 Observa scroll y resize para activar flechas
   useEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
 
     const updateArrows = () => {
-      setHasLeft(scroller.scrollLeft > 5);
-      setHasRight(scroller.scrollWidth - scroller.clientWidth - scroller.scrollLeft > 5);
+      setHasLeft(scroller.scrollLeft > 4);
+      setHasRight(scroller.scrollWidth - scroller.clientWidth - scroller.scrollLeft > 4);
     };
 
     updateArrows();
-    scroller.addEventListener("scroll", updateArrows);
+    scroller.addEventListener("scroll", updateArrows, { passive: true });
 
     const ro = new ResizeObserver(updateArrows);
     ro.observe(scroller);
@@ -173,6 +174,16 @@ export default function Sidebar({
       ro.disconnect();
     };
   }, []);
+
+  const scrollByDir = (dir = 1) => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    const delta = Math.round(scroller.clientWidth * 0.8) * dir;
+    scroller.scrollBy({ left: delta, behavior: "smooth" });
+  };
+
+  const onLeft = () => scrollByDir(-1);
+  const onRight = () => scrollByDir(1);
 
   return (
     <div className="sidebar__inner">
@@ -193,7 +204,9 @@ export default function Sidebar({
             onClick={() => setShowFilters(true)}
             title="Filtrar"
           >
-            <span className="btn-icon" aria-hidden>⫶</span>
+            <span className="btn-icon" aria-hidden>
+              ⫶
+            </span>
             <span className="btn-text">{t("ui.filter") ?? "Filtrar"}</span>
           </button>
         </div>
@@ -205,6 +218,15 @@ export default function Sidebar({
           aria-label={t("sidebar.title")}
           ref={scrollerRef}
         >
+          {/* Flecha izquierda */}
+          <button
+            type="button"
+            className="tribu-arrow tribu-arrow--left"
+            aria-label={t("ui.previous") ?? "Anterior"}
+            onClick={onLeft}
+            style={{ display: hasLeft ? "grid" : "none" }}
+          />
+
           <div className="tribu-track">
             {TRIBUS.map((key) => {
               const active = key === selectedTribu;
@@ -220,20 +242,25 @@ export default function Sidebar({
               );
             })}
           </div>
+
+          {/* Flecha derecha */}
+          <button
+            type="button"
+            className="tribu-arrow tribu-arrow--right"
+            aria-label={t("ui.next") ?? "Siguiente"}
+            onClick={onRight}
+            style={{ display: hasRight ? "grid" : "none" }}
+          />
         </div>
       </div>
 
       {/* ==== LISTA ==== */}
       <div className="cards">
-        {filtered.length === 0 && (
-          <div className="cards__empty">{t("sidebar.noResults")}</div>
-        )}
+        {filtered.length === 0 && <div className="cards__empty">{t("sidebar.noResults")}</div>}
         {filtered.map((item, i) => (
           <article key={i} className="card card--list">
             <header className="card__header">
-              <h4 className="card__title">
-                {item.nombre || item.titulo || t("sidebar.unnamed")}
-              </h4>
+              <h4 className="card__title">{item.nombre || item.titulo || t("sidebar.unnamed")}</h4>
               {(item.ciudad || item.pais) && (
                 <div className="card__meta">
                   {item.ciudad && <>{item.ciudad}, </>}
@@ -254,6 +281,7 @@ export default function Sidebar({
         ))}
       </div>
 
+      {/* MODAL DE FILTROS */}
       {showFilters && (
         <FilterModal
           tribu={selectedTribu}

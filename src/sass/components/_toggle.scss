@@ -1,62 +1,49 @@
 @use "../_variables.scss" as *;
 @use "../_mixins.scss" as *;
 
-/* ===== Vars útiles ===== */
+/* ===== Vars comunes para ambos botones (mobile) ===== */
 :root {
-  --mobile-toggle-offset: 72px; /* altura aprox. del botón + respiración */
+  /* altura estándar del botón + separaciones */
+  --bm-btn-h: 46px;
+  --bm-btn-pad-x: 24px;
+  --bm-inline-gap-top: 8px;
+  --bm-inline-h: calc(var(--bm-btn-h) + var(--bm-inline-gap-top) + 8px); /* ~74px */
 }
 
-/* ===== Botón flotante (móvil, vista mapa) ===== */
+/* ===== Botón flotante (móvil, vista MAPA) ===== */
 @media (min-width: 769px) {
   .bm-button-wrapper { display: none; }
 }
 
 .bm-button-wrapper {
   position: fixed;
-  top: calc(var(--header-offset, 85px) + 8px);
+  top: calc(var(--header-offset, 85px) + var(--bm-inline-gap-top));
   left: 0;
   width: 100%;
   display: flex;
   justify-content: center;
   background: transparent;
   z-index: 500;
-  pointer-events: none; /* sólo el botón captura eventos */
+  pointer-events: none;
 }
 .bm-button-wrapper .bm-toggle-mobile {
   pointer-events: auto;
 }
 
-/* ===== Botón inline (móvil, vista lista) ===== */
-/* top relativo al contenedor con scroll (sidebar) */
-.bm-button-inline {
-  position: sticky;
-  top: 8px;                  /* dentro del scroll de la sidebar */
-  z-index: 7;                /* por encima del contenido de la lista */
-  display: flex;
-  justify-content: center;
-  padding: 4px 0 8px;        /* respiración visual */
-  /* Fondo opaco pastel para que no se vean cards por debajo */
-  background: #FBE493;
-    /* Exponemos su altura para calcular el offset del bloque de arriba */
-  /* Ajusta este valor si tu wrapper mide distinto en tu UI */
-  --bm-inline-h: 74px;
-}
-
-/* ==== Estilo base ==== */
+/* Estilo base para AMBOS botones (consistencia) */
 .bm-toggle-mobile,
-.toggle-mobile-view {
+.toggle-mobile-view,
+#bm-toggle {
   background: #fcd20b;
   color: #1a1a1a;
   font-weight: 600;
-
-  /* Dimensiones unificadas */
-  --toggle-h: 46px;
-  height: var(--toggle-h);
   font-size: 1.1rem;
-  padding: 0 24px;
+
+  height: var(--bm-btn-h);
+  padding: 0 var(--bm-btn-pad-x);
 
   border: 0;
-  border-radius: 22px;
+  border-radius: calc(var(--bm-btn-h) / 2);
   box-shadow: 0 2px 8px rgba(0,0,0,.15);
   cursor: pointer;
 
@@ -68,58 +55,40 @@
   text-align: center;
 }
 
-/* 👇 Empuja la lista para que empiece justo debajo del botón sticky */
+/* ===== Botón inline (móvil, vista LISTA) ===== */
+.bm-button-inline {
+  position: sticky;
+  top: 0;                         /* pegado al top del contenedor desplazable */
+  z-index: 7;                     /* por encima de las cards */
+  display: flex;
+  justify-content: center;
+  padding: var(--bm-inline-gap-top) 0 8px;
+  /* fondo pastel (opaco) */
+  background: #FBE493;
+}
+
+/* Extiende el fondo hacia ARRIBA hasta cubrir la zona del header */
+.bm-button-inline::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  /* “sube” un bloque del alto del header para cubrirlo visualmente */
+  top: calc(-1 * var(--header-offset, 85px));
+  height: var(--header-offset, 85px);
+  background: #FBE493;
+  z-index: -1;                    /* queda detrás del botón */
+}
+
+/* Botón inline: mismas medidas que el flotante */
 @media (max-width: 768px) {
-  /* El contenedor del botón reserva espacio bajo él
-     para evitar solapar los chips al hacerse sticky */
-  .bm-button-inline {
-    /* botón (46px) + padding inferior (8px) ≈ 54px */
-    margin-bottom: calc(var(--toggle-h) + 8px);
-  }
-
-  .toggle-mobile-view,
-  .bm-toggle-mobile {
-    width: 50% !important;
+  .bm-toggle-mobile,
+  .toggle-mobile-view {
+    width: 50%;
     max-width: 240px;
-    margin: 8px auto;
-    height: var(--toggle-h);
-    padding: 0 24px;
-    font-size: 1.1rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* vista mapa: offset para no tapar el botón flotante */
-  .bm-button-wrapper ~ .layout-container {
-    padding-top: var(--mobile-toggle-offset) !important;
-  }
-
-  /* vista lista: sin padding extra en el propio inner */
-  .sidebar { position: relative; }
-  .sidebar .sidebar__inner {
-    padding-top: 0;
   }
 }
 
-/* ==== Compatibilidad legacy con #bm-toggle SOLO en escritorio ==== */
-@media (min-width: 769px) {
-  #bm-toggle,
-  .button-wrapper > #bm-toggle,
-  .bm-button-wrapper > #bm-toggle,
-  .bm-button-inline > #bm-toggle {
-    width: 200px !important;
-    height: 46px !important;
-    flex: 0 0 200px !important;
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    padding: 0 16px !important;
-    white-space: nowrap;
-  }
-}
-
-/* Quitar pseudo-iconos (“≡”) venga de donde venga */
+/* Quitar pseudo-iconos heredados, por si acaso */
 #bm-toggle::before,
 #bm-toggle::after,
 .bm-toggle-mobile::before,
