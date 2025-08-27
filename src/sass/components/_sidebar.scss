@@ -2,7 +2,7 @@
 
 /* ===== Sidebar (contenedor) ===== */
 .sidebar {
-  width: 560px;             /* ancho mayor: caben botones sin scroll */
+  width: 560px;
   min-width: 560px;
   max-width: 560px;
   height: 100%;
@@ -39,26 +39,22 @@
 
 /* wrapper interno para espaciar */
 .sidebar__inner {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  position: relative; /* necesario para el ::before */
-}
 
-/* ===== Fondo continuo bajo el botón inline =====
-   Pinta un bloque pastel desde el top del aside hasta el inicio de sidebar__top,
-   de forma que no se vean las cards al hacer scroll detrás del buscador. */
-.sidebar__inner::before {
-  content: "";
-  position: sticky;         /* se queda pegado arriba al hacer scroll */
-  top: 0;
-  left: 0;
-  right: 0;
-  height: calc(var(--bm-inline-h, 74px) + 8px); /* altura del botón inline + respiro */
-  background: #FBE493;
-  display: block;
-  z-index: 5;               /* por debajo de .bm-button-inline (7) y .sidebar__top (6) */
-  pointer-events: none;     /* no interfiere con el buscador */
+  /* 🎨 Pintamos SOLO la franja superior sin empujar contenido.
+     La altura pintada coincide con el alto total del bloque del botón inline:
+     var(--bm-inline-h) ya incluye el botón + separaciones. */
+  background:
+    linear-gradient(
+      #FBE493 0,
+      #FBE493 calc(var(--bm-inline-h, 74px)),
+      transparent calc(var(--bm-inline-h, 74px))
+    );
+  /* que el fondo se mueva con el scroll del aside */
+  background-attachment: local;
 }
 
 /* Header: buscador + botón filtro */
@@ -89,7 +85,7 @@
 }
 .btn--filter .btn-icon { font-size: 18px; line-height: 0; }
 
-/* ----- Tribus: compactas, SIN scroll horizontal (modo grid “legacy”) ----- */
+/* ----- Tribus (modo grid legacy, ya no usamos en móvil) ----- */
 .tribu-filters {
   display: grid;
   grid-template-columns: repeat(4, minmax(0,1fr));
@@ -129,7 +125,7 @@
   .tribu-filters { grid-template-columns: repeat(2, minmax(0,1fr)); }
 }
 
-/* ----- Cards: 2 columnas en desktop ----- */
+/* ----- Cards ----- */
 .cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -155,7 +151,7 @@
   .cards { grid-template-columns: 1fr; }
 }
 
-/* No-results en móvil: colapsa borde inferior */
+/* No-results en móvil */
 .sidebar.no-results {
   @media (max-width: 768px) {
     border-bottom: none !important;
@@ -168,27 +164,21 @@
   }
 }
 
+/* =================== Top fijo + carrusel =================== */
 
-/* =================== Sidebar: top fijo + carrusel =================== */
-
-/* El envoltorio scrollea; el top queda fijo dentro */
-.sidebar { /* sin cambios */ }
-
-/* Fondo del botón inline y del top (coherente con el overlay) */
+/* El bloque inline y el top comparten fondo pastel */
 .bm-button-inline,
-.sidebar__top {
-  background: #FBE493;
-}
+.sidebar__top { background: #FBE493; }
 
 .sidebar__top {
   position: sticky;
-  top: calc(8px + var(--bm-inline-h, 74px)); /* debajo del botón inline */
-  z-index: 6;                                /* debajo del botón pero sobre cards */
+  top: calc(8px + var(--bm-inline-h, 74px));
+  z-index: 6;
   padding: 0 0 8px 0;
   box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
 
-/* ===== Fila de 3 columnas: ← | carrusel | → ===== */
+/* Fila de 3 columnas: ← | carrusel | → */
 .tribu-row {
   display: grid;
   grid-template-columns: 32px 1fr 32px;
@@ -196,7 +186,7 @@
   gap: 8px;
 }
 
-/* Botones de flecha */
+/* Flechas */
 .tribu-arrow {
   appearance: none;
   border: 0;
@@ -224,7 +214,7 @@
   stroke-linecap: round; stroke-linejoin: round;
 }
 
-/* Carrusel horizontal de tribus */
+/* Carrusel (columna central) */
 .tribu-scroller {
   overflow-x: auto;
   overflow-y: hidden;
@@ -240,7 +230,7 @@
   min-width: 100%;
 }
 
-/* Chip/btn */
+/* Chip */
 .tribe-chip {
   flex: 0 0 auto;
   border: 0;
