@@ -68,7 +68,7 @@
 }
 .btn--filter .btn-icon { font-size: 18px; line-height: 0; }
 
-/* ----- Tribus: compactas, SIN scroll horizontal ----- */
+/* ----- Tribus: compactas, SIN scroll horizontal (modo grid “legacy”) ----- */
 .tribu-filters {
   display: grid;
   grid-template-columns: repeat(4, minmax(0,1fr));
@@ -151,18 +151,14 @@
 /* =================== Sidebar: top fijo + carrusel =================== */
 
 /* El envoltorio scrollea; el top queda fijo dentro */
-.sidebar {
-  /* nada aquí por ahora */
-}
+.sidebar { /* sin cambios */ }
 
-.sidebar__inner {
-  position: relative;
-}
+.sidebar__inner { position: relative; }
 
 /* Franja superior fija (buscador + carrusel) */
 .sidebar__top {
   position: sticky;
-    /* se fija JUSTO por debajo del botón inline */
+  /* se fija JUSTO por debajo del botón inline */
   top: calc(8px + var(--bm-inline-h, 74px));
   z-index: 6;                       /* debajo del botón, encima de cards */
   padding: 0 0 8px 0;
@@ -176,11 +172,12 @@
 
 /* Carrusel horizontal de tribus */
 .tribu-scroller {
+  position: relative;               /* necesario para flechas */
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;           /* Firefox */
-  padding: 6px 0 2px;
+  scrollbar-width: none;            /* Firefox */
+  padding: 6px 12px 2px;            /* deja hueco para flechas laterales */
 }
 .tribu-scroller::-webkit-scrollbar { display: none; } /* WebKit */
 
@@ -202,11 +199,45 @@
   white-space: nowrap;
   cursor: pointer;
 }
-.tribe-chip.active {
-  background: #ffd024;
+.tribe-chip.active { background: #ffd024; }
+
+/* ===== Indicadores / “flechas” del carrusel ===== */
+.tribu-scroller::before,
+.tribu-scroller::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 28px;
+  pointer-events: none;
+  opacity: 0;                       /* solo aparecen con has-left/right */
+  transition: opacity .2s ease;
 }
 
-/* La lista queda debajo y usa todo el alto disponible */
-.cards {
-  /* sin toques especiales: el contenedor que scrollea es el aside */
+/* degradado + icono izquierdo */
+.tribu-scroller::before {
+  left: 0;
+  background:
+    linear-gradient(to right, rgba(251,228,147,1), rgba(251,228,147,0));
+  mask:
+    linear-gradient(to right, #000 12px, transparent 12px) no-repeat,
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='15 18 9 12 15 6'/></svg>")
+    no-repeat 6px center / 12px 12px;
 }
+
+/* degradado + icono derecho */
+.tribu-scroller::after {
+  right: 0;
+  background:
+    linear-gradient(to left, rgba(251,228,147,1), rgba(251,228,147,0));
+  mask:
+    linear-gradient(to left, #000 12px, transparent 12px) no-repeat right top / 28px 100%,
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='9 18 15 12 9 6'/></svg>")
+    no-repeat calc(100% - 6px) center / 12px 12px;
+}
+
+/* se muestran solo cuando hay contenido a cada lado */
+.tribu-scroller.has-left::before  { opacity: 1; }
+.tribu-scroller.has-right::after  { opacity: 1; }
+
+/* La lista queda debajo y usa todo el alto disponible */
+.cards { /* el contenedor que scrollea es el aside */ }

@@ -29,11 +29,19 @@ import rent_tools from "../data/rent_tools.json";
 import shops from "../data/shops.json";
 
 const DATA_MAP = {
-  restauradores, gruas, desguaces, abandonos, propietarios,
-  rent_knowledge, rent_service, rent_space, rent_tools, shops,
+  restauradores,
+  gruas,
+  desguaces,
+  abandonos,
+  propietarios,
+  rent_knowledge,
+  rent_service,
+  rent_space,
+  rent_tools,
+  shops,
 };
 
-// 🔎 helper: match array de filtros (skills, categorías…) contra string/array del item
+// 🔎 helper: match array de filtros
 function someMatch(filterValues, itemValue) {
   if (!Array.isArray(filterValues) || !filterValues.length) return true;
   if (itemValue == null) return false;
@@ -53,7 +61,6 @@ export default function Sidebar({
   filters = {},
   onApplyFilters = () => {},
 }) {
-  // Re-render on language change
   const [, force] = useState(0);
   useEffect(() => {
     const onLang = () => force((x) => x + 1);
@@ -70,9 +77,7 @@ export default function Sidebar({
 
   const filtered = useMemo(() => {
     const q = (search || "").toLowerCase();
-
     return (data || []).filter((item) => {
-      // 🔍 Texto libre
       const matchesSearch =
         !q ||
         item?.nombre?.toLowerCase?.().includes(q) ||
@@ -81,17 +86,13 @@ export default function Sidebar({
         item?.pais?.toLowerCase?.().includes(q) ||
         item?.descripcion?.toLowerCase?.().includes(q);
 
-      // 🌍 País
       const matchPais = !filters.pais || item?.pais === filters.pais;
-
-      // 🧩 Skills (Nivel 2, genérico)
       const matchSkills =
         someMatch(filters.skills, item.skills) ||
         someMatch(filters.skills, item.especialidad) ||
         someMatch(filters.skills, item.servicios) ||
         someMatch(filters.skills, item.tags);
 
-      // 🚗 Vehículo (Nivel 2, cascada)
       const byMarca =
         !filters.veh_marca ||
         [item.marca, item.make, item.veh_marca, item.vehiculo?.marca].some(
@@ -109,9 +110,7 @@ export default function Sidebar({
         );
       const matchVehiculo = byMarca && byModelo && byGen;
 
-      // 🎯 Reglas específicas por tribu
       let matchByTribu = true;
-
       if (selectedTribu === "abandonos") {
         if (filters.vehiculo_text) {
           matchByTribu =
@@ -149,40 +148,31 @@ export default function Sidebar({
     });
   }, [data, search, filters, selectedTribu]);
 
-  /* ===== Carrusel: flechas y detección de overflow ===== */
   const scrollerRef = useRef(null);
+  const [hasLeft, setHasLeft] = useState(false);
+  const [hasRight, setHasRight] = useState(false);
 
+  // 👉 Observa scroll y resize para activar flechas
   useEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
 
     const updateArrows = () => {
-      const { scrollLeft, clientWidth, scrollWidth } = scroller;
-      const canLeft = scrollLeft > 0;
-      const canRight = scrollLeft + clientWidth < scrollWidth - 1;
-      scroller.dataset.overflowLeft = canLeft ? "true" : "false";
-      scroller.dataset.overflowRight = canRight ? "true" : "false";
+      setHasLeft(scroller.scrollLeft > 5);
+      setHasRight(scroller.scrollWidth - scroller.clientWidth - scroller.scrollLeft > 5);
     };
 
     updateArrows();
-    scroller.addEventListener("scroll", updateArrows, { passive: true });
-    window.addEventListener("resize", updateArrows);
-    // vuelva a evaluar si cambia el idioma o la tribu seleccionada
-    const id = setTimeout(updateArrows, 0);
+    scroller.addEventListener("scroll", updateArrows);
+
+    const ro = new ResizeObserver(updateArrows);
+    ro.observe(scroller);
 
     return () => {
       scroller.removeEventListener("scroll", updateArrows);
-      window.removeEventListener("resize", updateArrows);
-      clearTimeout(id);
+      ro.disconnect();
     };
-  }, [selectedTribu]); // recalcula cuando cambian chips activos
-
-  const scrollByStep = (dir) => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const step = Math.round(el.clientWidth * 0.6); // ~60% del ancho visible
-    el.scrollBy({ left: dir * step, behavior: "smooth" });
-  };
+  }, []);
 
   return (
     <div className="sidebar__inner">
@@ -210,18 +200,11 @@ export default function Sidebar({
 
         {/* Carrusel horizontal de tribus */}
         <div
-          className="tribu-scroller"
+          className={`tribu-scroller ${hasLeft ? "has-left" : ""} ${hasRight ? "has-right" : ""}`}
           role="tablist"
           aria-label={t("sidebar.title")}
           ref={scrollerRef}
         >
-          {/* Flecha izquierda */}
-          <span
-            className="arrow left"
-            aria-hidden="true"
-            onClick={() => scrollByStep(-1)}
-          />
-          {/* Pista con chips */}
           <div className="tribu-track">
             {TRIBUS.map((key) => {
               const active = key === selectedTribu;
@@ -237,16 +220,10 @@ export default function Sidebar({
               );
             })}
           </div>
-          {/* Flecha derecha */}
-          <span
-            className="arrow right"
-            aria-hidden="true"
-            onClick={() => scrollByStep(1)}
-          />
         </div>
       </div>
 
-      {/* ==== LISTA: scrollea por debajo del top fijo ==== */}
+      {/* ==== LISTA ==== */}
       <div className="cards">
         {filtered.length === 0 && (
           <div className="cards__empty">{t("sidebar.noResults")}</div>
@@ -264,24 +241,19 @@ export default function Sidebar({
                 </div>
               )}
             </header>
-            {item.descripcion && (
-              <p className="card__desc">{item.descripcion}</p>
-            )}
+            {item.descripcion && <p className="card__desc">{item.descripcion}</p>}
             <footer className="card__footer">
               {item.web && (
                 <a href={item.web} target="_blank" rel="noopener noreferrer">
                   Web
                 </a>
               )}
-              {item.instagram && (
-                <span className="card__ig">{item.instagram}</span>
-              )}
+              {item.instagram && <span className="card__ig">{item.instagram}</span>}
             </footer>
           </article>
         ))}
       </div>
 
-      {/* MODAL DE FILTROS */}
       {showFilters && (
         <FilterModal
           tribu={selectedTribu}
