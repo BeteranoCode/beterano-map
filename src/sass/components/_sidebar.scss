@@ -2,7 +2,7 @@
 
 /* ===== Sidebar (contenedor) ===== */
 .sidebar {
-  width: 560px;
+  width: 560px;             /* ancho mayor: caben botones sin scroll */
   min-width: 560px;
   max-width: 560px;
   height: 100%;
@@ -19,10 +19,15 @@
   box-sizing: border-box;
 
   @media (max-width: 1024px) {
-    width: 420px; min-width: 420px; max-width: 420px;
+    width: 420px;
+    min-width: 420px;
+    max-width: 420px;
   }
+
   @media (max-width: 768px) {
-    width: 100vw; min-width: 100vw; max-width: 100vw;
+    width: 100vw;
+    min-width: 100vw;
+    max-width: 100vw;
     height: 100%;
     box-shadow: none;
     border-right: none;
@@ -32,8 +37,29 @@
   }
 }
 
-/* wrapper interno */
-.sidebar__inner { display: flex; flex-direction: column; gap: 10px; }
+/* wrapper interno para espaciar */
+.sidebar__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative; /* necesario para el ::before */
+}
+
+/* ===== Fondo continuo bajo el botón inline =====
+   Pinta un bloque pastel desde el top del aside hasta el inicio de sidebar__top,
+   de forma que no se vean las cards al hacer scroll detrás del buscador. */
+.sidebar__inner::before {
+  content: "";
+  position: sticky;         /* se queda pegado arriba al hacer scroll */
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--bm-inline-h, 74px) + 8px); /* altura del botón inline + respiro */
+  background: #FBE493;
+  display: block;
+  z-index: 5;               /* por debajo de .bm-button-inline (7) y .sidebar__top (6) */
+  pointer-events: none;     /* no interfiere con el buscador */
+}
 
 /* Header: buscador + botón filtro */
 .sidebar__header {
@@ -43,6 +69,7 @@
   align-items: center;
   margin-bottom: 2px;
 }
+
 .sidebar-search {
   width: 100%;
   padding: 8px 14px;
@@ -62,13 +89,52 @@
 }
 .btn--filter .btn-icon { font-size: 18px; line-height: 0; }
 
-/* ====== Cards ====== */
+/* ----- Tribus: compactas, SIN scroll horizontal (modo grid “legacy”) ----- */
+.tribu-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 8px;
+}
+
+.tribu-filters .tribe-btn,
+.tribu-filters button {
+  border: none;
+  background: #f7f7f7;
+  color: #232323;
+  border-radius: 10px;
+  padding: 8px 10px;
+  height: 36px;
+  font-weight: 600;
+  font-family: 'Oswald', Arial, sans-serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.18s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tribu-filters .tribe-btn.active,
+.tribu-filters button.active,
+.tribu-filters button:focus {
+  background: #FCD20B;
+  color: #232323;
+  outline: none;
+}
+
+@media (max-width: 1024px) {
+  .tribu-filters { grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+@media (max-width: 768px) {
+  .tribu-filters { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+
+/* ----- Cards: 2 columnas en desktop ----- */
 .cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   margin-top: 8px;
-  background: #fff;              /* <- asegura que las cards mantienen blanco */
 }
 .cards__empty { color: #aaa; font-size: 14px; }
 
@@ -85,34 +151,39 @@
 .card__desc { font-size: 13px; margin: 4px 0 2px 0; }
 .card__footer { display: flex; gap: 10px; font-size: 12px; }
 
-@media (max-width: 1024px) { .cards { grid-template-columns: 1fr; } }
+@media (max-width: 1024px) {
+  .cards { grid-template-columns: 1fr; }
+}
 
-/* No-results en móvil */
+/* No-results en móvil: colapsa borde inferior */
 .sidebar.no-results {
   @media (max-width: 768px) {
     border-bottom: none !important;
     box-shadow: none !important;
-    > div:last-child { margin-top: 0 !important; border-top: none !important; }
+
+    > div:last-child {
+      margin-top: 0 !important;
+      border-top: none !important;
+    }
   }
 }
 
-/* =================== Top fijo + carrusel =================== */
 
-/* Fondo pastel SOLO para el botón inline y el bloque superior */
+/* =================== Sidebar: top fijo + carrusel =================== */
+
+/* El envoltorio scrollea; el top queda fijo dentro */
+.sidebar { /* sin cambios */ }
+
+/* Fondo del botón inline y del top (coherente con el overlay) */
 .bm-button-inline,
-.sidebar__top { background: #FBE493; }
-
-/* El botón inline no deja hueco debajo (elimina la franja transparente) */
-.bm-button-inline {
-  padding-bottom: 0 !important;   /* anulamos el 8px del _toggle.scss */
-  margin-bottom: 0 !important;
+.sidebar__top {
+  background: #FBE493;
 }
 
-/* Franja superior fija (buscador + carrusel) inmediatamente bajo el botón */
 .sidebar__top {
   position: sticky;
-  top: calc(8px + var(--bm-inline-h, 74px));
-  z-index: 6;
+  top: calc(8px + var(--bm-inline-h, 74px)); /* debajo del botón inline */
+  z-index: 6;                                /* debajo del botón pero sobre cards */
   padding: 0 0 8px 0;
   box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
@@ -127,19 +198,33 @@
 
 /* Botones de flecha */
 .tribu-arrow {
-  appearance: none; border: 0; padding: 0; margin: 0;
-  width: 28px; height: 28px; border-radius: 50%;
-  display: grid; place-items: center;
-  background: #fff; box-shadow: 0 1px 6px rgba(0,0,0,.15);
-  cursor: pointer; user-select: none;
+  appearance: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(0,0,0,.15);
+  cursor: pointer;
+  user-select: none;
 }
-.tribu-arrow:disabled { opacity: .35; cursor: default; box-shadow: none; }
+.tribu-arrow:disabled {
+  opacity: .35;
+  cursor: default;
+  box-shadow: none;
+}
 .tribu-arrow svg {
-  width: 16px; height: 16px; display: block;
-  stroke: #111; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  width: 16px; height: 16px;
+  display: block;
+  stroke: #111; fill: none; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
 }
 
-/* Carrusel horizontal (solo scrollea la columna central) */
+/* Carrusel horizontal de tribus */
 .tribu-scroller {
   overflow-x: auto;
   overflow-y: hidden;
@@ -149,14 +234,25 @@
 }
 .tribu-scroller::-webkit-scrollbar { display: none; }
 
-.tribu-track { display: inline-flex; gap: 10px; min-width: 100%; }
+.tribu-track {
+  display: inline-flex;
+  gap: 10px;
+  min-width: 100%;
+}
 
 /* Chip/btn */
 .tribe-chip {
   flex: 0 0 auto;
-  border: 0; border-radius: 18px;
+  border: 0;
+  border-radius: 18px;
   padding: 8px 14px;
   background: #f1f3f5;
-  color: #111; font-weight: 600; white-space: nowrap; cursor: pointer;
+  color: #111;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
 }
 .tribe-chip.active { background: #ffd024; }
+
+/* Cards debajo */
+.cards { /* el contenedor que scrollea es el aside */ }
