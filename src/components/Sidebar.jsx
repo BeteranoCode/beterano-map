@@ -29,16 +29,8 @@ import rent_tools from "../data/rent_tools.json";
 import shops from "../data/shops.json";
 
 const DATA_MAP = {
-  restauradores,
-  gruas,
-  desguaces,
-  abandonos,
-  propietarios,
-  rent_knowledge,
-  rent_service,
-  rent_space,
-  rent_tools,
-  shops,
+  restauradores, gruas, desguaces, abandonos, propietarios,
+  rent_knowledge, rent_service, rent_space, rent_tools, shops,
 };
 
 // 🔎 helper: match array de filtros
@@ -149,7 +141,7 @@ export default function Sidebar({
     });
   }, [data, search, filters, selectedTribu]);
 
-  /* ===== Carrusel de tribus: refs + estado de flechas ===== */
+  /* ===== Carrusel con flechas en columnas laterales ===== */
   const scrollerRef = useRef(null);
   const [hasLeft, setHasLeft] = useState(false);
   const [hasRight, setHasRight] = useState(false);
@@ -159,13 +151,12 @@ export default function Sidebar({
     if (!scroller) return;
 
     const updateArrows = () => {
-      setHasLeft(scroller.scrollLeft > 4);
-      setHasRight(scroller.scrollWidth - scroller.clientWidth - scroller.scrollLeft > 4);
+      setHasLeft(scroller.scrollLeft > 5);
+      setHasRight(scroller.scrollWidth - scroller.clientWidth - scroller.scrollLeft > 5);
     };
 
     updateArrows();
-    scroller.addEventListener("scroll", updateArrows, { passive: true });
-
+    scroller.addEventListener("scroll", updateArrows);
     const ro = new ResizeObserver(updateArrows);
     ro.observe(scroller);
 
@@ -175,15 +166,11 @@ export default function Sidebar({
     };
   }, []);
 
-  const scrollByDir = (dir = 1) => {
+  const scrollBy = (delta) => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
-    const delta = Math.round(scroller.clientWidth * 0.8) * dir;
     scroller.scrollBy({ left: delta, behavior: "smooth" });
   };
-
-  const onLeft = () => scrollByDir(-1);
-  const onRight = () => scrollByDir(1);
 
   return (
     <div className="sidebar__inner">
@@ -204,63 +191,69 @@ export default function Sidebar({
             onClick={() => setShowFilters(true)}
             title="Filtrar"
           >
-            <span className="btn-icon" aria-hidden>
-              ⫶
-            </span>
+            <span className="btn-icon" aria-hidden>⫶</span>
             <span className="btn-text">{t("ui.filter") ?? "Filtrar"}</span>
           </button>
         </div>
 
-        {/* Carrusel horizontal de tribus */}
-        <div
-          className={`tribu-scroller ${hasLeft ? "has-left" : ""} ${hasRight ? "has-right" : ""}`}
-          role="tablist"
-          aria-label={t("sidebar.title")}
-          ref={scrollerRef}
-        >
-          {/* Flecha izquierda */}
+        {/* Fila: ← flecha | carrusel chips | flecha → */}
+        <div className="tribu-row">
           <button
             type="button"
             className="tribu-arrow tribu-arrow--left"
-            aria-label={t("ui.previous") ?? "Anterior"}
-            onClick={onLeft}
-            style={{ display: hasLeft ? "grid" : "none" }}
-          />
+            aria-label="ui.prev"
+            onClick={() => scrollBy(-220)}
+            disabled={!hasLeft}
+          >
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
 
-          <div className="tribu-track">
-            {TRIBUS.map((key) => {
-              const active = key === selectedTribu;
-              return (
-                <button
-                  key={key}
-                  className={`tribe-chip ${active ? "active" : ""}`}
-                  onClick={() => setSelectedTribu(key)}
-                  aria-pressed={active}
-                >
-                  {t(`filter.${key}`)}
-                </button>
-              );
-            })}
+          <div
+            className="tribu-scroller"
+            role="tablist"
+            aria-label={t("sidebar.title")}
+            ref={scrollerRef}
+          >
+            <div className="tribu-track">
+              {TRIBUS.map((key) => {
+                const active = key === selectedTribu;
+                return (
+                  <button
+                    key={key}
+                    className={`tribe-chip ${active ? "active" : ""}`}
+                    onClick={() => setSelectedTribu(key)}
+                    aria-pressed={active}
+                  >
+                    {t(`filter.${key}`)}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Flecha derecha */}
           <button
             type="button"
             className="tribu-arrow tribu-arrow--right"
-            aria-label={t("ui.next") ?? "Siguiente"}
-            onClick={onRight}
-            style={{ display: hasRight ? "grid" : "none" }}
-          />
+            aria-label="ui.next"
+            onClick={() => scrollBy(+220)}
+            disabled={!hasRight}
+          >
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </div>
       </div>
 
       {/* ==== LISTA ==== */}
       <div className="cards">
-        {filtered.length === 0 && <div className="cards__empty">{t("sidebar.noResults")}</div>}
+        {filtered.length === 0 && (
+          <div className="cards__empty">{t("sidebar.noResults")}</div>
+        )}
         {filtered.map((item, i) => (
           <article key={i} className="card card--list">
             <header className="card__header">
-              <h4 className="card__title">{item.nombre || item.titulo || t("sidebar.unnamed")}</h4>
+              <h4 className="card__title">
+                {item.nombre || item.titulo || t("sidebar.unnamed")}
+              </h4>
               {(item.ciudad || item.pais) && (
                 <div className="card__meta">
                   {item.ciudad && <>{item.ciudad}, </>}
