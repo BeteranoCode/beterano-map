@@ -62,7 +62,7 @@
   z-index: 7;                     /* por encima de las cards */
   display: flex;
   justify-content: center;
-  padding: var(--bm-inline-gap-top) 0 8px;
+  padding: var(--bm-inline-gap-top) 0; /* 🔧 quitado el 8px inferior */
   /* fondo pastel (opaco) */
   background: #FBE493;
 }

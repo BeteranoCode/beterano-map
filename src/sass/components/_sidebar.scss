@@ -2,7 +2,7 @@
 
 /* ===== Sidebar (contenedor) ===== */
 .sidebar {
-  width: 560px;             /* ancho mayor: caben botones sin scroll */
+  width: 560px;
   min-width: 560px;
   max-width: 560px;
   height: 100%;
@@ -19,15 +19,10 @@
   box-sizing: border-box;
 
   @media (max-width: 1024px) {
-    width: 420px;
-    min-width: 420px;
-    max-width: 420px;
+    width: 420px; min-width: 420px; max-width: 420px;
   }
-
   @media (max-width: 768px) {
-    width: 100vw;
-    min-width: 100vw;
-    max-width: 100vw;
+    width: 100vw; min-width: 100vw; max-width: 100vw;
     height: 100%;
     box-shadow: none;
     border-right: none;
@@ -37,13 +32,8 @@
   }
 }
 
-/* wrapper interno para espaciar */
-.sidebar__inner { 
-  position: relative;
-  display: flex; 
-  flex-direction: column; 
-  gap: 10px; 
-}
+/* wrapper interno */
+.sidebar__inner { display: flex; flex-direction: column; gap: 10px; }
 
 /* Header: buscador + botón filtro */
 .sidebar__header {
@@ -53,7 +43,6 @@
   align-items: center;
   margin-bottom: 2px;
 }
-
 .sidebar-search {
   width: 100%;
   padding: 8px 14px;
@@ -73,53 +62,13 @@
 }
 .btn--filter .btn-icon { font-size: 18px; line-height: 0; }
 
-/* ----- Tribus: compactas, SIN scroll horizontal (modo grid “legacy”) ----- */
-.tribu-filters {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0,1fr));
-  gap: 8px;
-}
-
-.tribu-filters .tribe-btn,
-.tribu-filters button {
-  border: none;
-  background: #f7f7f7;
-  color: #232323;
-  border-radius: 10px;
-  padding: 8px 10px;
-  height: 36px;
-  font-weight: 600;
-  font-family: 'Oswald', Arial, sans-serif;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: background 0.18s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.tribu-filters .tribe-btn.active,
-.tribu-filters button.active,
-.tribu-filters button:focus {
-  background: #FCD20B;
-  color: #232323;
-  outline: none;
-}
-
-@media (max-width: 1024px) {
-  .tribu-filters { grid-template-columns: repeat(3, minmax(0,1fr)); }
-}
-@media (max-width: 768px) {
-  .tribu-filters { grid-template-columns: repeat(2, minmax(0,1fr)); }
-}
-
-/* ----- Cards: 2 columnas en desktop ----- */
+/* ====== Cards ====== */
 .cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-top: 8px;              /* el top de la primera card sigue en blanco */
-  background: transparent;      /* aseguramos que no herede el pastel */
+  margin-top: 8px;
+  background: #fff;              /* <- asegura que las cards mantienen blanco */
 }
 .cards__empty { color: #aaa; font-size: 14px; }
 
@@ -136,105 +85,78 @@
 .card__desc { font-size: 13px; margin: 4px 0 2px 0; }
 .card__footer { display: flex; gap: 10px; font-size: 12px; }
 
-@media (max-width: 1024px) {
-  .cards { grid-template-columns: 1fr; }
-}
+@media (max-width: 1024px) { .cards { grid-template-columns: 1fr; } }
 
-/* No-results en móvil: colapsa borde inferior */
+/* No-results en móvil */
 .sidebar.no-results {
   @media (max-width: 768px) {
     border-bottom: none !important;
     box-shadow: none !important;
-
-    > div:last-child {
-      margin-top: 0 !important;
-      border-top: none !important;
-    }
+    > div:last-child { margin-top: 0 !important; border-top: none !important; }
   }
 }
 
-/* =================== Sidebar: top fijo + carrusel =================== */
+/* =================== Top fijo + carrusel =================== */
 
-/* Fondo pastel SOLO en los bloques superiores */
+/* Fondo pastel SOLO para el botón inline y el bloque superior */
 .bm-button-inline,
 .sidebar__top { background: #FBE493; }
 
-/* Quitamos cualquier hueco entre “Mostrar mapa” y el buscador */
+/* El botón inline no deja hueco debajo (elimina la franja transparente) */
 .bm-button-inline {
-  padding-bottom: 0 !important;   /* anulamos el padding inferior que generaba hueco */
+  padding-bottom: 0 !important;   /* anulamos el 8px del _toggle.scss */
   margin-bottom: 0 !important;
 }
 
-/* Franja superior fija (buscador + carrusel) inmediatamente bajo el inline */
+/* Franja superior fija (buscador + carrusel) inmediatamente bajo el botón */
 .sidebar__top {
   position: sticky;
   top: calc(8px + var(--bm-inline-h, 74px));
   z-index: 6;
-  padding: 0 0 8px 0;             /* respiración SOLO debajo del buscador */
-  margin-top: 0 !important;       /* por si algún estilo externo añade margen */
+  padding: 0 0 8px 0;
   box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
 
 /* ===== Fila de 3 columnas: ← | carrusel | → ===== */
 .tribu-row {
   display: grid;
-  grid-template-columns: 32px 1fr 32px; /* flecha izq. | carrusel | flecha dcha. */
+  grid-template-columns: 32px 1fr 32px;
   align-items: center;
   gap: 8px;
 }
 
 /* Botones de flecha */
 .tribu-arrow {
-  appearance: none;
-  border: 0;
-  padding: 0;
-  margin: 0;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: #fff;
-  box-shadow: 0 1px 6px rgba(0,0,0,.15);
-  cursor: pointer;
-  user-select: none;
+  appearance: none; border: 0; padding: 0; margin: 0;
+  width: 28px; height: 28px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: #fff; box-shadow: 0 1px 6px rgba(0,0,0,.15);
+  cursor: pointer; user-select: none;
 }
 .tribu-arrow:disabled { opacity: .35; cursor: default; box-shadow: none; }
 .tribu-arrow svg {
-  width: 16px; height: 16px;
-  display: block;
-  stroke: #111; fill: none; stroke-width: 2;
-  stroke-linecap: round; stroke-linejoin: round;
+  width: 16px; height: 16px; display: block;
+  stroke: #111; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
 
-/* Carrusel horizontal de tribus (solo la columna central scrollea) */
+/* Carrusel horizontal (solo scrollea la columna central) */
 .tribu-scroller {
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;           /* Firefox */
-  padding: 6px 2px 2px;            /* leve respiro bajo el buscador */
+  scrollbar-width: none;
+  padding: 6px 2px 2px;
 }
-.tribu-scroller::-webkit-scrollbar { display: none; } /* WebKit */
+.tribu-scroller::-webkit-scrollbar { display: none; }
 
-.tribu-track {
-  display: inline-flex;
-  gap: 10px;
-  min-width: 100%;
-}
+.tribu-track { display: inline-flex; gap: 10px; min-width: 100%; }
 
-/* Chip/btn de tribu (una sola fila) */
+/* Chip/btn */
 .tribe-chip {
   flex: 0 0 auto;
-  border: 0;
-  border-radius: 18px;
+  border: 0; border-radius: 18px;
   padding: 8px 14px;
   background: #f1f3f5;
-  color: #111;
-  font-weight: 600;
-  white-space: nowrap;
-  cursor: pointer;
+  color: #111; font-weight: 600; white-space: nowrap; cursor: pointer;
 }
 .tribe-chip.active { background: #ffd024; }
-
-/* La lista queda debajo; el contenedor que scrollea es el aside */
