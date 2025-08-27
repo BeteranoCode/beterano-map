@@ -70,6 +70,58 @@ function FixMapSize({ deps = [], observeEl }) {
 
 /* ───────── Helpers ───────── */
 
+// Normalización de enlaces (Popup)
+function normalizeInstagram(insta) {
+  if (!insta) return null;
+  const str = String(insta).trim();
+  if (!str) return null;
+  if (str.startsWith("http")) return str;
+  const handle = str.replace(/^@+/, "");
+  return `https://instagram.com/${handle}`;
+}
+function normalizeWeb(url) {
+  if (!url) return null;
+  const s = String(url).trim();
+  if (!s) return null;
+  return s.startsWith("http") ? s : `https://${s}`;
+}
+function normalizeEmail(email) {
+  if (!email) return null;
+  const s = String(email).trim();
+  return s ? `mailto:${s}` : null;
+}
+function normalizePhone(phone) {
+  if (!phone) return null;
+  const s = String(phone).trim().replace(/\s+/g, "");
+  return s ? `tel:${s}` : null;
+}
+
+function PopupLinks({ item }) {
+  const web = normalizeWeb(item?.web);
+  const insta = normalizeInstagram(item?.instagram);
+  const mail = normalizeEmail(item?.email);
+  const tel = normalizePhone(item?.telefono || item?.phone);
+
+  const links = [
+    web ? { href: web, label: "Web" } : null,
+    insta ? { href: insta, label: "Instagram" } : null,
+    mail ? { href: mail, label: "Email" } : null,
+    tel ? { href: tel, label: "Teléfono" } : null,
+  ].filter(Boolean);
+
+  if (!links.length) return null;
+
+  return (
+    <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 8 }}>
+      {links.map((l, i) => (
+        <a key={i} href={l.href} target="_blank" rel="noreferrer" style={{ textDecoration: "underline" }}>
+          {l.label}
+        </a>
+      ))}
+    </div>
+  );
+}
+
 // Devuelve el punto {lat,lng} desde diferentes formatos (retrocompatible)
 function getPoint(item) {
   const p = item?.ubicacion?.point || item?.coordenadas || null;
@@ -87,9 +139,10 @@ function getPrecision(item) {
   return item?.ubicacion?.precision || "point";
 }
 
+// Búsqueda: quitamos 'descripcion' para evitar traducciones
 function matchesSearch(item, search = "") {
   if (!search) return true;
-  const haystack = [item.nombre, item.ciudad, item.pais, item.descripcion]
+  const haystack = [item.nombre, item.ciudad, item.pais]
     .filter(Boolean)
     .join(" ")
     .toLowerCase();
@@ -110,7 +163,27 @@ function Feature({ item, icon, map, registerMarker }) {
   if (!pt) return null;
 
   if (precision === "buffer") {
-    const km = Number(item?.ubicacion?.buffer_km) || 10;
+    // ⚠️ NO usar "|| 10": permite 0 -> pin
+    const rawKm = item?.ubicacion?.buffer_km;
+    const km = Number(rawKm);
+    if (!Number.isFinite(km) || km <= 0) {
+      // fallback a pin si km no válido o 0
+      return (
+        <Marker
+          position={[pt.lat, pt.lng]}
+          icon={icon}
+          ref={(node) => node && registerMarker(id, node)}
+        >
+          <Popup>
+            <strong>{name}</strong>
+            {item.ciudad ? <div>{item.ciudad}</div> : null}
+            {item.pais ? <div>{item.pais}</div> : null}
+            <PopupLinks item={item} />
+          </Popup>
+        </Marker>
+      );
+    }
+
     const radius = km * 1000;
     return (
       <Circle
@@ -123,8 +196,10 @@ function Feature({ item, icon, map, registerMarker }) {
       >
         <Popup>
           <strong>{name}</strong>
-          {km ? <div>Radio: {km} km</div> : null}
-          {item.descripcion ? <div>{item.descripcion}</div> : null}
+          {item.ciudad ? <div>{item.ciudad}</div> : null}
+          {item.pais ? <div>{item.pais}</div> : null}
+          <div>Radio: {km} km</div>
+          <PopupLinks item={item} />
         </Popup>
       </Circle>
     );
@@ -135,15 +210,13 @@ function Feature({ item, icon, map, registerMarker }) {
     <Marker
       position={[pt.lat, pt.lng]}
       icon={icon}
-      ref={(node) => {
-        if (node) registerMarker(id, node);
-      }}
+      ref={(node) => node && registerMarker(id, node)}
     >
       <Popup>
         <strong>{name}</strong>
-        {item.ciudad ? <div><b>ciudad:</b> {item.ciudad}</div> : null}
-        {item.pais ? <div><b>pais:</b> {item.pais}</div> : null}
-        {item.descripcion ? <div>{item.descripcion}</div> : null}
+        {item.ciudad ? <div>{item.ciudad}</div> : null}
+        {item.pais ? <div>{item.pais}</div> : null}
+        <PopupLinks item={item} />
       </Popup>
     </Marker>
   );
