@@ -1,51 +1,49 @@
-/*.map-leaflet-wrapper {
-  flex: 1 1 auto;
-  width: 100%;
-  height: 100%;
-  position: relative;
-  min-width: 0;
-
-  @media (max-width: 768px) {
-    width: 100vw;
-    height: 100vh;
-    min-width: 0;
-  }
-}
-*/
-
+/* ================== MAP WRAPPER ================== */
 .map-leaflet-wrapper {
-  position: absolute; /* rellena map-container */
+  position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   min-width: 0;
-
-  /*@media (max-width: 768px) {
-    position: absolute;
-    inset: 0;
-  }
-  */  
+  z-index: 0; /* el mapa no eclipsa al dock */
 }
 
+/* ================== LEAFLET CONTAINER ================== */
 .leaflet-container {
   height: 100% !important;
   width: 100% !important;
+  min-height: 0;
   position: relative;
-  min-height: 0;
+  z-index: 0; /* panes quedan por debajo del dock */
 }
 
-
-/* Contenedor real de Leaflet */
-.leaflet-container {
-  height: 100% !important;
-  width: 100% !important;
-  min-height: 0;
-  position: relative; /* ← antes estaba absolute: lo quitamos */
-}
-
+/* Highlight en markers */
 .leaflet-marker-icon.is-highlighted {
   filter: drop-shadow(0 0 6px rgba(255, 208, 36, .9));
   transform: scale(1.05);
   transition: transform .15s ease, filter .15s ease;
 }
 
+/* Evita stacking-context que rompa el dock */
+.layout-container {
+  transform: none !important;
+}
+
+/* ================== MÓVIL ================== */
+/* El mapa ocupa toda la pantalla menos el header;
+   el dock puede superponerse sin desplazarlo */
+@media (max-width: 768px) {
+  .map-container,
+  .map-leaflet-wrapper,
+  .leaflet-container {
+    height: calc(100dvh - var(--header-offset, 85px)) !important;
+    min-height: calc(100dvh - var(--header-offset, 85px)) !important;
+  }
+
+  /* cuando hay dock, no añadimos huecos artificiales */
+  body.has-mobile-dock .map-container,
+  body.has-mobile-dock .map-leaflet-wrapper {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+  }
+}

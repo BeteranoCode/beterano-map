@@ -1,5 +1,5 @@
 // src/components/Sidebar.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { t } from "@/i18n";
 import FilterModal from "./filters/FilterModal";
 
@@ -33,12 +33,16 @@ const DATA_MAP = {
   rent_knowledge, rent_service, rent_space, rent_tools, shops,
 };
 
-// 🔎 helper: match array de filtros (skills, categorías…) contra string/array del item
+// 🔎 helper: match array de filtros
 function someMatch(filterValues, itemValue) {
   if (!Array.isArray(filterValues) || !filterValues.length) return true;
   if (itemValue == null) return false;
-  const haystack = Array.isArray(itemValue) ? itemValue.map(String) : String(itemValue).split(/[;,]/).map(s=>s.trim());
-  return filterValues.some(v => haystack.some(h => h.toLowerCase().includes(String(v).toLowerCase())));
+  const haystack = Array.isArray(itemValue)
+    ? itemValue.map(String)
+    : String(itemValue).split(/[;,]/).map((s) => s.trim());
+  return filterValues.some((v) =>
+    haystack.some((h) => h.toLowerCase().includes(String(v).toLowerCase()))
+  );
 }
 
 export default function Sidebar({
@@ -52,7 +56,7 @@ export default function Sidebar({
   // Re-render on language change
   const [, force] = useState(0);
   useEffect(() => {
-    const onLang = () => force(x => x + 1);
+    const onLang = () => force((x) => x + 1);
     window.addEventListener("btr:langchange", onLang);
     window.addEventListener("btr:lang-changed", onLang);
     return () => {
@@ -66,9 +70,7 @@ export default function Sidebar({
 
   const filtered = useMemo(() => {
     const q = (search || "").toLowerCase();
-
-    return (data || []).filter(item => {
-      // 🔍 Texto libre
+    return (data || []).filter((item) => {
       const matchesSearch =
         !q ||
         item?.nombre?.toLowerCase?.().includes(q) ||
@@ -77,26 +79,31 @@ export default function Sidebar({
         item?.pais?.toLowerCase?.().includes(q) ||
         item?.descripcion?.toLowerCase?.().includes(q);
 
-      // 🌍 País
       const matchPais = !filters.pais || item?.pais === filters.pais;
-
-      // 🧩 Skills (Nivel 2, genérico): intenta en varias propiedades
       const matchSkills =
         someMatch(filters.skills, item.skills) ||
         someMatch(filters.skills, item.especialidad) ||
         someMatch(filters.skills, item.servicios) ||
         someMatch(filters.skills, item.tags);
 
-      // 🚗 Vehículo (Nivel 2, cascada)
-      // buscamos en propiedades comunes que solemos usar en datos: marca/modelo/generacion/vehiculo
-      const byMarca = !filters.veh_marca || [item.marca, item.make, item.veh_marca, item.vehiculo?.marca].some(v => String(v||"").toLowerCase() === String(filters.veh_marca).toLowerCase());
-      const byModelo = !filters.veh_modelo || [item.modelo, item.model, item.veh_modelo, item.vehiculo?.modelo].some(v => String(v||"").toLowerCase() === String(filters.veh_modelo).toLowerCase());
-      const byGen   = !filters.veh_gen || [item.generacion, item.generation, item.veh_gen, item.vehiculo?.generacion].some(v => String(v||"").toLowerCase() === String(filters.veh_gen).toLowerCase());
+      const byMarca =
+        !filters.veh_marca ||
+        [item.marca, item.make, item.veh_marca, item.vehiculo?.marca].some(
+          (v) => String(v || "").toLowerCase() === String(filters.veh_marca).toLowerCase()
+        );
+      const byModelo =
+        !filters.veh_modelo ||
+        [item.modelo, item.model, item.veh_modelo, item.vehiculo?.modelo].some(
+          (v) => String(v || "").toLowerCase() === String(filters.veh_modelo).toLowerCase()
+        );
+      const byGen =
+        !filters.veh_gen ||
+        [item.generacion, item.generation, item.veh_gen, item.vehiculo?.generacion].some(
+          (v) => String(v || "").toLowerCase() === String(filters.veh_gen).toLowerCase()
+        );
       const matchVehiculo = byMarca && byModelo && byGen;
 
-      // 🎯 Reglas específicas por tribu (mantengo tus casos previos)
       let matchByTribu = true;
-
       if (selectedTribu === "abandonos") {
         if (filters.vehiculo_text) {
           matchByTribu =
@@ -108,73 +115,135 @@ export default function Sidebar({
       }
       if (selectedTribu === "restauradores" && Array.isArray(filters.especialidad) && filters.especialidad.length) {
         const tag = (item?.especialidad || "").toString();
-        matchByTribu = filters.especialidad.some(e => tag.includes(e));
+        matchByTribu = filters.especialidad.some((e) => tag.includes(e));
       }
       if (selectedTribu === "rent_tools" && Array.isArray(filters.categoria) && filters.categoria.length) {
         const cat = (item?.categoria || "").toString();
-        matchByTribu = filters.categoria.some(e => cat.includes(e));
+        matchByTribu = filters.categoria.some((e) => cat.includes(e));
       }
       if (selectedTribu === "rent_space" && filters.tipo_espacio) {
         matchByTribu = item?.tipo_espacio === filters.tipo_espacio;
       }
       if (selectedTribu === "rent_service" && Array.isArray(filters.servicio) && filters.servicio.length) {
         const srv = (item?.servicios || "").toString();
-        matchByTribu = filters.servicio.some(e => srv.includes(e));
+        matchByTribu = filters.servicio.some((e) => srv.includes(e));
       }
       if (selectedTribu === "rent_knowledge" && Array.isArray(filters.tema) && filters.tema.length) {
         const tema = (item?.tema || "").toString();
-        matchByTribu = filters.tema.some(e => tema.includes(e));
+        matchByTribu = filters.tema.some((e) => tema.includes(e));
       }
       if (selectedTribu === "shops" && Array.isArray(filters.rubro) && filters.rubro.length) {
         const rub = (item?.rubro || "").toString();
-        matchByTribu = filters.rubro.some(e => rub.includes(e));
+        matchByTribu = filters.rubro.some((e) => rub.includes(e));
       }
 
       return matchesSearch && matchPais && matchSkills && matchVehiculo && matchByTribu;
     });
   }, [data, search, filters, selectedTribu]);
 
+  /* ===== Carrusel con flechas en columnas laterales ===== */
+  const scrollerRef = useRef(null);
+  const [hasLeft, setHasLeft] = useState(false);
+  const [hasRight, setHasRight] = useState(false);
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
+    const updateArrows = () => {
+      setHasLeft(scroller.scrollLeft > 5);
+      setHasRight(scroller.scrollWidth - scroller.clientWidth - scroller.scrollLeft > 5);
+    };
+
+    updateArrows();
+    scroller.addEventListener("scroll", updateArrows);
+    const ro = new ResizeObserver(updateArrows);
+    ro.observe(scroller);
+
+    return () => {
+      scroller.removeEventListener("scroll", updateArrows);
+      ro.disconnect();
+    };
+  }, []);
+
+  const scrollBy = (delta) => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    scroller.scrollBy({ left: delta, behavior: "smooth" });
+  };
+
   return (
     <div className="sidebar__inner">
-      {/* HEADER: buscador + botón filtro */}
-      <div className="sidebar__header">
-        <input
-          type="text"
-          className="sidebar-search"
-          placeholder={t("sidebar.searchPlaceholder")}
-          aria-label={t("sidebar.searchPlaceholder")}
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-        />
-        <button
-          className="btn btn--filter"
-          aria-label="Filtrar"
-          onClick={() => setShowFilters(true)}
-          title="Filtrar"
-        >
-          <span className="btn-icon" aria-hidden>⫶</span>
-          <span className="btn-text">{t("ui.filter") ?? "Filtrar"}</span>
-        </button>
+      {/* ==== TOP FIJO: buscador + carrusel de tribus ==== */}
+      <div className="sidebar__top" role="region" aria-label={t("sidebar.title")}>
+        <div className="sidebar__header">
+          <input
+            type="text"
+            className="sidebar-search"
+            placeholder={t("sidebar.searchPlaceholder")}
+            aria-label={t("sidebar.searchPlaceholder")}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <button
+            className="btn btn--filter"
+            aria-label="Filtrar"
+            onClick={() => setShowFilters(true)}
+            title="Filtrar"
+          >
+            <span className="btn-icon" aria-hidden>⫶</span>
+            <span className="btn-text">{t("ui.filter") ?? "Filtrar"}</span>
+          </button>
+        </div>
+
+        {/* Fila: ← flecha | carrusel chips | flecha → */}
+        <div className="tribu-row">
+          <button
+            type="button"
+            className="tribu-arrow tribu-arrow--left"
+            aria-label="ui.prev"
+            onClick={() => scrollBy(-220)}
+            disabled={!hasLeft}
+          >
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+
+          <div
+            className="tribu-scroller"
+            role="tablist"
+            aria-label={t("sidebar.title")}
+            ref={scrollerRef}
+          >
+            <div className="tribu-track">
+              {TRIBUS.map((key) => {
+                const active = key === selectedTribu;
+                return (
+                  <button
+                    key={key}
+                    className={`tribe-chip ${active ? "active" : ""}`}
+                    onClick={() => setSelectedTribu(key)}
+                    aria-pressed={active}
+                  >
+                    {t(`filter.${key}`)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="tribu-arrow tribu-arrow--right"
+            aria-label="ui.next"
+            onClick={() => scrollBy(+220)}
+            disabled={!hasRight}
+          >
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
       </div>
 
-      {/* TRIBUS (Nivel 1 set de chips) */}
-      <div className="tribu-filters" role="tablist" aria-label={t("sidebar.title")}>
-        {TRIBUS.map(key => {
-          const active = key === selectedTribu;
-          return (
-            <button
-              key={key}
-              className={`tribe-btn ${active ? "active" : ""}`}
-              onClick={() => setSelectedTribu(key)}
-              aria-pressed={active}
-            >
-              {t(`filter.${key}`)}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* LISTADO */}
+      {/* ==== LISTA ==== */}
       <div className="cards">
         {filtered.length === 0 && (
           <div className="cards__empty">{t("sidebar.noResults")}</div>
@@ -192,18 +261,14 @@ export default function Sidebar({
                 </div>
               )}
             </header>
-            {item.descripcion && (
-              <p className="card__desc">{item.descripcion}</p>
-            )}
+            {item.descripcion && <p className="card__desc">{item.descripcion}</p>}
             <footer className="card__footer">
               {item.web && (
                 <a href={item.web} target="_blank" rel="noopener noreferrer">
                   Web
                 </a>
               )}
-              {item.instagram && (
-                <span className="card__ig">{item.instagram}</span>
-              )}
+              {item.instagram && <span className="card__ig">{item.instagram}</span>}
             </footer>
           </article>
         ))}
@@ -215,7 +280,10 @@ export default function Sidebar({
           tribu={selectedTribu}
           initial={filters}
           onClose={() => setShowFilters(false)}
-          onApply={(f) => { onApplyFilters(f); setShowFilters(false); }}
+          onApply={(f) => {
+            onApplyFilters(f);
+            setShowFilters(false);
+          }}
         />
       )}
     </div>

@@ -1,81 +1,94 @@
 @use "../_variables.scss" as *;
 @use "../_mixins.scss" as *;
 
-/* ===== Vars útiles ===== */
+/* ===== Vars comunes para ambos botones (mobile) ===== */
 :root {
-  --mobile-toggle-offset: 72px; /* altura aprox. del botón + respiración */
+  /* altura estándar del botón + separaciones */
+  --bm-btn-h: 46px;
+  --bm-btn-pad-x: 24px;
+  --bm-inline-gap-top: 8px;
+  --bm-inline-h: calc(var(--bm-btn-h) + var(--bm-inline-gap-top) + 8px); /* ~74px */
 }
 
-/* ===== Botón flotante (móvil, vista mapa) ===== */
+/* ===== Botón flotante (móvil, vista MAPA) ===== */
 @media (min-width: 769px) {
   .bm-button-wrapper { display: none; }
 }
 
 .bm-button-wrapper {
   position: fixed;
-  /* MISMA posición para “Mostrar lista” y “Mostrar mapa” */
-  top: calc(var(--header-offset, 85px) + 16px);
+  top: calc(var(--header-offset, 85px) + var(--bm-inline-gap-top));
   left: 0;
   width: 100%;
   display: flex;
   justify-content: center;
   background: transparent;
-  z-index: 3000;       /* por encima del mapa */
-  pointer-events: none; /* sólo el botón captura eventos */
+  z-index: 500;
+  pointer-events: none;
 }
 .bm-button-wrapper .bm-toggle-mobile {
   pointer-events: auto;
 }
 
-/* ===== Botón inline (móvil, vista lista) ===== */
-/* sticky relativo al scroll del sidebar */
-.bm-button-inline {
-  position: sticky;
-  top: 16px;
-  z-index: 2;
-  display: flex;
-  justify-content: center;
-  padding: 4px 0 8px;
-  background: transparent;
-}
-
-/* ==== Estilo base (compartido) ==== */
+/* Estilo base para AMBOS botones (consistencia) */
 .bm-toggle-mobile,
-.toggle-mobile-view {
-  background: #ffd024;
-  color: #111;
-  font-weight: 800;
-  font-size: 20px;            /* ← MISMO tamaño para ambos textos */
+.toggle-mobile-view,
+#bm-toggle {
+  background: #fcd20b;
+  color: #1a1a1a;
+  font-weight: 600;
+  font-size: 1.1rem;
+
+  height: var(--bm-btn-h);
+  padding: 0 var(--bm-btn-pad-x);
+
   border: 0;
-  border-radius: 999px;
-  box-shadow: 0 2px 0 rgba(0,0,0,.18) inset, 0 6px 24px rgba(0,0,0,.16);
+  border-radius: calc(var(--bm-btn-h) / 2);
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
   cursor: pointer;
-  height: 48px;               /* ← MISMA altura para ambos */
-  min-width: 240px;           /* ← MISMO ancho mínimo */
-  padding: 0 20px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
   white-space: nowrap;
   text-align: center;
 }
 
-/* ==== Compatibilidad legacy con #bm-toggle SOLO en escritorio ==== */
-@media (min-width: 769px) {
-  #bm-toggle,
-  .button-wrapper > #bm-toggle,
-  .bm-button-wrapper > #bm-toggle,
-  .bm-button-inline > #bm-toggle {
-    width: 200px !important;
-    height: 46px !important;
-    flex: 0 0 200px !important;
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    padding: 0 16px !important;
-    white-space: nowrap;
+/* ===== Botón inline (móvil, vista LISTA) ===== */
+.bm-button-inline {
+  position: sticky;
+  top: 0;                         /* pegado al top del contenedor desplazable */
+  z-index: 7;                     /* por encima de las cards */
+  display: flex;
+  justify-content: center;
+  padding: var(--bm-inline-gap-top) 0; /* 🔧 quitado el 8px inferior */
+  /* fondo pastel (opaco) */
+  background: #FBE493;
+}
+
+/* Extiende el fondo hacia ARRIBA hasta cubrir la zona del header */
+.bm-button-inline::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  /* “sube” un bloque del alto del header para cubrirlo visualmente */
+  top: calc(-1 * var(--header-offset, 85px));
+  height: var(--header-offset, 85px);
+  background: #FBE493;
+  z-index: -1;                    /* queda detrás del botón */
+}
+
+/* Botón inline: mismas medidas que el flotante */
+@media (max-width: 768px) {
+  .bm-toggle-mobile,
+  .toggle-mobile-view {
+    width: 50%;
+    max-width: 240px;
   }
 }
 
-/* Quitar pseudo-iconos (“≡”) venga de donde venga */
+/* Quitar pseudo-iconos heredados, por si acaso */
 #bm-toggle::before,
 #bm-toggle::after,
 .bm-toggle-mobile::before,
@@ -84,28 +97,4 @@
 .toggle-mobile-view::after {
   content: "" !important;
   display: none !important;
-}
-
-/* ===== Ajustes específicos para móvil ===== */
-@media (max-width: 768px) {
-  /* centrado y anchura */
-  .toggle-mobile-view,
-  .bm-toggle-mobile {
-    width: auto !important;
-    max-width: 280px;
-    margin: 8px auto;
-    display: block;
-    flex: 0 0 auto;
-  }
-
-  /* vista mapa: el botón flotante deja espacio arriba */
-  .bm-button-wrapper ~ .layout-container {
-    padding-top: var(--mobile-toggle-offset) !important;
-  }
-
-  /* vista lista: sin padding extra; el sticky ya ocupa su altura */
-  .sidebar { position: relative; }
-  .sidebar .sidebar__inner {
-    padding-top: 0;
-  }
 }

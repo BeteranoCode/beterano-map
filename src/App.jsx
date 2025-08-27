@@ -16,52 +16,50 @@ function App() {
   const [hasResults, setHasResults] = useState(true);
   const [headerReady, setHeaderReady] = useState(false);
 
-  /* ✅ Estado Garagex */
+  /* ✅ Garagex */
   const [garageOpen, setGarageOpen] = useState(false);
-  const toggleGarage = () => setGarageOpen(v => !v);
+  const toggleGarage = () => setGarageOpen((v) => !v);
   const closeGarage = () => setGarageOpen(false);
 
-  /* 🌐 Estado para forzar re-render cuando cambia el idioma */
+  /* 🌐 tick para re-render tras i18n */
   const [langTick, setLangTick] = useState(0);
 
-  // ---- Navegación para el dock (placeholder) ----
+  // Handlers placeholder
   const goCalendar = () => console.log("Calendario");
   const goMarketplace = () => console.log("Marketplace");
   const goNews = () => console.log("News");
   const goMechAI = () => console.log("Mech AI");
 
-  // =========== 1) Cargar idioma inicial ===========
+  // 1) Cargar idioma inicial
   useEffect(() => {
     const initLang = async () => {
-      // 1) leído de localStorage (si lo usas) o del <html lang=".."> o del navegador
       const stored =
         localStorage.getItem("btr:lang") ||
         document.documentElement.getAttribute("lang") ||
         navigator.language ||
         "es";
       const wanted = String(stored).slice(0, 2).toLowerCase();
-
       await loadLang(wanted);
-      // si quieres persistir:
-      localStorage.setItem("btr:lang", getLang());
-      setLangTick(x => x + 1); // fuerza re-render para que t() use el diccionario cargado
+      const lang = getLang();
+      localStorage.setItem("btr:lang", lang);
+      document.documentElement.setAttribute("lang", lang);
+      setLangTick((x) => x + 1);
     };
     initLang();
   }, []);
 
-  // =========== 2) Escuchar cambios de idioma del header ===========
+  // 2) Escuchar cambios de idioma del header
   useEffect(() => {
-    // API estilo i18next por compatibilidad
-    const onI18nChange = async (lng) => {
+    const applyLang = async (lng) => {
       await loadLang(lng);
-      localStorage.setItem("btr:lang", getLang());
-      setLangTick(x => x + 1);
-      // Cierra el menú del header si estuviera abierto
+      const lang = getLang();
+      localStorage.setItem("btr:lang", lang);
+      document.documentElement.setAttribute("lang", lang);
+      setLangTick((x) => x + 1);
       document.querySelector(".nav-wrapper")?.classList.remove("open");
     };
 
-    // Distintos eventos que el header puede emitir
-    const handlerFromEvent = async (e) => {
+    const handlerFromEvent = (e) => {
       const cand =
         e?.detail?.lang ||
         e?.detail?.language ||
@@ -69,23 +67,21 @@ function App() {
         e?.target?.dataset?.lang ||
         document.documentElement.getAttribute("lang");
       const lng = (cand || "es").slice(0, 2).toLowerCase();
-      await onI18nChange(lng);
+      applyLang(lng);
     };
 
-    i18n.on("languageChanged", onI18nChange); // nuestro alias
     window.addEventListener("btr:lang-changed", handlerFromEvent);
     window.addEventListener("btr:langchange", handlerFromEvent);
     window.addEventListener("beteranoHeaderLangChange", handlerFromEvent);
 
     return () => {
-      i18n.off("languageChanged", onI18nChange);
       window.removeEventListener("btr:lang-changed", handlerFromEvent);
       window.removeEventListener("btr:langchange", handlerFromEvent);
       window.removeEventListener("beteranoHeaderLangChange", handlerFromEvent);
     };
   }, []);
 
-  // =========== 3) Calcular offset del header externo ===========
+  // 3) Calcular offset del header externo
   useEffect(() => {
     const isLocal = location.hostname === "localhost";
 
@@ -147,7 +143,7 @@ function App() {
     };
   }, []);
 
-  // =========== 4) Otras UX: cerrar menú idioma al clicar fuera ===========
+  // 4) UX: cerrar menú idioma al clicar opciones
   useEffect(() => {
     const closeMenu = () => {
       document.querySelector(".nav-wrapper")?.classList.remove("open");
@@ -155,14 +151,16 @@ function App() {
     const onDocClick = (e) => {
       const trg = e.target;
       if (!trg) return;
-      const hit = trg.closest?.("#language-selector, .language-menu, [data-lang], .language-option");
+      const hit = trg.closest?.(
+        "#language-selector, .language-menu, [data-lang], .language-option"
+      );
       if (hit) closeMenu();
     };
     document.addEventListener("click", onDocClick);
     return () => document.removeEventListener("click", onDocClick);
   }, []);
 
-  // =========== 5) Detectar móvil ===========
+  // 5) Detectar móvil
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
@@ -172,7 +170,7 @@ function App() {
   // Mostrar dock sólo en móvil + mapa
   const showMobileDock = isMobile && mobileView === "map";
 
-  // Añade clase al body cuando el dock está visible (por si necesitas estilos globales)
+  // Clase al body cuando el dock está visible
   useEffect(() => {
     const cls = "has-mobile-dock";
     if (showMobileDock) document.body.classList.add(cls);
@@ -180,12 +178,12 @@ function App() {
     return () => document.body.classList.remove(cls);
   }, [showMobileDock]);
 
-  // Evita parpadeos antes de tener header + idioma cargados
+  // Evita parpadeos antes de tener header + idioma
   const isLocal = location.hostname === "localhost";
   const ready = headerReady && langTick > 0;
   if (!ready && !isLocal) return null;
 
-  // Etiquetas del dock (memorizadas por idioma)
+  // Etiquetas del dock
   const dockLabels = useMemo(
     () => ({
       calendar: t("ui.calendar") || "Calendario",

@@ -1,1 +1,43 @@
-[]
+[
+  {
+    "nombre": "LAND CLASSICS PARTS",
+    "pais": "España",
+    "pais_iso2": "ES",
+    "ciudad": "Sabadell, Barcelona",
+    "tipo": ["shop"],
+    "instagram": "",
+    "web": "https://landclassics.com",
+    "email": "",
+    "logo": "landclassics.svg",
+    "direccion": "Carrer de Sobarber, 30, 08205 Sabadell, Barcelona",
+    "telefono": "+34 937 27 88 11",
+    "coordenadas": { "lat": 41.5603, "lng": 2.0991 },
+    "ubicacion": { "precision": "buffer", "point": { "lat": 41.5603, "lng": 2.0991 }, "buffer_km": 0 },
+    "privacidad": { "mostrar": "buffer" },
+    "vehiculos": [
+      "land-rover-range-rover-classic",
+      "land-rover-defender","land-rover-discovery",
+      "land-rover-santana"
+    ]
+  },
+  {
+    "nombre": "RecambioSantana",
+    "pais": "España",
+    "pais_iso2": "ES",
+    "ciudad": "L'Hospitalet de Llobregat, Barcelona",
+    "tipo": ["shop"],
+    "instagram": "",
+    "web": "https://recambiosantana.es",
+    "email": "",
+    "logo": "recambiosantana.svg",
+    "direccion": "Carrer Mina, 25, 08906 L'Hospitalet de Llobregat, Barcelona",
+    "telefono": "+34 619 99 03 59",
+    "coordenadas": { "lat": 41.3656, "lng": 2.1166 },
+    "ubicacion": { "precision": "buffer", "point": { "lat": 41.3656, "lng": 2.1166 }, "buffer_km": 0 },
+    "privacidad": { "mostrar": "buffer" },
+    "vehiculos": [
+      "land-rover-santana",
+      "land-rover-defender-serie3"
+    ]
+  }
+]
