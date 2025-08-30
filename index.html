@@ -6,23 +6,36 @@
   <title>BETERANO MAP</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
-  <!-- ❌ Header dinámico: se carga antes que React -->
-  <!-- <script src="https://beteranocode.github.io/beterano-web-header/components/header/header-loader.js" defer></script> -->
-
-
-  <!-- ✅ Leaflet styles -->
+  <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+
+  <style>
+    /* altura del header embebido */
+    :root { --header-offset: 85px; }
+    .header-frame {
+      border: 0;
+      width: 100%;
+      height: var(--header-offset);
+      display: block;
+    }
+    /* deja hueco bajo el header para que no lo tape */
+    body { padding-top: var(--header-offset); }
+  </style>
 </head>
-
 <body>
-  <!-- ✅ Header dinámico se insertará aquí -->
-  <div id="header-container"></div>
+  <!-- Header embebido (aislado en un iframe, sin React compartido) -->
+  <iframe
+    class="header-frame"
+    src="https://beteranocode.github.io/beterano-web-header/embed.html"
+    title="BETERANO Header"
+    loading="eager">
+  </iframe>
 
-  <!-- ✅ Aquí se monta React (mapa + sidebar) -->
+  <!-- Aquí se monta React (mapa + sidebar) -->
   <div id="root"></div>
 
-  <!-- ✅ App React/Vite -->
+  <!-- App React/Vite (en dev Vite usa este src; en build lo reescribe a /assets/index-*.js) -->
   <script type="module" src="./src/main.jsx"></script>
 </body>
 </html>
