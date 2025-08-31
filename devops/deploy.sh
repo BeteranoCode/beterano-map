@@ -81,16 +81,18 @@ touch dist/.nojekyll
 # =========================================
 # Deploy a gh-pages
 # =========================================
-# Copiar también dotfiles (.nojekyll)
-shopt -s dotglob
-
 info "Preparando rama gh-pages…"
 git show-ref --verify --quiet refs/heads/deploy-temp && git branch -D deploy-temp
 git checkout -b deploy-temp
 
-# Vaciar árbol y copiar dist
+# ⚠️ elimina TODO lo no trackeado (node_modules, caches, etc.)
 git rm -rf . > /dev/null 2>&1 || true
+git clean -fdx
+
+# Copiar también dotfiles (.nojekyll)
+shopt -s dotglob
 cp -r dist/* ./
+shopt -u dotglob || true
 
 git add -A
 git commit -m "🚀 Deploy automático desde dist ($TARGET_BRANCH)"
