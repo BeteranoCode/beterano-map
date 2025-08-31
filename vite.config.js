@@ -8,19 +8,15 @@ export default defineConfig({
   plugins: [
     react(),
     viteStaticCopy({
-      targets: [
-        {
-          src: 'src/data/*.json',
-          dest: 'data'
-        }
-      ]
+      targets: [{ src: 'src/data/*.json', dest: 'data' }]
     })
   ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@sass': path.resolve(__dirname, './src/sass') // ✅ Alias para SCSS
+      '@sass': path.resolve(__dirname, './src/sass')
     },
+    dedupe: ['react', 'react-dom']   // ✅ clave para evitar “invalid hook call”
   },
   build: {
     rollupOptions: {
