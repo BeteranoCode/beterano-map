@@ -24,27 +24,17 @@ require_clean_tree(){
   fi
 }
 
-is_inside_git(){
-  git rev-parse --is-inside-work-tree > /dev/null 2>&1
-}
-
-is_submodule(){
-  # Devuelve 0 si estamos dentro de un submódulo (hay superproyecto)
-  [[ -n "$(git rev-parse --show-superproject-working-tree 2>/dev/null || true)" ]]
-}
-
-submodule_path(){
-  # Deriva la ruta del submódulo dentro del superproyecto a partir de .git dir
-  # .git/modules/<ruta/submodulo>
-  local gd
-  gd="$(git rev-parse --git-dir)" || return 1
-  echo "$gd" | sed -E 's#.git/modules/(.*)#\1#'
-}
+is_inside_git(){ git rev-parse --is-inside-work-tree > /dev/null 2>&1; }
+is_submodule(){ [[ -n "$(git rev-parse --show-superproject-working-tree 2>/dev/null || true)" ]]; }
+submodule_path(){ local gd; gd="$(git rev-parse --git-dir)" || return 1; echo "$gd" | sed -E 's#.git/modules/(.*)#\1#'; }
 
 # =========================================
 # Checks iniciales
 # =========================================
 is_inside_git || die "Ejecuta dentro de un repo Git."
+
+ORIG_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+trap 'git checkout -q "$ORIG_BRANCH" 2>/dev/null || true' EXIT
 
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 [[ "$CURRENT_BRANCH" == "$TARGET_BRANCH" ]] || die "Estás en '$CURRENT_BRANCH'. Cambia a '$TARGET_BRANCH' (git checkout $TARGET_BRANCH)."
@@ -78,6 +68,12 @@ npm run build || die "Falló la compilación"
 cp dist/index.html dist/404.html || true
 touch dist/.nojekyll
 
+# ===== Guarda el build en un tmp antes de limpiar el repo =====
+TMP_DIR="$(mktemp -d 2>/dev/null || mktemp -d -t 'btrdeploy')"
+shopt -s dotglob
+cp -r dist/* "$TMP_DIR"/
+shopt -u dotglob || true
+
 # =========================================
 # Deploy a gh-pages
 # =========================================
@@ -85,14 +81,15 @@ info "Preparando rama gh-pages…"
 git show-ref --verify --quiet refs/heads/deploy-temp && git branch -D deploy-temp
 git checkout -b deploy-temp
 
-# ⚠️ elimina TODO lo no trackeado (node_modules, caches, etc.)
+# Limpia absolutamente todo (incluye node_modules, caches, etc.)
 git rm -rf . > /dev/null 2>&1 || true
 git clean -fdx
 
-# Copiar también dotfiles (.nojekyll)
+# Copia el build desde el tmp (incluye .nojekyll/404.html)
 shopt -s dotglob
-cp -r dist/* ./
+cp -r "$TMP_DIR"/* ./
 shopt -u dotglob || true
+rm -rf "$TMP_DIR"
 
 git add -A
 git commit -m "🚀 Deploy automático desde dist ($TARGET_BRANCH)"
