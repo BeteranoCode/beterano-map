@@ -12,16 +12,28 @@
 </head>
 
 <body>
-  <!-- Header dinámico se insertará aquí -->
+  <!-- Contenedor donde irá el header externo -->
   <div id="header-container"></div>
 
-  <!-- Aquí se monta React (mapa + sidebar) -->
+  <!-- Aquí se monta React -->
   <div id="root"></div>
 
-  <!-- App React/Vite -->
+  <!-- Tu app React -->
   <script type="module" src="./src/main.jsx"></script>
 
-  <!-- Header dinámico: cargar DESPUÉS de montar React -->
-  <script src="https://beteranocode.github.io/beterano-web-header/components/header/header-loader.js" defer></script>
+  <!-- ⛔️ QUITAMOS la carga directa del header -->
+  <!-- <script src="https://beteranocode.github.io/beterano-web-header/components/header/header-loader.js" defer></script> -->
+
+  <!-- ✅ Inyección diferida y encapsulada del header (después de montar React) -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const s = document.createElement('script');
+      s.src = 'https://beteranocode.github.io/beterano-web-header/components/header/header-loader.js';
+      s.defer = true;
+      // Guard: evita que el loader toque fuera de #header-container
+      s.setAttribute('data-target', '#header-container');
+      document.body.appendChild(s);
+    });
+  </script>
 </body>
 </html>
