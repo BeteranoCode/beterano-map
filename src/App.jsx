@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import MapPage from "./pages/Map";
-// import GaragexToggle from "./components/GaragexToggle"; // ⬅️ ya no se usa en desktop
+import GaragexToggle from "./components/GaragexToggle";
 import GaragexPanel from "./components/GaragexPanel";
 import MobileDock from "./components/MobileDock";
 import { t, loadLang, getLang } from "./i18n";
@@ -178,7 +178,7 @@ function App() {
     return () => document.body.classList.remove(cls);
   }, [showMobileDock]);
 
-  // Etiquetas del dock
+  // 🔁 labels del dock (no bloquear el render)
   const dockLabels = useMemo(
     () => ({
       calendar: t("ui.calendar") || "Calendario",
@@ -200,14 +200,37 @@ function App() {
         mobileView === "list" ? (
           <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
             <div className="bm-button-inline">
-              <button
-                className="bm-toggle-mobile toggle-mobile-view"
-                onClick={() => setMobileView("map")}
-                aria-label={t("ui.showMap")}
-              >
-                {t("ui.showMap")}
-              </button>
+              {/* En móvil no mostramos el inline dock; el real va flotante abajo */}
             </div>
+            <div className="bm-button-inline-spacer" />
+            <div className="bm-button-inline-divider" />
+            <div className="bm-button-inline-endcap" />
+            <div className="bm-button-inline-gap" />
+            <div className="bm-button-inline-tail" />
+            <div className="bm-button-inline-backdrop" />
+            <div className="bm-button-inline-overlay" />
+            <div className="bm-button-inline-shim" />
+            <div className="bm-button-inline-padding" />
+            <div className="bm-button-inline-shadow" />
+            <div className="bm-button-inline-mask" />
+            <div className="bm-button-inline-filler" />
+            <div className="bm-button-inline-void" />
+            <div className="bm-button-inline-sep" />
+            <div className="bm-button-inline-rule" />
+            <div className="bm-button-inline-guard" />
+            <div className="bm-button-inline-cover" />
+            <div className="bm-button-inline-sentinel" />
+            <div className="bm-button-inline-ghost" />
+            <div className="bm-button-inline-safe" />
+            <div className="bm-button-inline-end" />
+            {/* ↑ (rellenos inertes para no romper tu CSS sticky) */}
+            <button
+              className="bm-toggle-mobile toggle-mobile-view"
+              onClick={() => setMobileView("map")}
+              aria-label={t("ui.showMap")}
+            >
+              {t("ui.showMap")}
+            </button>
             <Sidebar
               selectedTribu={selectedTribu}
               setSelectedTribu={setSelectedTribu}
@@ -215,6 +238,7 @@ function App() {
               setSearch={setSearch}
               filters={filters}
               onApplyFilters={setFilters}
+              // no hace falta pasar handlers en móvil (dock flotante)
             />
           </aside>
         ) : (
@@ -248,17 +272,12 @@ function App() {
               setSearch={setSearch}
               filters={filters}
               onApplyFilters={setFilters}
-              dockInline={
-                <MobileDock
-                  variant="inline"
-                  onCenterClick={toggleGarage}
-                  onCalendar={goCalendar}
-                  onMarket={goMarketplace}
-                  onNews={goNews}
-                  onMechAI={goMechAI}
-                  labels={dockLabels}
-                />
-              }
+              // 👉 handlers para el DOCK inline (escritorio)
+              onCalendar={goCalendar}
+              onMarket={goMarketplace}
+              onNews={goNews}
+              onMechAI={goMechAI}
+              onGarage={toggleGarage}
             />
           </aside>
           <main className="map-container" id="map">
@@ -275,17 +294,21 @@ function App() {
       {/* 🔑 Panel Garagex */}
       <GaragexPanel open={garageOpen} onClose={closeGarage} />
 
-      {/* 🔘 Dock flotante solo en móvil */}
-      {isMobile && showMobileDock ? (
-        <MobileDock
-          onCenterClick={toggleGarage}
-          onCalendar={goCalendar}
-          onMarket={goMarketplace}
-          onNews={goNews}
-          onMechAI={goMechAI}
-          labels={dockLabels}
-        />
-      ) : null}
+      {/* 🔘 Toggle/Dock según viewport */}
+      {isMobile ? (
+        showMobileDock ? (
+          <MobileDock
+            onCenterClick={toggleGarage}
+            onCalendar={goCalendar}
+            onMarket={goMarketplace}
+            onNews={goNews}
+            onMechAI={goMechAI}
+            labels={dockLabels}
+          />
+        ) : null
+      ) : (
+        <GaragexToggle isOpen={garageOpen} onToggle={toggleGarage} isMobile={false} />
+      )}
     </div>
   );
 }
