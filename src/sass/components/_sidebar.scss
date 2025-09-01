@@ -234,3 +234,27 @@
   .subfilters { grid-template-columns: 1fr; }
   .subfilters--3 { grid-template-columns: 1fr; }
 }
+
+
+/* Bloque sticky superior en móvil con todo el cabecero dentro */
+.bm-button-inline.mobile {
+  position: sticky;
+  top: var(--header-offset, 0px);
+  z-index: 7;
+  background: #FBE493;
+  padding: 10px 12px 10px 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+
+/* Cuando el cabecero vive dentro del sticky, anulamos su sticky interno */
+.bm-button-inline.mobile .sidebar__top {
+  position: static;
+  top: auto;
+  box-shadow: none;
+  padding-top: 8px;
+}
+
+/* En móvil ya no necesitamos el gradiente “relleno” del wrapper */
+@media (max-width: 768px) {
+  .sidebar__inner { background: none; }
+}

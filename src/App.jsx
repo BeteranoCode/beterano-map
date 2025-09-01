@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import MapPage from "./pages/Map";
-// ⬇️ quitado GaragexToggle
+// import GaragexToggle from "./components/GaragexToggle"; // ya no se usa en desktop
 import GaragexPanel from "./components/GaragexPanel";
 import MobileDock from "./components/MobileDock";
 import { t, loadLang, getLang } from "./i18n";
@@ -16,21 +16,21 @@ function App() {
   const [hasResults, setHasResults] = useState(true);
   const [headerReady, setHeaderReady] = useState(false);
 
-  /* ✅ Garagex */
+  // Garagex
   const [garageOpen, setGarageOpen] = useState(false);
   const toggleGarage = () => setGarageOpen((v) => !v);
   const closeGarage = () => setGarageOpen(false);
 
-  /* 🌐 tick para re-render tras i18n */
+  // i18n tick
   const [langTick, setLangTick] = useState(0);
 
-  // Handlers placeholder
+  // placeholders navegación
   const goCalendar = () => console.log("Calendario");
   const goMarketplace = () => console.log("Marketplace");
   const goNews = () => console.log("News");
   const goMechAI = () => console.log("Mech AI");
 
-  // 1) Cargar idioma inicial
+  // 1) idioma inicial
   useEffect(() => {
     const initLang = async () => {
       const stored =
@@ -48,7 +48,7 @@ function App() {
     initLang();
   }, []);
 
-  // 2) Escuchar cambios de idioma del header
+  // 2) escuchar cambios de idioma del header
   useEffect(() => {
     const applyLang = async (lng) => {
       await loadLang(lng);
@@ -81,7 +81,7 @@ function App() {
     };
   }, []);
 
-  // 3) Calcular offset del header externo
+  // 3) calcular offset del header externo
   useEffect(() => {
     const isLocal = location.hostname === "localhost";
 
@@ -143,7 +143,7 @@ function App() {
     };
   }, []);
 
-  // 4) UX: cerrar menú idioma al clicar opciones
+  // 4) UX cerrar menú idioma
   useEffect(() => {
     const closeMenu = () => {
       document.querySelector(".nav-wrapper")?.classList.remove("open");
@@ -160,24 +160,14 @@ function App() {
     return () => document.removeEventListener("click", onDocClick);
   }, []);
 
-  // 5) Detectar móvil
+  // 5) detectar móvil
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Mostrar dock sólo en móvil + mapa
-  const showMobileDock = isMobile && mobileView === "map";
-
-  // Clase al body cuando el dock está visible
-  useEffect(() => {
-    const cls = "has-mobile-dock";
-    if (showMobileDock) document.body.classList.add(cls);
-    else document.body.classList.remove(cls);
-    return () => document.body.classList.remove(cls);
-  }, [showMobileDock]);
-
+  // dock labels
   const dockLabels = useMemo(
     () => ({
       calendar: t("ui.calendar") || "Calendario",
@@ -188,42 +178,42 @@ function App() {
     [langTick]
   );
 
-  // Evita parpadeos antes de tener header + idioma
+  // ready gate
   const isLocal = location.hostname === "localhost";
   const ready = headerReady && langTick > 0;
   if (!ready && !isLocal) return null;
+
+  // ¿mostramos dock flotante móvil?
+  const showMobileDock = isMobile && mobileView === "map";
 
   return (
     <div className="layout-container" data-lang={getLang()}>
       {isMobile ? (
         mobileView === "list" ? (
           <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
-            <div className="bm-button-inline">
-              <button
-                className="bm-toggle-mobile toggle-mobile-view"
-                onClick={() => setMobileView("map")}
-                aria-label={t("ui.showMap")}
-              >
-                {t("ui.showMap")}
-              </button>
-            </div>
+            {/* ⬇️ El botón “Mostrar mapa” ahora lo renderiza el propio Sidebar en su cabecera */}
             <Sidebar
+              isMobile
               selectedTribu={selectedTribu}
               setSelectedTribu={setSelectedTribu}
               search={search}
               setSearch={setSearch}
               filters={filters}
               onApplyFilters={setFilters}
-              /* handlers dock (no se usan en móvil dentro del sidebar) */
-              onCalendar={goCalendar}
-              onMarket={goMarketplace}
-              onNews={goNews}
-              onMechAI={goMechAI}
-              onGarage={toggleGarage}
+              mobileToggle={
+                <button
+                  className="bm-toggle-mobile toggle-mobile-view"
+                  onClick={() => setMobileView("map")}
+                  aria-label={t("ui.showMap")}
+                >
+                  {t("ui.showMap")}
+                </button>
+              }
             />
           </aside>
         ) : (
           <>
+            {/* Botón flotante sobre el mapa para “Mostrar lista” */}
             <div className="bm-button-wrapper">
               <button
                 className="bm-toggle-mobile toggle-mobile-view"
@@ -253,12 +243,17 @@ function App() {
               setSearch={setSearch}
               filters={filters}
               onApplyFilters={setFilters}
-              /* ⬇️ DockInline vive dentro del sidebar en escritorio */
-              onCalendar={goCalendar}
-              onMarket={goMarketplace}
-              onNews={goNews}
-              onMechAI={goMechAI}
-              onGarage={toggleGarage}
+              dockInline={
+                <MobileDock
+                  variant="inline"
+                  onCenterClick={toggleGarage}
+                  onCalendar={goCalendar}
+                  onMarket={goMarketplace}
+                  onNews={goNews}
+                  onMechAI={goMechAI}
+                  labels={dockLabels}
+                />
+              }
             />
           </aside>
           <main className="map-container" id="map">
@@ -275,7 +270,7 @@ function App() {
       {/* Panel Garagex */}
       <GaragexPanel open={garageOpen} onClose={closeGarage} />
 
-      {/* Dock móvil (se mantiene) */}
+      {/* Dock flotante solo en móvil + vista mapa */}
       {isMobile && showMobileDock ? (
         <MobileDock
           onCenterClick={toggleGarage}
