@@ -17,10 +17,10 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: sans-serif;
-  overflow: hidden;
+  overflow: hidden;          /* bloquea scroll global */
 }
 
-/* 🔝 Header dinámico */
+/* 🔝 Header dinámico inyectado */
 #header-container {
   width: 100%;
   position: fixed;
@@ -32,11 +32,15 @@ html, body {
 }
 #header-container * { pointer-events: auto; }
 
-/* React App debajo del header */
+/* ✅ NUEVO: desplazar el contenido con padding-top del body
+   El loader define body.header-loaded[style*="--header-offset"] */
+:root { --header-offset: 0px; }          /* fallback seguro */
+body.header-loaded { padding-top: var(--header-offset, 96px); }
+
+/* React App debajo del header (sin márgenes ni cálculos) */
 #root {
   position: relative;
-  margin-top: var(--header-offset, 96px);
-  height: calc(100% - var(--header-offset, 96px));
+  height: 100dvh;                         /* ocupa viewport entero */
   width: 100%;
   display: flex;
   flex-direction: row;
