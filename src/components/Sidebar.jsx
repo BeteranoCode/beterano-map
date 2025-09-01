@@ -52,6 +52,7 @@ export default function Sidebar({
   setSearch,
   filters = {},
   onApplyFilters = () => {},
+  dockInline = null, // ⬅️ NUEVO: dock en escritorio
 }) {
   // Re-render on language change
   const [, force] = useState(0);
@@ -174,8 +175,10 @@ export default function Sidebar({
 
   return (
     <div className="sidebar__inner">
-      {/* ==== TOP FIJO: buscador + carrusel de tribus ==== */}
+      {/* ==== TOP (dock inline opcional) + buscador + carrusel ==== */}
       <div className="sidebar__top" role="region" aria-label={t("sidebar.title")}>
+        {dockInline ? <div className="sidebar__dock">{dockInline}</div> : null}
+
         <div className="sidebar__header">
           <input
             type="text"
@@ -243,7 +246,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* ==== LISTA ==== */}
+      {/* ==== LISTA (scrollea aquí, no el aside) ==== */}
       <div className="cards">
         {filtered.length === 0 && (
           <div className="cards__empty">{t("sidebar.noResults")}</div>
