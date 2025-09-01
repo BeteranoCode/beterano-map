@@ -1,11 +1,10 @@
 // src/components/SidebarTop.jsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useMemo, useRef, useEffect, useState } from "react";
 import { t } from "@/i18n";
 
-/** Chips de tribus (usa las keys existentes) */
 const TRIBUS = [
   "restauradores",
-  "gruas",          // se mostrará como t("filter.transport") si lo defines en i18n
+  "gruas",        // etiqueta se puede traducir como “filter.transport”
   "desguaces",
   "abandonos",
   "propietarios",
@@ -16,46 +15,214 @@ const TRIBUS = [
   "shops",
 ];
 
+// helpers para opciones únicas
+const pick = (obj, keys) => keys.map((k) => obj?.[k]).find((v) => v != null);
+function uniqFrom(data, keys) {
+  const set = new Set();
+  (data || []).forEach((it) => {
+    const v = pick(it, keys);
+    if (Array.isArray(v)) v.forEach((x) => x && set.add(String(x)));
+    else if (v) set.add(String(v));
+  });
+  return Array.from(set).sort((a, b) => a.localeCompare(b));
+}
+
 export default function SidebarTop({
+  data = [],
   selectedTribu,
   setSelectedTribu,
   search,
   setSearch,
   onOpenFilters,
-  /** subfiltros controlados desde el padre */
-  subfilters = {},
-  onChangeSubfilters = () => {},
+  subfilters,
+  onChangeSubfilters,
 }) {
-  /** flechas del carrusel */
+  // carrusel con flechas (como ya tenías)
   const scrollerRef = useRef(null);
   const [hasLeft, setHasLeft] = useState(false);
   const [hasRight, setHasRight] = useState(false);
-
   useEffect(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const update = () => {
-      setHasLeft(el.scrollLeft > 5);
-      setHasRight(el.scrollWidth - el.clientWidth - el.scrollLeft > 5);
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    const updateArrows = () => {
+      setHasLeft(scroller.scrollLeft > 5);
+      setHasRight(scroller.scrollWidth - scroller.clientWidth - scroller.scrollLeft > 5);
     };
-    update();
-    el.addEventListener("scroll", update);
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
+    updateArrows();
+    scroller.addEventListener("scroll", updateArrows);
+    const ro = new ResizeObserver(updateArrows);
+    ro.observe(scroller);
     return () => {
-      el.removeEventListener("scroll", update);
+      scroller.removeEventListener("scroll", updateArrows);
       ro.disconnect();
     };
   }, []);
 
-  const scrollBy = (dx) => scrollerRef.current?.scrollBy({ left: dx, behavior: "smooth" });
+  const scrollBy = (delta) => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    scroller.scrollBy({ left: delta, behavior: "smooth" });
+  };
 
-  /** helpers subfiltros simples */
-  const setSF = (k, v) => onChangeSubfilters({ ...subfilters, [k]: v || "" });
+  // opciones subfiltros según tribu
+  const opts = useMemo(() => {
+    const brand = uniqFrom(data, ["marca", "make", "vehiculo.marca"]);
+    const model = uniqFrom(data, ["modelo", "model", "vehiculo.modelo"]);
+    const country = uniqFrom(data, ["pais", "country"]);
+    const region = uniqFrom(data, ["region", "state", "provincia"]);
+    const city = uniqFrom(data, ["ciudad", "city", "localidad"]);
+    const skills = uniqFrom(data, ["skills", "especialidad", "servicios", "tags"]);
+    const tools = uniqFrom(data, ["categoria", "herramienta", "tools"]);
+    return { brand, model, country, region, city, skills, tools };
+  }, [data]);
+
+  const s = subfilters || {};
+  const change = (k) => (e) => onChangeSubfilters({ ...s, [k]: e.target.value || "" });
+  const clearSubfilters = () =>
+    onChangeSubfilters({ brand: "", model: "", country: "", region: "", city: "", skill: "", tool: "" });
+
+  const renderSubfilters = () => {
+    switch (selectedTribu) {
+      case "restauradores":
+      case "abandonos":
+      case "propietarios":
+      case "rent_knowledge":
+      case "shops":
+        return (
+          <div className="subfilters">
+            <div className="subf__field">
+              <label className="subf__label">{t("filter.brand") || "filter.brand"}</label>
+              <select className="subf__select" value={s.brand || ""} onChange={change("brand")}>
+                <option value="">{t("ui.any") || "ui.any"}</option>
+                {opts.brand.map((v) => (
+                  <option key={v} value={v}>{v}</option>
+                ))}
+              </select>
+            </div>
+            <div className="subf__field">
+              <label className="subf__label">{t("filter.model") || "filter.model"}</label>
+              <select className="subf__select" value={s.model || ""} onChange={change("model")}>
+                <option value="">{t("ui.any") || "ui.any"}</option>
+                {opts.model.map((v) => (
+                  <option key={v} value={v}>{v}</option>
+                ))}
+              </select>
+            </div>
+            <button className="subf__clear" onClick={clearSubfilters}>
+              {t("ui.clear") || "ui.clear"}
+            </button>
+          </div>
+        );
+
+      case "gruas": // Transporte
+      case "desguaces":
+        return (
+          <div className="subfilters">
+            <div className="subf__field">
+              <label className="subf__label">{t("filter.country") || "filter.country"}</label>
+              <select className="subf__select" value={s.country || ""} onChange={change("country")}>
+                <option value="">{t("ui.any") || "ui.any"}</option>
+                {opts.country.map((v) => (
+                  <option key={v} value={v}>{v}</option>
+                ))}
+              </select>
+            </div>
+            <div className="subf__field">
+              <label className="subf__label">{t("filter.region") || "filter.region"}</label>
+              <select className="subf__select" value={s.region || ""} onChange={change("region")}>
+                <option value="">{t("ui.any") || "ui.any"}</option>
+                {opts.region.map((v) => (
+                  <option key={v} value={v}>{v}</option>
+                ))}
+              </select>
+            </div>
+            <button className="subf__clear" onClick={clearSubfilters}>
+              {t("ui.clear") || "ui.clear"}
+            </button>
+          </div>
+        );
+
+      case "rent_space":
+        return (
+          <div className="subfilters subfilters--3">
+            <div className="subf__field">
+              <label className="subf__label">{t("filter.country") || "filter.country"}</label>
+              <select className="subf__select" value={s.country || ""} onChange={change("country")}>
+                <option value="">{t("ui.any") || "ui.any"}</option>
+                {opts.country.map((v) => (
+                  <option key={v} value={v}>{v}</option>
+                ))}
+              </select>
+            </div>
+            <div className="subf__field">
+              <label className="subf__label">{t("filter.region") || "filter.region"}</label>
+              <select className="subf__select" value={s.region || ""} onChange={change("region")}>
+                <option value="">{t("ui.any") || "ui.any"}</option>
+                {opts.region.map((v) => (
+                  <option key={v} value={v}>{v}</option>
+                ))}
+              </select>
+            </div>
+            <div className="subf__field">
+              <label className="subf__label">{t("filter.city") || "filter.city"}</label>
+              <select className="subf__select" value={s.city || ""} onChange={change("city")}>
+                <option value="">{t("ui.any") || "ui.any"}</option>
+                {opts.city.map((v) => (
+                  <option key={v} value={v}>{v}</option>
+                ))}
+              </select>
+            </div>
+            <button className="subf__clear" onClick={clearSubfilters}>
+              {t("ui.clear") || "ui.clear"}
+            </button>
+          </div>
+        );
+
+      case "rent_service":
+        return (
+          <div className="subfilters">
+            <div className="subf__field">
+              <label className="subf__label">{t("filter.skill") || "filter.skill"}</label>
+              <select className="subf__select" value={s.skill || ""} onChange={change("skill")}>
+                <option value="">{t("ui.any") || "ui.any"}</option>
+                {opts.skills.map((v) => (
+                  <option key={v} value={v}>{v}</option>
+                ))}
+              </select>
+              <div className="subf__hint">{t("hint.skill") || ""}</div>
+            </div>
+            <button className="subf__clear" onClick={clearSubfilters}>
+              {t("ui.clear") || "ui.clear"}
+            </button>
+          </div>
+        );
+
+      case "rent_tools":
+        return (
+          <div className="subfilters">
+            <div className="subf__field">
+              <label className="subf__label">{t("filter.tool") || "filter.tool"}</label>
+              <select className="subf__select" value={s.tool || ""} onChange={change("tool")}>
+                <option value="">{t("ui.any") || "ui.any"}</option>
+                {opts.tools.map((v) => (
+                  <option key={v} value={v}>{v}</option>
+                ))}
+              </select>
+            </div>
+            <button className="subf__clear" onClick={clearSubfilters}>
+              {t("ui.clear") || "ui.clear"}
+            </button>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="sidebar__top" role="region" aria-label={t("sidebar.title")}>
-      {/* buscador + botón filtros */}
+      {/* buscador + botón filtro */}
       <div className="sidebar__header">
         <input
           type="text"
@@ -65,18 +232,13 @@ export default function SidebarTop({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <button
-          className="btn btn--filter"
-          aria-label="Filtrar"
-          onClick={onOpenFilters}
-          title="Filtrar"
-        >
+        <button className="btn btn--filter" aria-label="Filtrar" onClick={onOpenFilters} title="Filtrar">
           <span className="btn-icon" aria-hidden>⫶</span>
           <span className="btn-text">{t("ui.filter") ?? "Filtrar"}</span>
         </button>
       </div>
 
-      {/* ← chips tribu → */}
+      {/* carrusel chips tribus */}
       <div className="tribu-row">
         <button
           type="button"
@@ -92,7 +254,6 @@ export default function SidebarTop({
           <div className="tribu-track">
             {TRIBUS.map((key) => {
               const active = key === selectedTribu;
-              const labelKey = key === "gruas" ? "filter.transport" : `filter.${key}`;
               return (
                 <button
                   key={key}
@@ -100,7 +261,7 @@ export default function SidebarTop({
                   onClick={() => setSelectedTribu(key)}
                   aria-pressed={active}
                 >
-                  {t(labelKey)}
+                  {t(`filter.${key}`)}
                 </button>
               );
             })}
@@ -118,42 +279,8 @@ export default function SidebarTop({
         </button>
       </div>
 
-      {/* ==== SUBFILTROS NIVEL 2 (compacto) ==== */}
-      <div className="subfilters">
-        {selectedTribu === "restauradores" && (
-          <>
-            <label className="sf-label">filter.brand</label>
-            <select className="sf-select" value={subfilters.brand || ""} onChange={(e) => setSF("brand", e.target.value)}>
-              <option value="">{t("ui.any")}</option>
-            </select>
-
-            <label className="sf-label">filter.model</label>
-            <select className="sf-select" value={subfilters.model || ""} onChange={(e) => setSF("model", e.target.value)}>
-              <option value="">{t("ui.any")}</option>
-            </select>
-
-            <button className="sf-clear" onClick={() => onChangeSubfilters({})}>ui.clear</button>
-          </>
-        )}
-
-        {selectedTribu === "gruas" && (
-          <>
-            <label className="sf-label">filter.country</label>
-            <select className="sf-select" value={subfilters.pais || ""} onChange={(e) => setSF("pais", e.target.value)}>
-              <option value="">{t("ui.any")}</option>
-            </select>
-
-            <label className="sf-label">filter.region</label>
-            <select className="sf-select" value={subfilters.region || ""} onChange={(e) => setSF("region", e.target.value)}>
-              <option value="">{t("ui.any")}</option>
-            </select>
-
-            <button className="sf-clear" onClick={() => onChangeSubfilters({})}>ui.clear</button>
-          </>
-        )}
-
-        {/* …repite los bloques según tu tabla (desguaces, abandonos, propietarios, rent_*, shops) … */}
-      </div>
+      {/* subfiltros por tribu */}
+      {renderSubfilters()}
     </div>
   );
 }

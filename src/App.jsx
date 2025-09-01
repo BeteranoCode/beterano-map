@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import MapPage from "./pages/Map";
-// import GaragexToggle from "./components/GaragexToggle"; // ya no se usa en desktop
+// import GaragexToggle from "./components/GaragexToggle"; // ⬅️ ya no se usa en desktop
 import GaragexPanel from "./components/GaragexPanel";
 import MobileDock from "./components/MobileDock";
 import { t, loadLang, getLang } from "./i18n";
@@ -16,21 +16,21 @@ function App() {
   const [hasResults, setHasResults] = useState(true);
   const [headerReady, setHeaderReady] = useState(false);
 
-  // Garagex
+  /* ✅ Garagex */
   const [garageOpen, setGarageOpen] = useState(false);
   const toggleGarage = () => setGarageOpen((v) => !v);
   const closeGarage = () => setGarageOpen(false);
 
-  // i18n tick
+  /* 🌐 tick para re-render tras i18n */
   const [langTick, setLangTick] = useState(0);
 
-  // placeholders navegación
+  // Handlers placeholder
   const goCalendar = () => console.log("Calendario");
   const goMarketplace = () => console.log("Marketplace");
   const goNews = () => console.log("News");
   const goMechAI = () => console.log("Mech AI");
 
-  // 1) idioma inicial
+  // 1) Cargar idioma inicial
   useEffect(() => {
     const initLang = async () => {
       const stored =
@@ -48,7 +48,7 @@ function App() {
     initLang();
   }, []);
 
-  // 2) escuchar cambios de idioma del header
+  // 2) Escuchar cambios de idioma del header
   useEffect(() => {
     const applyLang = async (lng) => {
       await loadLang(lng);
@@ -81,7 +81,7 @@ function App() {
     };
   }, []);
 
-  // 3) calcular offset del header externo
+  // 3) Calcular offset del header externo
   useEffect(() => {
     const isLocal = location.hostname === "localhost";
 
@@ -143,7 +143,7 @@ function App() {
     };
   }, []);
 
-  // 4) UX cerrar menú idioma
+  // 4) UX: cerrar menú idioma al clicar opciones
   useEffect(() => {
     const closeMenu = () => {
       document.querySelector(".nav-wrapper")?.classList.remove("open");
@@ -160,14 +160,25 @@ function App() {
     return () => document.removeEventListener("click", onDocClick);
   }, []);
 
-  // 5) detectar móvil
+  // 5) Detectar móvil
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // dock labels
+  // Mostrar dock sólo en móvil + mapa
+  const showMobileDock = isMobile && mobileView === "map";
+
+  // Clase al body cuando el dock está visible
+  useEffect(() => {
+    const cls = "has-mobile-dock";
+    if (showMobileDock) document.body.classList.add(cls);
+    else document.body.classList.remove(cls);
+    return () => document.body.classList.remove(cls);
+  }, [showMobileDock]);
+
+  // Etiquetas del dock
   const dockLabels = useMemo(
     () => ({
       calendar: t("ui.calendar") || "Calendario",
@@ -178,28 +189,19 @@ function App() {
     [langTick]
   );
 
-  // ready gate
+  // Evita parpadeos antes de tener header + idioma
   const isLocal = location.hostname === "localhost";
   const ready = headerReady && langTick > 0;
   if (!ready && !isLocal) return null;
-
-  // ¿mostramos dock flotante móvil?
-  const showMobileDock = isMobile && mobileView === "map";
 
   return (
     <div className="layout-container" data-lang={getLang()}>
       {isMobile ? (
         mobileView === "list" ? (
           <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
-            {/* ⬇️ El botón “Mostrar mapa” ahora lo renderiza el propio Sidebar en su cabecera */}
+            {/* ⬇️ AHORA el botón vive dentro del Sidebar como cabecero sticky */}
             <Sidebar
               isMobile
-              selectedTribu={selectedTribu}
-              setSelectedTribu={setSelectedTribu}
-              search={search}
-              setSearch={setSearch}
-              filters={filters}
-              onApplyFilters={setFilters}
               mobileToggle={
                 <button
                   className="bm-toggle-mobile toggle-mobile-view"
@@ -209,11 +211,16 @@ function App() {
                   {t("ui.showMap")}
                 </button>
               }
+              selectedTribu={selectedTribu}
+              setSelectedTribu={setSelectedTribu}
+              search={search}
+              setSearch={setSearch}
+              filters={filters}
+              onApplyFilters={setFilters}
             />
           </aside>
         ) : (
           <>
-            {/* Botón flotante sobre el mapa para “Mostrar lista” */}
             <div className="bm-button-wrapper">
               <button
                 className="bm-toggle-mobile toggle-mobile-view"
@@ -267,10 +274,10 @@ function App() {
         </>
       )}
 
-      {/* Panel Garagex */}
+      {/* 🔑 Panel Garagex */}
       <GaragexPanel open={garageOpen} onClose={closeGarage} />
 
-      {/* Dock flotante solo en móvil + vista mapa */}
+      {/* 🔘 Dock flotante solo en móvil */}
       {isMobile && showMobileDock ? (
         <MobileDock
           onCenterClick={toggleGarage}
