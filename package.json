@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "vite build && gh-pages -d dist"
+    "deploy": "bash devops/deploy.sh --branch main"
   },
   "dependencies": {
     "leaflet": "^1.9.4",

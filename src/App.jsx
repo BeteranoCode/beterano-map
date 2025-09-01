@@ -178,12 +178,7 @@ function App() {
     return () => document.body.classList.remove(cls);
   }, [showMobileDock]);
 
-  // Evita parpadeos antes de tener header + idioma
-  const isLocal = location.hostname === "localhost";
-  const ready = headerReady && langTick > 0;
-  if (!ready && !isLocal) return null;
-
-  // Etiquetas del dock
+  // 🔁 Mueve ESTE hook antes de cualquier return condicional
   const dockLabels = useMemo(
     () => ({
       calendar: t("ui.calendar") || "Calendario",
@@ -193,6 +188,11 @@ function App() {
     }),
     [langTick]
   );
+
+  // Evita parpadeos antes de tener header + idioma (el hook anterior ya fue llamado)
+  const isLocal = location.hostname === "localhost";
+  const ready = headerReady && langTick > 0;
+  if (!ready && !isLocal) return null;
 
   return (
     <div className="layout-container" data-lang={getLang()}>

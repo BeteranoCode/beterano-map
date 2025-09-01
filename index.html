@@ -6,23 +6,34 @@
   <title>BETERANO MAP</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
-  <!-- ❌ Header dinámico: se carga antes que React -->
-  <!-- <script src="https://beteranocode.github.io/beterano-web-header/components/header/header-loader.js" defer></script> -->
-
-
-  <!-- ✅ Leaflet styles -->
+  <!-- Leaflet styles -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
 </head>
 
 <body>
-  <!-- ✅ Header dinámico se insertará aquí -->
+  <!-- Contenedor donde irá el header externo -->
   <div id="header-container"></div>
 
-  <!-- ✅ Aquí se monta React (mapa + sidebar) -->
+  <!-- Aquí se monta React -->
   <div id="root"></div>
 
-  <!-- ✅ App React/Vite -->
+  <!-- Tu app React -->
   <script type="module" src="./src/main.jsx"></script>
+
+  <!-- ⛔️ QUITAMOS la carga directa del header -->
+  <!-- <script src="https://beteranocode.github.io/beterano-web-header/components/header/header-loader.js" defer></script> -->
+
+  <!-- ✅ Inyección diferida y encapsulada del header (después de montar React) -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const s = document.createElement('script');
+      s.src = 'https://beteranocode.github.io/beterano-web-header/components/header/header-loader.js';
+      s.defer = true;
+      // Guard: evita que el loader toque fuera de #header-container
+      s.setAttribute('data-target', '#header-container');
+      document.body.appendChild(s);
+    });
+  </script>
 </body>
 </html>
