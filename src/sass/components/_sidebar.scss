@@ -12,11 +12,7 @@
   padding: 10px 12px 12px 12px;
   position: relative;
   z-index: 2;
-
-  /* IMPORTANTE: el scroll ya NO va en el aside,
-     lo llevará .sidebar__list */
-  overflow: hidden;
-
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   font-family: 'Inter', Arial, sans-serif;
@@ -41,57 +37,20 @@
   }
 }
 
-/* wrapper interno a altura completa para poder flexionar */
+/* wrapper interno para espaciar */
 .sidebar__inner {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  min-height: 0; /* ⚠️ necesario para que el hijo con overflow pueda scrollear */
   gap: 10px;
-}
 
-/* ============ CUADRANTE SUPERIOR (SIN SCROLL) ============ */
-.sidebar__controls {
-  flex: 0 0 auto;
-  background: #FBE493;
-  padding: 8px 4px 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.06);
-  position: relative;
-  z-index: 3;
-}
-
-/* Dock inline (oculto en móvil) */
-.dock-inline {
-  display: grid;
-  grid-auto-flow: column;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-.dock-inline .dock-btn,
-.dock-inline .dock-center {
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: 999px;
-  background: #fff;
-  box-shadow: 0 1px 6px rgba(0,0,0,.12);
-  cursor: pointer;
-}
-.dock-inline .dock-btn { width: 36px; height: 36px; }
-.dock-inline .dock-btn svg {
-  width: 20px; height: 20px;
-  stroke: #111; fill: none; stroke-width: 2;
-  stroke-linecap: round; stroke-linejoin: round;
-}
-.dock-inline .dock-center { width: 44px; height: 44px; border: 2px solid #1111; }
-.dock-inline .dock-center img { width: 24px; height: 24px; display: block; }
-
-@media (max-width: 768px) {
-  .dock-inline { display: none; }
+  background:
+    linear-gradient(
+      #FBE493 0,
+      #FBE493 calc(var(--bm-inline-h, 74px)),
+      transparent calc(var(--bm-inline-h, 74px))
+    );
+  background-attachment: local;
 }
 
 /* Header: buscador + botón filtro */
@@ -100,7 +59,7 @@
   grid-template-columns: 1fr auto;
   gap: 8px;
   align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: 2px;
 }
 
 .sidebar-search {
@@ -122,63 +81,12 @@
 }
 .btn--filter .btn-icon { font-size: 18px; line-height: 0; }
 
-/* Carrusel de tribus */
-.tribu-row {
-  display: grid;
-  grid-template-columns: 32px 1fr 32px;
-  align-items: center;
-  gap: 8px;
-}
-
-.tribu-arrow {
-  appearance: none;
-  border: 0;
-  padding: 0;
-  margin: 0;
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  display: grid; place-items: center;
-  background: #fff;
-  box-shadow: 0 1px 6px rgba(0,0,0,.15);
-  cursor: pointer; user-select: none;
-}
-.tribu-arrow:disabled { opacity: .35; cursor: default; box-shadow: none; }
-.tribu-arrow svg {
-  width: 16px; height: 16px;
-  display: block; stroke: #111; fill: none; stroke-width: 2;
-  stroke-linecap: round; stroke-linejoin: round;
-}
-
-.tribu-scroller {
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding: 6px 2px 2px;
-}
-.tribu-scroller::-webkit-scrollbar { display: none; }
-.tribu-track { display: inline-flex; gap: 10px; min-width: 100%; }
-.tribe-chip {
-  flex: 0 0 auto; border: 0; border-radius: 18px;
-  padding: 8px 14px; background: #f1f3f5; color: #111;
-  font-weight: 600; white-space: nowrap; cursor: pointer;
-}
-.tribe-chip.active { background: #ffd024; }
-
-/* ============ CUADRANTE INFERIOR (CON SCROLL) ============ */
-.sidebar__list {
-  flex: 1 1 auto;
-  min-height: 0;          /* ⚠️ imprescindible para que el overflow funcione en flexbox */
-  overflow-y: auto;
-  padding-top: 8px;       /* separa carrusel de las cards */
-}
-
-/* Cards */
+/* ----- Cards ----- */
 .cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin: 0;              /* ya no necesitamos margen superior, lo controla sidebar__list */
+  margin-top: 8px;
 }
 .cards__empty { color: #aaa; font-size: 14px; }
 
@@ -199,7 +107,7 @@
   .cards { grid-template-columns: 1fr; }
 }
 
-/* No-results en móvil: mantiene tu comportamiento anterior */
+/* No-results en móvil */
 .sidebar.no-results {
   @media (max-width: 768px) {
     border-bottom: none !important;
@@ -210,4 +118,119 @@
       border-top: none !important;
     }
   }
+}
+
+/* =================== Top fijo + carrusel =================== */
+.bm-button-inline,
+.sidebar__top { background: #FBE493; }
+
+.sidebar__top {
+  position: sticky;
+  top: calc(8px + var(--bm-inline-h, 74px));
+  z-index: 6;
+  padding: 0 0 8px 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+/* Fila de 3 columnas: ← | carrusel | → */
+.tribu-row {
+  display: grid;
+  grid-template-columns: 32px 1fr 32px;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Flechas */
+.tribu-arrow {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(0,0,0,.15);
+  cursor: pointer;
+  user-select: none;
+}
+.tribu-arrow:disabled { opacity: .35; cursor: default; box-shadow: none; }
+.tribu-arrow svg {
+  width: 16px; height: 16px;
+  display: block;
+  stroke: #111; fill: none; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* Carrusel (columna central) */
+.tribu-scroller {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 6px 2px 2px;
+}
+.tribu-scroller::-webkit-scrollbar { display: none; }
+
+.tribu-track {
+  display: inline-flex;
+  gap: 10px;
+  min-width: 100%;
+}
+
+/* Chip */
+.tribe-chip {
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 18px;
+  padding: 8px 14px;
+  background: #f1f3f5;
+  color: #111;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.tribe-chip.active { background: #ffd024; }
+
+/* ===== Subfilters (nivel 2) ===== */
+.subfilters {
+  margin-top: 8px;
+  padding: 8px;
+  background: #fff7cf;
+  border: 1px solid #f1d971;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+}
+.subfilters--3 { grid-template-columns: 1fr 1fr 1fr auto; }
+
+.subf__field { display: flex; flex-direction: column; gap: 6px; }
+.subf__label { font-size: 12px; font-weight: 600; color: #6a6a6a; }
+.subf__select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+}
+.subf__hint { font-size: 11px; color: #8a8a8a; }
+
+.subf__clear {
+  align-self: end;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid #d9b941;
+  background: #ffe27a;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+  .subfilters { grid-template-columns: 1fr; }
+  .subfilters--3 { grid-template-columns: 1fr; }
 }
