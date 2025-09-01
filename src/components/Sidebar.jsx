@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { t } from "@/i18n";
 import FilterModal from "./filters/FilterModal";
+import DockInline from "./DockInline";
 
 const TRIBUS = [
   "restauradores",
@@ -33,7 +34,7 @@ const DATA_MAP = {
   rent_knowledge, rent_service, rent_space, rent_tools, shops,
 };
 
-// 🔎 helper: match array de filtros
+// helper: match array de filtros
 function someMatch(filterValues, itemValue) {
   if (!Array.isArray(filterValues) || !filterValues.length) return true;
   if (itemValue == null) return false;
@@ -52,7 +53,12 @@ export default function Sidebar({
   setSearch,
   filters = {},
   onApplyFilters = () => {},
-  dockInline = null, // ⬅️ NUEVO: dock en escritorio
+  // Handlers para DockInline (escritorio)
+  onCalendar,
+  onMarket,
+  onNews,
+  onMechAI,
+  onGarage,
 }) {
   // Re-render on language change
   const [, force] = useState(0);
@@ -175,10 +181,18 @@ export default function Sidebar({
 
   return (
     <div className="sidebar__inner">
-      {/* ==== TOP (dock inline opcional) + buscador + carrusel ==== */}
-      <div className="sidebar__top" role="region" aria-label={t("sidebar.title")}>
-        {dockInline ? <div className="sidebar__dock">{dockInline}</div> : null}
+      {/* === CUADRANTE SUPERIOR SIN SCROLL === */}
+      <div className="sidebar__controls" role="region" aria-label={t("sidebar.title")}>
+        {/* Dock inline (oculto en móvil por CSS) */}
+        <DockInline
+          onCenterClick={onGarage}
+          onCalendar={onCalendar}
+          onMarket={onMarket}
+          onNews={onNews}
+          onMechAI={onMechAI}
+        />
 
+        {/* Buscador + botón filtro */}
         <div className="sidebar__header">
           <input
             type="text"
@@ -199,7 +213,7 @@ export default function Sidebar({
           </button>
         </div>
 
-        {/* Fila: ← flecha | carrusel chips | flecha → */}
+        {/* Carrusel de tribus */}
         <div className="tribu-row">
           <button
             type="button"
@@ -246,35 +260,37 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* ==== LISTA (scrollea aquí, no el aside) ==== */}
-      <div className="cards">
-        {filtered.length === 0 && (
-          <div className="cards__empty">{t("sidebar.noResults")}</div>
-        )}
-        {filtered.map((item, i) => (
-          <article key={i} className="card card--list">
-            <header className="card__header">
-              <h4 className="card__title">
-                {item.nombre || item.titulo || t("sidebar.unnamed")}
-              </h4>
-              {(item.ciudad || item.pais) && (
-                <div className="card__meta">
-                  {item.ciudad && <>{item.ciudad}, </>}
-                  {item.pais}
-                </div>
-              )}
-            </header>
-            {item.descripcion && <p className="card__desc">{item.descripcion}</p>}
-            <footer className="card__footer">
-              {item.web && (
-                <a href={item.web} target="_blank" rel="noopener noreferrer">
-                  Web
-                </a>
-              )}
-              {item.instagram && <span className="card__ig">{item.instagram}</span>}
-            </footer>
-          </article>
-        ))}
+      {/* === CUADRANTE INFERIOR CON SCROLL (SOLO CARDS) === */}
+      <div className="sidebar__list">
+        <div className="cards">
+          {filtered.length === 0 && (
+            <div className="cards__empty">{t("sidebar.noResults")}</div>
+          )}
+          {filtered.map((item, i) => (
+            <article key={i} className="card card--list">
+              <header className="card__header">
+                <h4 className="card__title">
+                  {item.nombre || item.titulo || t("sidebar.unnamed")}
+                </h4>
+                {(item.ciudad || item.pais) && (
+                  <div className="card__meta">
+                    {item.ciudad && <>{item.ciudad}, </>}
+                    {item.pais}
+                  </div>
+                )}
+              </header>
+              {item.descripcion && <p className="card__desc">{item.descripcion}</p>}
+              <footer className="card__footer">
+                {item.web && (
+                  <a href={item.web} target="_blank" rel="noopener noreferrer">
+                    Web
+                  </a>
+                )}
+                {item.instagram && <span className="card__ig">{item.instagram}</span>}
+              </footer>
+            </article>
+          ))}
+        </div>
       </div>
 
       {/* MODAL DE FILTROS */}
