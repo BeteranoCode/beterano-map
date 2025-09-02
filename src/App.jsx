@@ -2,7 +2,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import MapPage from "./pages/Map";
-import GaragexToggle from "./components/GaragexToggle";
 import GaragexPanel from "./components/GaragexPanel";
 import MobileDock from "./components/MobileDock";
 import { t, loadLang, getLang } from "./i18n";
@@ -178,7 +177,7 @@ function App() {
     return () => document.body.classList.remove(cls);
   }, [showMobileDock]);
 
-  // 🔁 Mueve ESTE hook antes de cualquier return condicional
+  // Etiquetas del dock
   const dockLabels = useMemo(
     () => ({
       calendar: t("ui.calendar") || "Calendario",
@@ -189,7 +188,7 @@ function App() {
     [langTick]
   );
 
-  // Evita parpadeos antes de tener header + idioma (el hook anterior ya fue llamado)
+  // Evita parpadeos antes de tener header + idioma
   const isLocal = location.hostname === "localhost";
   const ready = headerReady && langTick > 0;
   if (!ready && !isLocal) return null;
@@ -209,12 +208,23 @@ function App() {
               </button>
             </div>
             <Sidebar
+              isMobile
               selectedTribu={selectedTribu}
               setSelectedTribu={setSelectedTribu}
               search={search}
               setSearch={setSearch}
               filters={filters}
               onApplyFilters={setFilters}
+              // (en móvil, Sidebar mete el botón “Mostrar mapa” dentro del sticky)
+              mobileToggle={
+                <button
+                  className="bm-toggle-mobile toggle-mobile-view"
+                  onClick={() => setMobileView("map")}
+                  aria-label={t("ui.showMap")}
+                >
+                  {t("ui.showMap")}
+                </button>
+              }
             />
           </aside>
         ) : (
@@ -248,6 +258,18 @@ function App() {
               setSearch={setSearch}
               filters={filters}
               onApplyFilters={setFilters}
+              /* ⬇️ ESTE es el dock de 5 botones que queremos encima del buscador */
+              dockInline={
+                <MobileDock
+                  variant="inline"
+                  onCenterClick={toggleGarage}
+                  onCalendar={goCalendar}
+                  onMarket={goMarketplace}
+                  onNews={goNews}
+                  onMechAI={goMechAI}
+                  labels={dockLabels}
+                />
+              }
             />
           </aside>
           <main className="map-container" id="map">
@@ -264,21 +286,17 @@ function App() {
       {/* 🔑 Panel Garagex */}
       <GaragexPanel open={garageOpen} onClose={closeGarage} />
 
-      {/* 🔘 Toggle/Dock según viewport */}
-      {isMobile ? (
-        showMobileDock ? (
-          <MobileDock
-            onCenterClick={toggleGarage}
-            onCalendar={goCalendar}
-            onMarket={goMarketplace}
-            onNews={goNews}
-            onMechAI={goMechAI}
-            labels={dockLabels}
-          />
-        ) : null
-      ) : (
-        <GaragexToggle isOpen={garageOpen} onToggle={toggleGarage} isMobile={false} />
-      )}
+      {/* 🔘 Dock flotante solo en móvil */}
+      {isMobile && showMobileDock ? (
+        <MobileDock
+          onCenterClick={toggleGarage}
+          onCalendar={goCalendar}
+          onMarket={goMarketplace}
+          onNews={goNews}
+          onMechAI={goMechAI}
+          labels={dockLabels}
+        />
+      ) : null}
     </div>
   );
 }

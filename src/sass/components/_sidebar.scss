@@ -1,3 +1,4 @@
+/* src/sass/components/_sidebar.scss */
 @use "../_variables.scss" as *;
 
 /* ===== Sidebar (contenedor) ===== */
@@ -12,7 +13,10 @@
   padding: 10px 12px 12px 12px;
   position: relative;
   z-index: 2;
-  overflow-y: auto;
+
+  /* ⬇️ clave: que NO scrollee el aside; el scroll va en .cards */
+  overflow: hidden;
+
   display: flex;
   flex-direction: column;
   font-family: 'Inter', Arial, sans-serif;
@@ -37,23 +41,25 @@
   }
 }
 
-/* wrapper interno para espaciar */
+/* wrapper interno que contendrá “top” + “cards” */
 .sidebar__inner {
   position: relative;
+
   display: flex;
   flex-direction: column;
   gap: 10px;
 
-  /* 🎨 Pintamos SOLO la franja superior sin empujar contenido.
-     La altura pintada coincide con el alto total del bloque del botón inline:
-     var(--bm-inline-h) ya incluye el botón + separaciones. */
+  /* que el contenedor ocupe todo el alto disponible */
+  flex: 1 1 auto;
+  min-height: 0; /* ⬅️ imprescindible para que .cards pueda scrollear */
+
+  /* franja pastel superior (solo visual) */
   background:
     linear-gradient(
       #FBE493 0,
       #FBE493 calc(var(--bm-inline-h, 74px)),
       transparent calc(var(--bm-inline-h, 74px))
     );
-  /* que el fondo se mueva con el scroll del aside */
   background-attachment: local;
 }
 
@@ -85,97 +91,41 @@
 }
 .btn--filter .btn-icon { font-size: 18px; line-height: 0; }
 
-/* ----- Tribus (modo grid legacy, ya no usamos en móvil) ----- */
-.tribu-filters {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0,1fr));
-  gap: 8px;
-}
-
-.tribu-filters .tribe-btn,
-.tribu-filters button {
-  border: none;
-  background: #f7f7f7;
-  color: #232323;
-  border-radius: 10px;
-  padding: 8px 10px;
-  height: 36px;
-  font-weight: 600;
-  font-family: 'Oswald', Arial, sans-serif;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: background 0.18s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.tribu-filters .tribe-btn.active,
-.tribu-filters button.active,
-.tribu-filters button:focus {
-  background: #FCD20B;
-  color: #232323;
-  outline: none;
-}
-
-@media (max-width: 1024px) {
-  .tribu-filters { grid-template-columns: repeat(3, minmax(0,1fr)); }
-}
-@media (max-width: 768px) {
-  .tribu-filters { grid-template-columns: repeat(2, minmax(0,1fr)); }
-}
-
-/* ----- Cards ----- */
-.cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 8px;
-}
-.cards__empty { color: #aaa; font-size: 14px; }
-
-.card {
-  border: 1px solid #eee;
-  border-radius: 12px;
-  padding: 14px;
-  background: #fff;
-  box-shadow: 0 1px 6px #0001;
-  display: flex; flex-direction: column; gap: 6px;
-}
-.card__title { font-weight: 700; font-size: 16px; margin: 0; }
-.card__meta { font-size: 13px; color: #666; }
-.card__desc { font-size: 13px; margin: 4px 0 2px 0; }
-.card__footer { display: flex; gap: 10px; font-size: 12px; }
-
-@media (max-width: 1024px) {
-  .cards { grid-template-columns: 1fr; }
-}
-
-/* No-results en móvil */
-.sidebar.no-results {
-  @media (max-width: 768px) {
-    border-bottom: none !important;
-    box-shadow: none !important;
-
-    > div:last-child {
-      margin-top: 0 !important;
-      border-top: none !important;
-    }
-  }
-}
-
-/* =================== Top fijo + carrusel =================== */
-
-/* El bloque inline y el top comparten fondo pastel */
+/* =================== Cabecero (buscador + carrusel + subfiltros) =================== */
 .bm-button-inline,
 .sidebar__top { background: #FBE493; }
 
+/* En escritorio no usamos sticky: el scroll es solo en .cards */
 .sidebar__top {
-  position: sticky;
-  top: calc(8px + var(--bm-inline-h, 74px));
+  position: relative;
+  top: auto;
   z-index: 6;
   padding: 0 0 8px 0;
   box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+/* Dock inline encima del buscador (solo desktop) */
+.bm-desktop-dock-row { display: none; }
+
+@media (min-width: 769px) {
+  .bm-desktop-dock-row {
+    display: flex;
+    margin: 2px 0 10px 0;
+  }
+  /* El componente MobileDock encaja como fila normal */
+  .bm-desktop-dock-row .mobile-dock {
+    position: static;
+    transform: none;
+    width: 100%;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .bm-desktop-dock-row .dock-center {
+    translate: 0 0;
+  }
 }
 
 /* Fila de 3 columnas: ← | carrusel | → */
@@ -202,11 +152,7 @@
   cursor: pointer;
   user-select: none;
 }
-.tribu-arrow:disabled {
-  opacity: .35;
-  cursor: default;
-  box-shadow: none;
-}
+.tribu-arrow:disabled { opacity: .35; cursor: default; box-shadow: none; }
 .tribu-arrow svg {
   width: 16px; height: 16px;
   display: block;
@@ -214,7 +160,7 @@
   stroke-linecap: round; stroke-linejoin: round;
 }
 
-/* Carrusel (columna central) */
+/* Carrusel */
 .tribu-scroller {
   overflow-x: auto;
   overflow-y: hidden;
@@ -223,12 +169,7 @@
   padding: 6px 2px 2px;
 }
 .tribu-scroller::-webkit-scrollbar { display: none; }
-
-.tribu-track {
-  display: inline-flex;
-  gap: 10px;
-  min-width: 100%;
-}
+.tribu-track { display: inline-flex; gap: 10px; min-width: 100%; }
 
 /* Chip */
 .tribe-chip {
@@ -244,7 +185,128 @@
 }
 .tribe-chip.active { background: #ffd024; }
 
-/* Cards debajo */
-/* El contenedor que scrollea es el aside */
-/* .cards { }  → no hace falta */
+/* ===== Subfilters (nivel 2) ===== */
+.subfilters {
+  margin-top: 8px;
+  padding: 8px;
+  background: #fff7cf;
+  border: 1px solid #f1d971;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+}
+.subfilters--3 { grid-template-columns: 1fr 1fr 1fr auto; }
+.subf__field { display: flex; flex-direction: column; gap: 6px; }
+.subf__label { font-size: 12px; font-weight: 600; color: #6a6a6a; }
+.subf__select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+}
+.subf__hint { font-size: 11px; color: #8a8a8a; }
+.subf__clear {
+  align-self: end;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid #d9b941;
+  background: #ffe27a;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+@media (max-width: 1024px) {
+  .subfilters { grid-template-columns: 1fr; }
+  .subfilters--3 { grid-template-columns: 1fr; }
+}
 
+/* =================== LISTA (solo esta parte scrollea) =================== */
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+
+  /* ⬇️ scroll interno a la lista */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+}
+.cards__empty { color: #aaa; font-size: 14px; }
+
+.card {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fff;
+  box-shadow: 0 1px 6px #0001;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.card__title { font-weight: 700; font-size: 16px; margin: 0; }
+.card__meta { font-size: 13px; color: #666; }
+.card__desc { font-size: 13px; margin: 4px 0 2px 0; }
+.card__footer { display: flex; gap: 10px; font-size: 12px; }
+
+@media (max-width: 1024px) {
+  .cards { grid-template-columns: 1fr; }
+}
+
+/* No-results en móvil */
+.sidebar.no-results {
+  @media (max-width: 768px) {
+    border-bottom: none !important;
+    box-shadow: none !important;
+    > div:last-child { margin-top: 0 !important; border-top: none !important; }
+  }
+}
+
+/* ===== Sticky móvil con todo el cabecero dentro ===== */
+.bm-button-inline.mobile {
+  position: sticky;
+  top: var(--header-offset, 0px);
+  z-index: 7;
+  background: #FBE493;
+  padding: 10px 12px 12px 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.08);
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* quitamos cualquier relleno fantasma */
+.bm-button-inline.mobile::before { content: none !important; }
+
+/* Fila del botón “Mostrar mapa” centrado */
+.bm-mobile-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 10px;
+}
+.bm-toggle-mobile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 240px;
+  max-width: 320px;
+  height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 28px;
+  font-weight: 700;
+  background: #fcd20b;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15) inset, 0 2px 8px rgba(0,0,0,.06);
+  cursor: pointer;
+}
+
+/* En móvil quitamos el gradiente del wrapper */
+@media (max-width: 768px) {
+  .sidebar__inner { background: none; }
+}

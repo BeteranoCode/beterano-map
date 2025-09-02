@@ -2,21 +2,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { t } from "@/i18n";
 import FilterModal from "./filters/FilterModal";
+import SidebarTop from "./SidebarTop";
 
-const TRIBUS = [
-  "restauradores",
-  "gruas",
-  "desguaces",
-  "abandonos",
-  "propietarios",
-  "rent_knowledge",
-  "rent_service",
-  "rent_space",
-  "rent_tools",
-  "shops",
-];
-
-// Datos locales
+// ===== Datos locales =====
 import restauradores from "../data/restauradores.json";
 import gruas from "../data/gruas.json";
 import desguaces from "../data/desguaces.json";
@@ -29,11 +17,19 @@ import rent_tools from "../data/rent_tools.json";
 import shops from "../data/shops.json";
 
 const DATA_MAP = {
-  restauradores, gruas, desguaces, abandonos, propietarios,
-  rent_knowledge, rent_service, rent_space, rent_tools, shops,
+  restauradores,
+  gruas,
+  desguaces,
+  abandonos,
+  propietarios,
+  rent_knowledge,
+  rent_service,
+  rent_space,
+  rent_tools,
+  shops,
 };
 
-// 🔎 helper: match array de filtros
+// helpers
 function someMatch(filterValues, itemValue) {
   if (!Array.isArray(filterValues) || !filterValues.length) return true;
   if (itemValue == null) return false;
@@ -44,6 +40,8 @@ function someMatch(filterValues, itemValue) {
     haystack.some((h) => h.toLowerCase().includes(String(v).toLowerCase()))
   );
 }
+const eq = (a, b) =>
+  String(a || "").toLowerCase() === String(b || "").toLowerCase();
 
 export default function Sidebar({
   selectedTribu,
@@ -52,8 +50,16 @@ export default function Sidebar({
   setSearch,
   filters = {},
   onApplyFilters = () => {},
+  // cabecero y subfiltros
+  renderTop = true,
+  subfilters = {},
+  onChangeSubfilters = () => {},
+  // integración cabecero sticky según viewport
+  isMobile = false,
+  mobileToggle = null, // botón “Mostrar mapa” (móvil/lista)
+  dockInline = null,   // dock con 5 botones (escritorio)
 }) {
-  // Re-render on language change
+  // Re-render en cambio de idioma del header
   const [, force] = useState(0);
   useEffect(() => {
     const onLang = () => force((x) => x + 1);
@@ -66,69 +72,114 @@ export default function Sidebar({
   }, []);
 
   const [showFilters, setShowFilters] = useState(false);
+
+  // dataset actual
   const data = useMemo(() => DATA_MAP[selectedTribu] || [], [selectedTribu]);
 
+  // filtrado (buscador + filtros + subfiltros)
   const filtered = useMemo(() => {
     const q = (search || "").toLowerCase();
+    const sf = subfilters || {};
+
     return (data || []).filter((item) => {
       const matchesSearch =
         !q ||
         item?.nombre?.toLowerCase?.().includes(q) ||
         item?.titulo?.toLowerCase?.().includes(q) ||
         item?.ciudad?.toLowerCase?.().includes(q) ||
-        item?.pais?.toLowerCase?.().includes(q) ||
-        item?.descripcion?.toLowerCase?.().includes(q);
+        item?.pais?.toLowerCase?.().includes(q);
 
       const matchPais = !filters.pais || item?.pais === filters.pais;
+
       const matchSkills =
         someMatch(filters.skills, item.skills) ||
         someMatch(filters.skills, item.especialidad) ||
         someMatch(filters.skills, item.servicios) ||
         someMatch(filters.skills, item.tags);
 
-      const byMarca =
+      const byMarcaModal =
         !filters.veh_marca ||
-        [item.marca, item.make, item.veh_marca, item.vehiculo?.marca].some(
-          (v) => String(v || "").toLowerCase() === String(filters.veh_marca).toLowerCase()
+        [item.marca, item.make, item.veh_marca, item.vehiculo?.marca].some((v) =>
+          eq(v, filters.veh_marca)
         );
-      const byModelo =
+      const byModeloModal =
         !filters.veh_modelo ||
         [item.modelo, item.model, item.veh_modelo, item.vehiculo?.modelo].some(
-          (v) => String(v || "").toLowerCase() === String(filters.veh_modelo).toLowerCase()
+          (v) => eq(v, filters.veh_modelo)
         );
-      const byGen =
+      const byGenModal =
         !filters.veh_gen ||
         [item.generacion, item.generation, item.veh_gen, item.vehiculo?.generacion].some(
-          (v) => String(v || "").toLowerCase() === String(filters.veh_gen).toLowerCase()
+          (v) => eq(v, filters.veh_gen)
         );
-      const matchVehiculo = byMarca && byModelo && byGen;
 
+      // subfiltros nuevos (nivel 2)
+      const brandOk =
+        !sf.brand ||
+        [item.marca, item.make, item.vehiculo?.marca].some((v) => eq(v, sf.brand));
+      const modelOk =
+        !sf.model ||
+        [item.modelo, item.model, item.vehiculo?.modelo].some((v) => eq(v, sf.model));
+      const countryOk = !sf.country || eq(item?.pais, sf.country);
+      const regionOk =
+        !sf.region ||
+        [item.region, item.state, item.provincia].some((v) => eq(v, sf.region));
+      const cityOk =
+        !sf.city ||
+        [item.ciudad, item.city, item.localidad].some((v) => eq(v, sf.city));
+      const skillOk =
+        !sf.skill ||
+        someMatch([sf.skill], item.skills) ||
+        someMatch([sf.skill], item.especialidad) ||
+        someMatch([sf.skill], item.servicios) ||
+        someMatch([sf.skill], item.tags);
+      const toolOk =
+        !sf.tool ||
+        someMatch([sf.tool], item.categoria) ||
+        someMatch([sf.tool], item.herramienta) ||
+        someMatch([sf.tool], item.tools);
+
+      // reglas tribu-específicas existentes
       let matchByTribu = true;
-      if (selectedTribu === "abandonos") {
-        if (filters.vehiculo_text) {
-          matchByTribu =
-            item?.vehiculo?.toLowerCase?.().includes(filters.vehiculo_text.toLowerCase());
-        }
-        if (matchByTribu && filters.estado) {
-          matchByTribu = item?.estado === filters.estado;
-        }
+      if (selectedTribu === "abandonos" && filters.vehiculo_text) {
+        matchByTribu =
+          item?.vehiculo?.toLowerCase?.().includes(filters.vehiculo_text.toLowerCase());
       }
-      if (selectedTribu === "restauradores" && Array.isArray(filters.especialidad) && filters.especialidad.length) {
+      if (matchByTribu && selectedTribu === "abandonos" && filters.estado) {
+        matchByTribu = item?.estado === filters.estado;
+      }
+      if (
+        selectedTribu === "restauradores" &&
+        Array.isArray(filters.especialidad) &&
+        filters.especialidad.length
+      ) {
         const tag = (item?.especialidad || "").toString();
         matchByTribu = filters.especialidad.some((e) => tag.includes(e));
       }
-      if (selectedTribu === "rent_tools" && Array.isArray(filters.categoria) && filters.categoria.length) {
+      if (
+        selectedTribu === "rent_tools" &&
+        Array.isArray(filters.categoria) &&
+        filters.categoria.length
+      ) {
         const cat = (item?.categoria || "").toString();
         matchByTribu = filters.categoria.some((e) => cat.includes(e));
       }
       if (selectedTribu === "rent_space" && filters.tipo_espacio) {
         matchByTribu = item?.tipo_espacio === filters.tipo_espacio;
       }
-      if (selectedTribu === "rent_service" && Array.isArray(filters.servicio) && filters.servicio.length) {
+      if (
+        selectedTribu === "rent_service" &&
+        Array.isArray(filters.servicio) &&
+        filters.servicio.length
+      ) {
         const srv = (item?.servicios || "").toString();
         matchByTribu = filters.servicio.some((e) => srv.includes(e));
       }
-      if (selectedTribu === "rent_knowledge" && Array.isArray(filters.tema) && filters.tema.length) {
+      if (
+        selectedTribu === "rent_knowledge" &&
+        Array.isArray(filters.tema) &&
+        filters.tema.length
+      ) {
         const tema = (item?.tema || "").toString();
         matchByTribu = filters.tema.some((e) => tema.includes(e));
       }
@@ -137,111 +188,61 @@ export default function Sidebar({
         matchByTribu = filters.rubro.some((e) => rub.includes(e));
       }
 
-      return matchesSearch && matchPais && matchSkills && matchVehiculo && matchByTribu;
+      return (
+        matchesSearch &&
+        matchPais &&
+        matchSkills &&
+        byMarcaModal &&
+        byModeloModal &&
+        byGenModal &&
+        brandOk &&
+        modelOk &&
+        countryOk &&
+        regionOk &&
+        cityOk &&
+        skillOk &&
+        toolOk &&
+        matchByTribu
+      );
     });
-  }, [data, search, filters, selectedTribu]);
+  }, [data, search, filters, subfilters, selectedTribu]);
 
-  /* ===== Carrusel con flechas en columnas laterales ===== */
-  const scrollerRef = useRef(null);
-  const [hasLeft, setHasLeft] = useState(false);
-  const [hasRight, setHasRight] = useState(false);
-
-  useEffect(() => {
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
-
-    const updateArrows = () => {
-      setHasLeft(scroller.scrollLeft > 5);
-      setHasRight(scroller.scrollWidth - scroller.clientWidth - scroller.scrollLeft > 5);
-    };
-
-    updateArrows();
-    scroller.addEventListener("scroll", updateArrows);
-    const ro = new ResizeObserver(updateArrows);
-    ro.observe(scroller);
-
-    return () => {
-      scroller.removeEventListener("scroll", updateArrows);
-      ro.disconnect();
-    };
-  }, []);
-
-  const scrollBy = (delta) => {
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
-    scroller.scrollBy({ left: delta, behavior: "smooth" });
-  };
-
+  // ====== RENDER ======
   return (
     <div className="sidebar__inner">
-      {/* ==== TOP FIJO: buscador + carrusel de tribus ==== */}
-      <div className="sidebar__top" role="region" aria-label={t("sidebar.title")}>
-        <div className="sidebar__header">
-          <input
-            type="text"
-            className="sidebar-search"
-            placeholder={t("sidebar.searchPlaceholder")}
-            aria-label={t("sidebar.searchPlaceholder")}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <button
-            className="btn btn--filter"
-            aria-label="Filtrar"
-            onClick={() => setShowFilters(true)}
-            title="Filtrar"
-          >
-            <span className="btn-icon" aria-hidden>⫶</span>
-            <span className="btn-text">{t("ui.filter") ?? "Filtrar"}</span>
-          </button>
-        </div>
-
-        {/* Fila: ← flecha | carrusel chips | flecha → */}
-        <div className="tribu-row">
-          <button
-            type="button"
-            className="tribu-arrow tribu-arrow--left"
-            aria-label="ui.prev"
-            onClick={() => scrollBy(-220)}
-            disabled={!hasLeft}
-          >
-            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-          </button>
-
-          <div
-            className="tribu-scroller"
-            role="tablist"
-            aria-label={t("sidebar.title")}
-            ref={scrollerRef}
-          >
-            <div className="tribu-track">
-              {TRIBUS.map((key) => {
-                const active = key === selectedTribu;
-                return (
-                  <button
-                    key={key}
-                    className={`tribe-chip ${active ? "active" : ""}`}
-                    onClick={() => setSelectedTribu(key)}
-                    aria-pressed={active}
-                  >
-                    {t(`filter.${key}`)}
-                  </button>
-                );
-              })}
-            </div>
+      {/* Cabecero */}
+      {renderTop && (
+        isMobile ? (
+          <div className="bm-button-inline mobile">
+            {mobileToggle ? (
+              <div className="bm-mobile-toggle-row">{mobileToggle}</div>
+            ) : null}
+            <SidebarTop
+              data={data}
+              selectedTribu={selectedTribu}
+              setSelectedTribu={setSelectedTribu}
+              search={search}
+              setSearch={setSearch}
+              onOpenFilters={() => setShowFilters(true)}
+              subfilters={subfilters}
+              onChangeSubfilters={onChangeSubfilters}
+            />
           </div>
-
-          <button
-            type="button"
-            className="tribu-arrow tribu-arrow--right"
-            aria-label="ui.next"
-            onClick={() => scrollBy(+220)}
-            disabled={!hasRight}
-          >
-            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-          </button>
-        </div>
-      </div>
+        ) : (
+          // ⬇️ En desktop pasamos el dock a SidebarTop (sin wrapper adicional)
+          <SidebarTop
+            dockInline={dockInline}
+            data={data}
+            selectedTribu={selectedTribu}
+            setSelectedTribu={setSelectedTribu}
+            search={search}
+            setSearch={setSearch}
+            onOpenFilters={() => setShowFilters(true)}
+            subfilters={subfilters}
+            onChangeSubfilters={onChangeSubfilters}
+          />
+        )
+      )}
 
       {/* ==== LISTA ==== */}
       <div className="cards">
@@ -274,7 +275,7 @@ export default function Sidebar({
         ))}
       </div>
 
-      {/* MODAL DE FILTROS */}
+      {/* Modal de filtros “avanzados” */}
       {showFilters && (
         <FilterModal
           tribu={selectedTribu}
