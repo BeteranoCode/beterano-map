@@ -95,13 +95,37 @@
 .bm-button-inline,
 .sidebar__top { background: #FBE493; }
 
-/* En escritorio ya no hace falta sticky: el scroll es solo en .cards */
+/* En escritorio no usamos sticky: el scroll es solo en .cards */
 .sidebar__top {
   position: relative;
   top: auto;
   z-index: 6;
   padding: 0 0 8px 0;
   box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+/* Dock inline encima del buscador (solo desktop) */
+.bm-desktop-dock-row { display: none; }
+
+@media (min-width: 769px) {
+  .bm-desktop-dock-row {
+    display: flex;
+    margin: 2px 0 10px 0;
+  }
+  /* El componente MobileDock encaja como fila normal */
+  .bm-desktop-dock-row .mobile-dock {
+    position: static;
+    transform: none;
+    width: 100%;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .bm-desktop-dock-row .dock-center {
+    translate: 0 0;
+  }
 }
 
 /* Fila de 3 columnas: ← | carrusel | → */
@@ -206,12 +230,12 @@
   gap: 12px;
   margin-top: 8px;
 
-  /* ⬇️ clave para que el scroll sea interno a la lista */
+  /* ⬇️ scroll interno a la lista */
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding-right: 4px; /* pequeña separación del scrollbar */
+  padding-right: 4px;
 }
 .cards__empty { color: #aaa; font-size: 14px; }
 
@@ -282,7 +306,7 @@
   cursor: pointer;
 }
 
-/* En móvil ya no necesitamos el gradiente del wrapper */
+/* En móvil quitamos el gradiente del wrapper */
 @media (max-width: 768px) {
   .sidebar__inner { background: none; }
 }

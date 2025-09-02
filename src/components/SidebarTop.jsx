@@ -4,7 +4,7 @@ import { t } from "@/i18n";
 
 const TRIBUS = [
   "restauradores",
-  "gruas",        // etiqueta se puede traducir como “filter.transport”
+  "gruas",
   "desguaces",
   "abandonos",
   "propietarios",
@@ -28,6 +28,7 @@ function uniqFrom(data, keys) {
 }
 
 export default function SidebarTop({
+  dockInline = null,   // ⬅️ NUEVO (solo desktop)
   data = [],
   selectedTribu,
   setSelectedTribu,
@@ -37,7 +38,7 @@ export default function SidebarTop({
   subfilters,
   onChangeSubfilters,
 }) {
-  // carrusel con flechas (como ya tenías)
+  // carrusel con flechas
   const scrollerRef = useRef(null);
   const [hasLeft, setHasLeft] = useState(false);
   const [hasRight, setHasRight] = useState(false);
@@ -222,6 +223,13 @@ export default function SidebarTop({
 
   return (
     <div className="sidebar__top" role="region" aria-label={t("sidebar.title")}>
+      {/* Dock inline (solo desktop) */}
+      {dockInline ? (
+        <div className="bm-desktop-dock-row" role="toolbar" aria-label="Garagex shortcuts">
+          {dockInline}
+        </div>
+      ) : null}
+
       {/* buscador + botón filtro */}
       <div className="sidebar__header">
         <input

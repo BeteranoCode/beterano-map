@@ -210,15 +210,13 @@ export default function Sidebar({
   // ====== RENDER ======
   return (
     <div className="sidebar__inner">
-      {/* Cabecero sticky */}
+      {/* Cabecero */}
       {renderTop && (
         isMobile ? (
           <div className="bm-button-inline mobile">
-            {/* ⬇️ Fila propia para el botón, arriba del todo */}
             {mobileToggle ? (
               <div className="bm-mobile-toggle-row">{mobileToggle}</div>
             ) : null}
-            {/* Top con buscador + chips + subfiltros */}
             <SidebarTop
               data={data}
               selectedTribu={selectedTribu}
@@ -231,19 +229,18 @@ export default function Sidebar({
             />
           </div>
         ) : (
-          <>
-            {dockInline ? <div className="bm-button-inline">{dockInline}</div> : null}
-            <SidebarTop
-              data={data}
-              selectedTribu={selectedTribu}
-              setSelectedTribu={setSelectedTribu}
-              search={search}
-              setSearch={setSearch}
-              onOpenFilters={() => setShowFilters(true)}
-              subfilters={subfilters}
-              onChangeSubfilters={onChangeSubfilters}
-            />
-          </>
+          // ⬇️ En desktop pasamos el dock a SidebarTop (sin wrapper adicional)
+          <SidebarTop
+            dockInline={dockInline}
+            data={data}
+            selectedTribu={selectedTribu}
+            setSelectedTribu={setSelectedTribu}
+            search={search}
+            setSearch={setSearch}
+            onOpenFilters={() => setShowFilters(true)}
+            subfilters={subfilters}
+            onChangeSubfilters={onChangeSubfilters}
+          />
         )
       )}
 

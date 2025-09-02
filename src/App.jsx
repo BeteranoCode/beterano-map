@@ -2,7 +2,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import MapPage from "./pages/Map";
-// import GaragexToggle from "./components/GaragexToggle"; // ⬅️ ya no se usa en desktop
 import GaragexPanel from "./components/GaragexPanel";
 import MobileDock from "./components/MobileDock";
 import { t, loadLang, getLang } from "./i18n";
@@ -199,9 +198,24 @@ function App() {
       {isMobile ? (
         mobileView === "list" ? (
           <aside className={`sidebar ${!hasResults ? "no-results" : ""}`} id="sidebar">
-            {/* ⬇️ AHORA el botón vive dentro del Sidebar como cabecero sticky */}
+            <div className="bm-button-inline">
+              <button
+                className="bm-toggle-mobile toggle-mobile-view"
+                onClick={() => setMobileView("map")}
+                aria-label={t("ui.showMap")}
+              >
+                {t("ui.showMap")}
+              </button>
+            </div>
             <Sidebar
               isMobile
+              selectedTribu={selectedTribu}
+              setSelectedTribu={setSelectedTribu}
+              search={search}
+              setSearch={setSearch}
+              filters={filters}
+              onApplyFilters={setFilters}
+              // (en móvil, Sidebar mete el botón “Mostrar mapa” dentro del sticky)
               mobileToggle={
                 <button
                   className="bm-toggle-mobile toggle-mobile-view"
@@ -211,12 +225,6 @@ function App() {
                   {t("ui.showMap")}
                 </button>
               }
-              selectedTribu={selectedTribu}
-              setSelectedTribu={setSelectedTribu}
-              search={search}
-              setSearch={setSearch}
-              filters={filters}
-              onApplyFilters={setFilters}
             />
           </aside>
         ) : (
@@ -250,6 +258,7 @@ function App() {
               setSearch={setSearch}
               filters={filters}
               onApplyFilters={setFilters}
+              /* ⬇️ ESTE es el dock de 5 botones que queremos encima del buscador */
               dockInline={
                 <MobileDock
                   variant="inline"
