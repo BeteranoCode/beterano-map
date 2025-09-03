@@ -14,7 +14,7 @@
   position: relative;
   z-index: 2;
 
-  /* ⬇️ clave: que NO scrollee el aside; el scroll va en .cards */
+  /* el scroll será interno a .cards */
   overflow: hidden;
 
   display: flex;
@@ -41,17 +41,16 @@
   }
 }
 
-/* wrapper interno que contendrá “top” + “cards” */
+/* wrapper interno: contendrá top + cards */
 .sidebar__inner {
   position: relative;
-
   display: flex;
   flex-direction: column;
   gap: 10px;
 
-  /* que el contenedor ocupe todo el alto disponible */
+  /* ocupar todo el alto disponible para que .cards scrollee */
   flex: 1 1 auto;
-  min-height: 0; /* ⬅️ imprescindible para que .cards pueda scrollear */
+  min-height: 0;
 
   /* franja pastel superior (solo visual) */
   background:
@@ -91,11 +90,11 @@
 }
 .btn--filter .btn-icon { font-size: 18px; line-height: 0; }
 
-/* =================== Cabecero (buscador + carrusel + subfiltros) =================== */
+/* =================== Cabecero (dock + buscador + carrusel + subfiltros) =================== */
 .bm-button-inline,
 .sidebar__top { background: #FBE493; }
 
-/* En escritorio no usamos sticky: el scroll es solo en .cards */
+/* en desktop no usamos sticky (el scroll es de .cards) */
 .sidebar__top {
   position: relative;
   top: auto;
@@ -110,7 +109,9 @@
 @media (min-width: 769px) {
   .bm-desktop-dock-row {
     display: flex;
-    margin: 2px 0 10px 0;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 0 10px 0;
   }
   /* El componente MobileDock encaja como fila normal */
   .bm-desktop-dock-row .mobile-dock {
@@ -197,6 +198,7 @@
   gap: 10px;
 }
 .subfilters--3 { grid-template-columns: 1fr 1fr 1fr auto; }
+
 .subf__field { display: flex; flex-direction: column; gap: 6px; }
 .subf__label { font-size: 12px; font-weight: 600; color: #6a6a6a; }
 .subf__select {
@@ -208,6 +210,7 @@
   font: inherit;
 }
 .subf__hint { font-size: 11px; color: #8a8a8a; }
+
 .subf__clear {
   align-self: end;
   height: 36px;
@@ -218,19 +221,19 @@
   font-weight: 600;
   cursor: pointer;
 }
+
 @media (max-width: 1024px) {
   .subfilters { grid-template-columns: 1fr; }
   .subfilters--3 { grid-template-columns: 1fr; }
 }
 
-/* =================== LISTA (solo esta parte scrollea) =================== */
+/* =================== LISTA (solo scrollea esta parte) =================== */
 .cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   margin-top: 8px;
 
-  /* ⬇️ scroll interno a la lista */
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
@@ -279,7 +282,7 @@
   align-items: stretch;
 }
 
-/* quitamos cualquier relleno fantasma */
+/* sin relleno fantasma */
 .bm-button-inline.mobile::before { content: none !important; }
 
 /* Fila del botón “Mostrar mapa” centrado */
