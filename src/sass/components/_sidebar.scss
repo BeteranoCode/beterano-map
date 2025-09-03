@@ -15,7 +15,7 @@
   z-index: 2;
 
   /* ⬇️ el aside NO scrollea; el scroll va en .cards */
-  overflow: hidden;
+  overflow: visible; /*el boton central puede sobresalir hacia arriba*/
 
   display: flex;
   flex-direction: column;
@@ -313,4 +313,166 @@
 /* En móvil quitamos el gradiente del wrapper */
 @media (max-width: 768px) {
   .sidebar__inner { background: none; }
+}
+
+/* =========================
+   Desktop: dock inline encima del buscador
+   ========================= */
+@media (min-width: 901px) {
+  /* muestra la fila en desktop */
+  .bm-desktop-dock-row {
+    display: block;           /* estaba en display:none */
+    padding: 0 0 8px 0;
+  }
+
+  /* el mismo componente MobileDock, pero en modo inline */
+  .bm-desktop-dock-row .mobile-dock {
+    /* anula el fixed del dock móvil */
+    position: static !important;
+    inset: auto !important;
+    z-index: auto !important;
+
+    /* vuelve a ocupar el ancho del contenedor */
+    width: 100% !important;
+    max-width: none;
+    height: auto;
+    padding: 0;
+    margin: 0;
+
+    /* apariencia integrada al header del sidebar */
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+
+    /* y que se vea :) */
+    display: grid !important;
+    grid-template-columns: 56px 56px 72px 56px 56px; /* 2 | center | 2 */
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 8px;
+  }
+
+  /* botones laterales */
+  .bm-desktop-dock-row .mobile-dock .dock-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 1px 6px rgba(0,0,0,.12);
+  }
+
+  /* iconos */
+  .bm-desktop-dock-row .mobile-dock .dock-icon,
+  .bm-desktop-dock-row .mobile-dock .dock-btn svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* botón central (Garagex) */
+  .bm-desktop-dock-row .mobile-dock .dock-center {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #FBE493;
+    border: 1px solid #e6cf87;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06) inset;
+    transform: none;        /* quitar el translateY del móvil */
+    justify-self: center;
+  }
+}
+
+/* =========================
+   Desktop: dock inline encima del buscador,
+   mismo estilo que móvil, pegado al header
+   ========================= */
+@media (min-width: 901px) {
+  /* fila contenedora del dock (la que renderiza SidebarTop) */
+  .bm-desktop-dock-row {
+    position: sticky;              /* se queda pegado al header al hacer scroll */
+    top: var(--header-offset, 0);  /* misma cota que el mapa */
+    z-index: 20000;                /* el botón central puede superponerse al header */
+    padding: 8px 0 10px 0;
+    background: transparent;
+  }
+
+  /* reconfiguramos el mismo componente .mobile-dock en modo "inline" */
+  .bm-desktop-dock-row .mobile-dock {
+    /* anula fixed/inset del modo móvil */
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    top: auto !important;
+    z-index: auto !important;
+    transform: none !important;
+
+    /* caja pastel como en móvil */
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: none;
+    height: auto;
+    padding: 0 12px;                 /* margen lateral como el header del sidebar */
+    background: #FBE493;
+    border-radius: 18px;
+    box-shadow: none;
+
+    display: grid !important;
+    grid-template-columns: 56px 56px 80px 56px 56px; /* 2 | center | 2 */
+    grid-auto-rows: 64px;            /* altura del dock (similar móvil) */
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 12px;
+    overflow: visible;
+  }
+
+  /* botones laterales */
+  .bm-desktop-dock-row .mobile-dock .dock-btn {
+    all: unset;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 1px 6px rgba(0,0,0,.12);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    line-height: 0;
+    color: #111;
+  }
+
+  /* iconos como en móvil */
+  .bm-desktop-dock-row .mobile-dock .dock-icon,
+  .bm-desktop-dock-row .mobile-dock .dock-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke: #111;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    display: block;
+  }
+
+  /* botón central (Garagex) sobresaliendo */
+  .bm-desktop-dock-row .mobile-dock .dock-center {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #FBE493;            /* igual que el dock */
+    border: 1px solid #e6cf87;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06) inset;
+    justify-self: center;
+    align-self: center;
+
+    /* sobresale un 20% hacia arriba, puede tapar el header */
+    transform: translateY(-12px);
+    z-index: 20002;
+  }
+
+  .bm-desktop-dock-row .mobile-dock .dock-center img,
+  .bm-desktop-dock-row .mobile-dock .dock-center svg {
+    width: 70%; height: 70%;
+    object-fit: contain; display: block;
+    stroke: #111; fill: none;
+    pointer-events: none;
+  }
 }
