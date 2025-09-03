@@ -28,7 +28,7 @@ function uniqFrom(data, keys) {
 }
 
 export default function SidebarTop({
-  dockInline = null,   // ⬅️ NUEVO (solo desktop)
+  dockInline = null,   // ⬅️ dock inline (solo desktop)
   data = [],
   selectedTribu,
   setSelectedTribu,
@@ -42,6 +42,7 @@ export default function SidebarTop({
   const scrollerRef = useRef(null);
   const [hasLeft, setHasLeft] = useState(false);
   const [hasRight, setHasRight] = useState(false);
+
   useEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
@@ -80,7 +81,9 @@ export default function SidebarTop({
   const s = subfilters || {};
   const change = (k) => (e) => onChangeSubfilters({ ...s, [k]: e.target.value || "" });
   const clearSubfilters = () =>
-    onChangeSubfilters({ brand: "", model: "", country: "", region: "", city: "", skill: "", tool: "" });
+    onChangeSubfilters({
+      brand: "", model: "", country: "", region: "", city: "", skill: "", tool: ""
+    });
 
   const renderSubfilters = () => {
     switch (selectedTribu) {
@@ -115,7 +118,7 @@ export default function SidebarTop({
           </div>
         );
 
-      case "gruas": // Transporte
+      case "gruas":
       case "desguaces":
         return (
           <div className="subfilters">
