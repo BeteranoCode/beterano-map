@@ -6,34 +6,45 @@
    ============================================================ */
 html, body, #root {
   height: 100%;
-  overflow-x: visible;
-  overflow-y: hidden; /* el scroll vertical NO es global */
 }
 
+html, body {
+  margin: 0;           /* evita el hueco blanco */
+  padding: 0;
+}
+
+body {
+  overflow: hidden;    /* el scroll NO es global */
+}
+
+/* El contenedor de la app ocupa exactamente
+   el viewport menos la altura del header externo */
 .layout-container {
-  height: calc(100dvh - var(--header-offset, 0px));
+  position: fixed;                          /* ← clave */
+  inset: var(--header-offset, 0px) 0 0 0;   /* top right bottom left */
   display: grid;
-  grid-template-columns: 560px 1fr; /* ancho sidebar desktop */
+  grid-template-columns: 560px 1fr;         /* ancho sidebar desktop */
   align-items: stretch;
   gap: 0;
-  overflow: hidden; /* evita que el grid cree scroll */
+  overflow: hidden;                         /* evita scroll propio del grid */
 }
 
 @media (max-width: 1024px) {
   .layout-container { grid-template-columns: 420px 1fr; }
 }
+
 @media (max-width: 768px) {
   .layout-container {
-    grid-template-columns: 1fr;      /* una columna en móvil */
-    height: calc(100dvh - var(--header-offset, 0px));
+    grid-template-columns: 1fr;             /* una columna en móvil */
+    /* sigue anclado por inset; no hace falta height aquí */
   }
 }
 
-/* El mapa ocupa todo el alto del área derecha */
+/* El mapa sigue ocupando todo el alto de su área */
 .map-container {
   position: relative;
   height: 100%;
-  min-height: 0;     /* clave para que no empuje al grid */
+  min-height: 0;
   overflow: hidden;
 }
 .map-container .map-leaflet-wrapper {
