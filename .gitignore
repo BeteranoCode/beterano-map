@@ -27,6 +27,6 @@ yarn-error.log*
 
 # Archivos sensibles o internos
 src/data/
-
+.gh-pages/
 
 $null
