@@ -17,10 +17,10 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: sans-serif;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
-/* 🔝 Header dinámico */
+/* 🔝 Contenedor del header inyectado: no debe reservar espacio */
 #header-container {
   width: 100%;
   position: fixed;
@@ -28,19 +28,18 @@ html, body {
   z-index: 9999;
   height: auto !important;
   max-height: none !important;
-  pointer-events: none;
+  pointer-events: none; /* el header dentro sigue siendo clickable */
 }
 #header-container * { pointer-events: auto; }
 
-/* React App debajo del header */
+/* 👇 IMPORTANTÍSIMO: NO usar top/margin con header-offset aquí */
+/* Deja que el header.css controle la altura disponible del root */
 #root {
   position: relative;
-  margin-top: var(--header-offset, 96px);
-  height: calc(100% - var(--header-offset, 96px));
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  overflow: hidden;
+  /* quita cualquier: top: var(--header-offset,...); margin-top: ...; height: 100vh; */
+  min-height: auto;
+  height: auto;
+  overflow: hidden; /* el mapa y sidebar gestionan scroll internos */
 }
 
 /* Layout principal (flex: sidebar + mapa) */
