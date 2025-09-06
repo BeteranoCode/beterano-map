@@ -32,76 +32,120 @@ html, body {
 }
 #header-container * { pointer-events: auto; }
 
-/* 👇 IMPORTANTÍSIMO: NO usar top/margin con header-offset aquí
-   Deja que el header.css controle la altura disponible del root */
+/* 👇 NO usar offsets aquí: el header controla la altura útil */
 #root {
   position: relative;
-  /* Evitar: top: var(--header-offset,...); margin-top; height: 100vh */
   min-height: auto;
   height: auto;
   overflow: hidden;            /* el scroll vive dentro de sidebar/cards */
-  display: flex;               /* ⬅️ clave para estirar hasta el suelo */
+  display: flex;
   flex-direction: column;
 }
 
-/* Layout principal (sidebar + mapa) debe ocupar TODO el alto disponible de #root */
+/* ====== LAYOUT PRINCIPAL ====== */
 .layout-container {
-  flex: 1 1 auto;              /* ⬅️ ocupa el resto de altura bajo el header */
-  min-height: 0;               /* ⬅️ permite que los hijos usen 100% sin desbordar */
+  flex: 1 1 auto;              /* ocupa el resto de altura bajo el header */
+  min-height: 0;               /* permite que los hijos usen 100% sin desbordar */
   display: flex;
   width: 100%;
-  flex-direction: row;
   gap: 0;
 
-  @media (max-width: 768px) {
-    flex-direction: column;    /* en móvil, lista encima y mapa debajo */
+  /* móvil por defecto: columna (lista arriba, mapa abajo) */
+  flex-direction: column;
+
+  /* a partir de 600px: fila para que el mapa use el hueco derecho */
+  @media (min-width: 600px) {
+    flex-direction: row;
   }
 }
 
-/* 🧭 Sidebar: que pueda hacer scroll interno sin empujar el body */
+/* ====== SIDEBAR ====== */
+/* Base: escalable. Da aire y evita quedarse "apretado" respecto al dock */
 .sidebar {
-  flex: 0 0 360px;
-  min-width: 280px;
-  max-width: 420px;
-  height: 100%;                /* ⬅️ llena toda la altura del layout */
+  /* ancho entre 320 y 420, aprox 38vw como punto medio */
+  flex: 0 0 clamp(320px, 38vw, 420px);
+  min-width: 300px;
+  max-width: 480px;
+  height: 100%;
   overflow: auto;
+  position: relative; /* para sticky children */
 
-  @media (max-width: 768px) {
+  /* móvil puro (<600): ocupa 100% arriba */
+  @media (max-width: 599px) {
     flex: 0 0 auto;
-    max-height: 40vh;          /* opcional: limita altura en móvil */
+    width: 100%;
+    max-width: none;
+  }
+
+  /* escritorio ancho (≥900): más espacio para filtros + dock */
+  @media (min-width: 900px) {
+    flex: 0 0 clamp(380px, 32vw, 540px);
+    max-width: 540px;
   }
 }
 
-/* 🗺️ Contenedor del mapa: ocupa todo lo restante */
+/* ====== MAPA ====== */
 .map-container {
   flex: 1 1 auto;
   min-width: 0;
-  height: 100%;                /* ⬅️ en vez de 100vh */
+  height: 100%;
   position: relative;
   z-index: 1;
 }
+.map-leaflet-wrapper { position: absolute; inset: 0; width: 100%; height: 100%; }
+.leaflet-container    { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
 
-/* Wrapper del mapa (absoluto dentro del contenedor) */
-.map-leaflet-wrapper {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+/* ====== DOCKS ====== */
+/* Por defecto ocultamos el inline-dock (solo escritorio) */
+.inline-dock { display: none; }
+
+/* Escritorio compacto: 768–899px
+   - ocultar mobile dock
+   - mostrar inline dock sticky en la cabecera del sidebar
+*/
+@media (min-width: 768px) and (max-width: 899px) {
+  .inline-dock {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #f9e6a8;       /* amarillo pastel del sidebar */
+    padding: 10px 12px 6px;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+  }
+  /* reserva un pelín de espacio para no tapar filtros */
+  .sidebar .sidebar__content { padding-top: 8px; }
 }
 
-/* Leaflet ocupa todo */
-.leaflet-container {
-  position: absolute;
-  inset: 0;
-  width: 100% !important;
-  height: 100% !important;
+/* Escritorio ≥900px (sidebar más ancho) */
+@media (min-width: 900px) {
+  .inline-dock {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #f9e6a8;
+    padding: 12px 12px 8px;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+  }
+  .sidebar .sidebar__content { padding-top: 8px; }
+  .sidebar .tribes-filter { margin-top: 8px; }
 }
 
-/* Modo local: offset simulado si no hay header */
+/* si tu inline-dock contiene la clase .dock, dale layout horizontal bonito */
+.inline-dock .dock {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 8px;
+  justify-content: start;
+}
+.inline-dock .dock-btn { background: #fff; }
+
+/* ====== Modo local (sin header real) ====== */
 body.local-dev #header-container { background: #f8f8f8; border-bottom: 1px solid #ddd; }
 body.local-dev { --header-offset: 125px; }
 
-/* 🧭 Centrar navegación en escritorio (header externo) */
+/* Centrar navegación en escritorio (header externo) */
 @media (min-width: 1024px) {
   #site-header { display: flex; align-items: center; }
   #site-header .nav-wrapper {

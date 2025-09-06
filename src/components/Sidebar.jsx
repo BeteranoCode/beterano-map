@@ -1,5 +1,5 @@
 // src/components/Sidebar.jsx
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { t } from "@/i18n";
 import FilterModal from "./filters/FilterModal";
 import SidebarTop from "./SidebarTop";
@@ -40,8 +40,7 @@ function someMatch(filterValues, itemValue) {
     haystack.some((h) => h.toLowerCase().includes(String(v).toLowerCase()))
   );
 }
-const eq = (a, b) =>
-  String(a || "").toLowerCase() === String(b || "").toLowerCase();
+const eq = (a, b) => String(a || "").toLowerCase() === String(b || "").toLowerCase();
 
 export default function Sidebar({
   selectedTribu,
@@ -99,34 +98,23 @@ export default function Sidebar({
 
       const byMarcaModal =
         !filters.veh_marca ||
-        [item.marca, item.make, item.veh_marca, item.vehiculo?.marca].some((v) =>
-          eq(v, filters.veh_marca)
-        );
+        [item.marca, item.make, item.veh_marca, item.vehiculo?.marca].some((v) => eq(v, filters.veh_marca));
       const byModeloModal =
         !filters.veh_modelo ||
-        [item.modelo, item.model, item.veh_modelo, item.vehiculo?.modelo].some(
-          (v) => eq(v, filters.veh_modelo)
-        );
+        [item.modelo, item.model, item.veh_modelo, item.vehiculo?.modelo].some((v) => eq(v, filters.veh_modelo));
       const byGenModal =
         !filters.veh_gen ||
-        [item.generacion, item.generation, item.veh_gen, item.vehiculo?.generacion].some(
-          (v) => eq(v, filters.veh_gen)
-        );
+        [item.generacion, item.generation, item.veh_gen, item.vehiculo?.generacion].some((v) => eq(v, filters.veh_gen));
 
       // subfiltros nuevos (nivel 2)
       const brandOk =
-        !sf.brand ||
-        [item.marca, item.make, item.vehiculo?.marca].some((v) => eq(v, sf.brand));
+        !sf.brand || [item.marca, item.make, item.vehiculo?.marca].some((v) => eq(v, sf.brand));
       const modelOk =
-        !sf.model ||
-        [item.modelo, item.model, item.vehiculo?.modelo].some((v) => eq(v, sf.model));
+        !sf.model || [item.modelo, item.model, item.vehiculo?.modelo].some((v) => eq(v, sf.model));
       const countryOk = !sf.country || eq(item?.pais, sf.country);
-      const regionOk =
-        !sf.region ||
-        [item.region, item.state, item.provincia].some((v) => eq(v, sf.region));
+      const regionOk = !sf.region || [item.region, item.state, item.provincia].some((v) => eq(v, sf.region));
       const cityOk =
-        !sf.city ||
-        [item.ciudad, item.city, item.localidad].some((v) => eq(v, sf.city));
+        !sf.city || [item.ciudad, item.city, item.localidad].some((v) => eq(v, sf.city));
       const skillOk =
         !sf.skill ||
         someMatch([sf.skill], item.skills) ||
@@ -142,44 +130,27 @@ export default function Sidebar({
       // reglas tribu-específicas existentes
       let matchByTribu = true;
       if (selectedTribu === "abandonos" && filters.vehiculo_text) {
-        matchByTribu =
-          item?.vehiculo?.toLowerCase?.().includes(filters.vehiculo_text.toLowerCase());
+        matchByTribu = item?.vehiculo?.toLowerCase?.().includes(filters.vehiculo_text.toLowerCase());
       }
       if (matchByTribu && selectedTribu === "abandonos" && filters.estado) {
         matchByTribu = item?.estado === filters.estado;
       }
-      if (
-        selectedTribu === "restauradores" &&
-        Array.isArray(filters.especialidad) &&
-        filters.especialidad.length
-      ) {
+      if (selectedTribu === "restauradores" && Array.isArray(filters.especialidad) && filters.especialidad.length) {
         const tag = (item?.especialidad || "").toString();
         matchByTribu = filters.especialidad.some((e) => tag.includes(e));
       }
-      if (
-        selectedTribu === "rent_tools" &&
-        Array.isArray(filters.categoria) &&
-        filters.categoria.length
-      ) {
+      if (selectedTribu === "rent_tools" && Array.isArray(filters.categoria) && filters.categoria.length) {
         const cat = (item?.categoria || "").toString();
         matchByTribu = filters.categoria.some((e) => cat.includes(e));
       }
       if (selectedTribu === "rent_space" && filters.tipo_espacio) {
         matchByTribu = item?.tipo_espacio === filters.tipo_espacio;
       }
-      if (
-        selectedTribu === "rent_service" &&
-        Array.isArray(filters.servicio) &&
-        filters.servicio.length
-      ) {
+      if (selectedTribu === "rent_service" && Array.isArray(filters.servicio) && filters.servicio.length) {
         const srv = (item?.servicios || "").toString();
         matchByTribu = filters.servicio.some((e) => srv.includes(e));
       }
-      if (
-        selectedTribu === "rent_knowledge" &&
-        Array.isArray(filters.tema) &&
-        filters.tema.length
-      ) {
+      if (selectedTribu === "rent_knowledge" && Array.isArray(filters.tema) && filters.tema.length) {
         const tema = (item?.tema || "").toString();
         matchByTribu = filters.tema.some((e) => tema.includes(e));
       }
@@ -214,9 +185,7 @@ export default function Sidebar({
       {renderTop && (
         isMobile ? (
           <div className="bm-button-inline mobile">
-            {mobileToggle ? (
-              <div className="bm-mobile-toggle-row">{mobileToggle}</div>
-            ) : null}
+            {mobileToggle ? <div className="bm-mobile-toggle-row">{mobileToggle}</div> : null}
             <SidebarTop
               data={data}
               selectedTribu={selectedTribu}
@@ -229,50 +198,54 @@ export default function Sidebar({
             />
           </div>
         ) : (
-          // ⬇️ En desktop pasamos el dock a SidebarTop (sin wrapper adicional)
-          <SidebarTop
-            dockInline={dockInline}
-            data={data}
-            selectedTribu={selectedTribu}
-            setSelectedTribu={setSelectedTribu}
-            search={search}
-            setSearch={setSearch}
-            onOpenFilters={() => setShowFilters(true)}
-            subfilters={subfilters}
-            onChangeSubfilters={onChangeSubfilters}
-          />
+          /* Escritorio: pintamos el dock inline sticky encima del Top */
+          <>
+            {dockInline ? <div className="inline-dock">{dockInline}</div> : null}
+            <SidebarTop
+              data={data}
+              selectedTribu={selectedTribu}
+              setSelectedTribu={setSelectedTribu}
+              search={search}
+              setSearch={setSearch}
+              onOpenFilters={() => setShowFilters(true)}
+              subfilters={subfilters}
+              onChangeSubfilters={onChangeSubfilters}
+            />
+          </>
         )
       )}
 
       {/* ==== LISTA ==== */}
-      <div className="cards">
-        {filtered.length === 0 && (
-          <div className="cards__empty">{t("sidebar.noResults")}</div>
-        )}
-        {filtered.map((item, i) => (
-          <article key={i} className="card card--list">
-            <header className="card__header">
-              <h4 className="card__title">
-                {item.nombre || item.titulo || t("sidebar.unnamed")}
-              </h4>
-              {(item.ciudad || item.pais) && (
-                <div className="card__meta">
-                  {item.ciudad && <>{item.ciudad}, </>}
-                  {item.pais}
-                </div>
-              )}
-            </header>
-            {item.descripcion && <p className="card__desc">{item.descripcion}</p>}
-            <footer className="card__footer">
-              {item.web && (
-                <a href={item.web} target="_blank" rel="noopener noreferrer">
-                  Web
-                </a>
-              )}
-              {item.instagram && <span className="card__ig">{item.instagram}</span>}
-            </footer>
-          </article>
-        ))}
+      <div className="sidebar__content">
+        <div className="cards">
+          {filtered.length === 0 && (
+            <div className="cards__empty">{t("sidebar.noResults")}</div>
+          )}
+          {filtered.map((item, i) => (
+            <article key={i} className="card card--list">
+              <header className="card__header">
+                <h4 className="card__title">
+                  {item.nombre || item.titulo || t("sidebar.unnamed")}
+                </h4>
+                {(item.ciudad || item.pais) && (
+                  <div className="card__meta">
+                    {item.ciudad && <>{item.ciudad}, </>}
+                    {item.pais}
+                  </div>
+                )}
+              </header>
+              {item.descripcion && <p className="card__desc">{item.descripcion}</p>}
+              <footer className="card__footer">
+                {item.web && (
+                  <a href={item.web} target="_blank" rel="noopener noreferrer">
+                    Web
+                  </a>
+                )}
+                {item.instagram && <span className="card__ig">{item.instagram}</span>}
+              </footer>
+            </article>
+          ))}
+        </div>
       </div>
 
       {/* Modal de filtros “avanzados” */}

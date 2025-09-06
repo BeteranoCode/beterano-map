@@ -27,7 +27,6 @@ body.has-mobile-dock .map-leaflet-wrapper {
   /* === variables === */
   --center-base: 88px;
 
-  /* ⬇️ mismas proporciones que en gh-pages */
   /* Central: -20% respecto al tamaño anterior */
   --center: calc(var(--center-base) * 0.7 * 1.30 * 0.8);
 
@@ -38,16 +37,13 @@ body.has-mobile-dock .map-leaflet-wrapper {
   --btn: clamp(28px, calc(var(--dock-h) - 12px), 52px);
   --icon-scale: 0.8;
 
-  /* ⬇️ SIEMPRE flotante sobre el mapa */
+  /* SIEMPRE flotante sobre el mapa */
   position: fixed !important;
   left: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
 
-  /* ⚠️ Importante: evitar desbordes laterales en móvil
-     - 100vw incluye la barra de scroll y puede “salirse”.
-     - width:100% + box-sizing:border-box respeta el viewport real.
-     - max-width:100dvw como cinturón y tirantes. */
+  /* evitar desbordes laterales en móvil */
   box-sizing: border-box;
   width: 100% !important;
   max-width: 100dvw;
@@ -55,21 +51,20 @@ body.has-mobile-dock .map-leaflet-wrapper {
   height: calc(var(--dock-h) + env(safe-area-inset-bottom, 0px));
   padding: 0 var(--pad-h) env(safe-area-inset-bottom, 0px);
 
-  /* 🎨 color pastel igual a gh-pages */
+  /* 🎨 color pastel */
   background: #FBE493;
   border-radius: 20px 20px 0 0;
   box-shadow: none;
-  z-index: 20000 !important; /* por encima de Leaflet panes/popups */
+  z-index: 20000 !important;
 
   display: grid;
   grid-template-columns: var(--btn) var(--btn) var(--center) var(--btn) var(--btn);
   grid-auto-rows: var(--dock-h);
-  align-items: stretch;        /* como en gh-pages */
+  align-items: stretch;
   justify-content: space-between;
   column-gap: 12px;
   overflow: visible;
 
-  /* redundancia defensiva */
   transform: none !important;
 }
 
@@ -91,7 +86,7 @@ body.has-mobile-dock .map-leaflet-wrapper {
   line-height: 0;
 }
 
-/* ===== Iconos SVG (laterales) — estilo gh-pages ===== */
+/* ===== Iconos SVG (laterales) ===== */
 .mobile-dock .dock-icon,
 .mobile-dock .dock-btn svg {
   display: block;
@@ -117,7 +112,7 @@ body.has-mobile-dock .map-leaflet-wrapper {
   width: var(--center);
   height: var(--center);
   border-radius: 50%;
-  background: #FBE493;   /* mismo color que el dock pastel */
+  background: #FBE493;
   border: none;
   box-shadow: none;
 
@@ -130,7 +125,7 @@ body.has-mobile-dock .map-leaflet-wrapper {
   pointer-events: auto;
 }
 
-/* ===== Logo Garagex (SVG o <img>) — estilo minimal ===== */
+/* ===== Logo Garagex (SVG o <img>) ===== */
 .mobile-dock .dock-center img,
 .mobile-dock .dock-center svg {
   width: 70%;
@@ -142,7 +137,7 @@ body.has-mobile-dock .map-leaflet-wrapper {
   fill: none;
 }
 
-/* solo móvil */
-@media (min-width: 901px) {
+/* solo móvil: oculta desde 768px en adelante */
+@media (min-width: 768px) {
   .mobile-dock { display: none; }
 }
