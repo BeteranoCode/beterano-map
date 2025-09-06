@@ -17,10 +17,10 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: sans-serif;
-  overflow: hidden;          /* bloquea scroll global */
+  overflow-x: hidden;
 }
 
-/* 🔝 Header dinámico inyectado */
+/* 🔝 Contenedor del header inyectado: no debe reservar espacio */
 #header-container {
   width: 100%;
   position: fixed;
@@ -28,23 +28,18 @@ html, body {
   z-index: 9999;
   height: auto !important;
   max-height: none !important;
-  pointer-events: none;
+  pointer-events: none; /* el header dentro sigue siendo clickable */
 }
 #header-container * { pointer-events: auto; }
 
-/* ✅ NUEVO: desplazar el contenido con padding-top del body
-   El loader define body.header-loaded[style*="--header-offset"] */
-:root { --header-offset: 0px; }          /* fallback seguro */
-body.header-loaded { padding-top: var(--header-offset, 96px); }
-
-/* React App debajo del header (sin márgenes ni cálculos) */
+/* 👇 IMPORTANTÍSIMO: NO usar top/margin con header-offset aquí */
+/* Deja que el header.css controle la altura disponible del root */
 #root {
   position: relative;
-  height: 100dvh;                         /* ocupa viewport entero */
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  overflow: hidden;
+  /* quita cualquier: top: var(--header-offset,...); margin-top: ...; height: 100vh; */
+  min-height: auto;
+  height: auto;
+  overflow: hidden; /* el mapa y sidebar gestionan scroll internos */
 }
 
 /* Layout principal (flex: sidebar + mapa) */
