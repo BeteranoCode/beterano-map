@@ -32,36 +32,52 @@ html, body {
 }
 #header-container * { pointer-events: auto; }
 
-/* 👇 IMPORTANTÍSIMO: NO usar top/margin con header-offset aquí */
-/* Deja que el header.css controle la altura disponible del root */
+/* 👇 IMPORTANTÍSIMO: NO usar top/margin con header-offset aquí
+   Deja que el header.css controle la altura disponible del root */
 #root {
   position: relative;
-  /* quita cualquier: top: var(--header-offset,...); margin-top: ...; height: 100vh; */
+  /* Evitar: top: var(--header-offset,...); margin-top; height: 100vh */
   min-height: auto;
   height: auto;
-  overflow: hidden; /* el mapa y sidebar gestionan scroll internos */
+  overflow: hidden;            /* el scroll vive dentro de sidebar/cards */
+  display: flex;               /* ⬅️ clave para estirar hasta el suelo */
+  flex-direction: column;
 }
 
-/* Layout principal (flex: sidebar + mapa) */
+/* Layout principal (sidebar + mapa) debe ocupar TODO el alto disponible de #root */
 .layout-container {
+  flex: 1 1 auto;              /* ⬅️ ocupa el resto de altura bajo el header */
+  min-height: 0;               /* ⬅️ permite que los hijos usen 100% sin desbordar */
   display: flex;
-  height: 100%;
   width: 100%;
   flex-direction: row;
-  flex: 1;
+  gap: 0;
 
   @media (max-width: 768px) {
-    flex-direction: column;
+    flex-direction: column;    /* en móvil, lista encima y mapa debajo */
   }
 }
 
-/* 🗺️ Contenedor del mapa */
+/* 🧭 Sidebar: que pueda hacer scroll interno sin empujar el body */
+.sidebar {
+  flex: 0 0 360px;
+  min-width: 280px;
+  max-width: 420px;
+  height: 100%;                /* ⬅️ llena toda la altura del layout */
+  overflow: auto;
+
+  @media (max-width: 768px) {
+    flex: 0 0 auto;
+    max-height: 40vh;          /* opcional: limita altura en móvil */
+  }
+}
+
+/* 🗺️ Contenedor del mapa: ocupa todo lo restante */
 .map-container {
   flex: 1 1 auto;
-  height: 100%;
-  position: relative;
   min-width: 0;
-  display: block;
+  height: 100%;                /* ⬅️ en vez de 100vh */
+  position: relative;
   z-index: 1;
 }
 
